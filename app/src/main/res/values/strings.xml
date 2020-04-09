@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">OurGoals</string>
+
+    <!-- StartActivity -->
+    <string name="our_goals">Our Goals</string>
+
+    <!-- LogInActivity -->
+    <string name="logging_in">Вход в аккаунт</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="logIn_enter">Войти</string>
+    <string name="registration">Регистрация</string>
+    <string name="your_email">Ваш Email</string>
+    <string name="your_login">Ваш Логин</string>
+    <string name="register">Зарегистрироваться</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="start_as_a_guest">Продолжить как Гость</string>
+
+    <!-- GuideActivity -->
+    <string name="guide">Обучение</string>
+    <string name="guide_pre_text">Пройдите обучение, чтобы узнать все возможности приложения и максимально эффективно использовать его для достижения своих целей</string>
+    <string name="skipGuide">Пропустить</string>
+    <string name="beginGuide">Начать</string>
+    <string name="next">Далее</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="back">Назад</string>
+    <string name="test_title">Test Title</string>
+    <string name="test_title2">Test Title2</string>
+    <string name="test_guide_fraze">Test super important fraze at the middle</string>
+    <string name="test_guide_text">test text test text test text test text test texttest text test text test text test text test text test text test text test text test text test text test text test text</string>
+    <string name="finishGuide">Завершить</string>
+
+    <!-- Bottom navigation menu items -->
+    <string name="my_goals">Мои Цели</string>
+    <string name="categories">Категории</string>
+    <string name="analytics">Аналитика</string>
+
+    <!-- Adding new Goal -->
+    <string name="tasks">Задачи</string>
+</resources>
