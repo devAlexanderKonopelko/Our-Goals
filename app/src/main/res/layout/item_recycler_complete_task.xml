@@ -15,27 +15,33 @@
         android:visibility="gone"
         tools:visibility="visible">
 
-        <Button
+        <ImageButton
             android:id="@+id/itemTaskCompleteEditButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginEnd="10dp"
             app:layout_constraintEnd_toStartOf="@+id/itemTaskCompleteDeleteButton"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
 
-        <Button
+            android:src="@drawable/icon_edit"
+            android:background="@color/white"/>
+
+        <ImageButton
             android:id="@+id/itemTaskCompleteDeleteButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="30dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+
+            android:src="@drawable/delete_icon"
+            android:background="@color/white"/>
 
         <TextView
             android:id="@+id/itemTaskCompleteText"
-            android:layout_width="280dp"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -47,10 +53,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="10dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/itemTaskCompleteText"
             app:layout_constraintTop_toBottomOf="@+id/itemTaskCompleteEditButton"
 
-            android:hint="01.01.2019" />
+            android:hint="Дата"
+            android:textAlignment="center"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

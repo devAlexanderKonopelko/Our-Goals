@@ -10,9 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.Goal
 import by.konopelko.ourgoals.database.Task
-import by.konopelko.ourgoals.goals.GoalSingleton
+import by.konopelko.ourgoals.temporaryData.GoalCollection
 import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
 import by.konopelko.ourgoals.goals.add.recyclerTasks.TaskAdapter
+import by.konopelko.ourgoals.temporaryData.DatabaseOperations
 import kotlinx.android.synthetic.main.fragment_add_goal_tasks.*
 
 class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
@@ -36,6 +37,8 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
         addTasksRecycler.adapter = TaskAdapter(AddTaskSingleton.instance.taskList)
         addTasksRecycler.layoutManager = LinearLayoutManager(view.context)
         addTasksRecycler.setHasFixedSize(true)
+
+        AddTaskSingleton.instance.taskToComplete = 0
 
         addTaskFragmentAddButton.setOnClickListener {
             if (AddTaskSingleton.instance.taskToComplete == 0) {
@@ -81,10 +84,10 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
             activity?.run {
                 val refresh = this as RefreshGoalsListInterface
                 refresh.refreshGoalsRecyclerView(goal)
-
-                GoalSingleton.getInstance(this).addGoal(goal)
             }
+
             dismiss()
         }
     }
+
 }

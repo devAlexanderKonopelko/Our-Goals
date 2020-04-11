@@ -8,7 +8,9 @@ import by.konopelko.ourgoals.analytics.FragmentAnalytics
 import by.konopelko.ourgoals.categories.FragmentCategories
 import by.konopelko.ourgoals.database.Goal
 import by.konopelko.ourgoals.goals.FragmentGoals
+import by.konopelko.ourgoals.goals.add.FragmentAddGoal
 import by.konopelko.ourgoals.goals.add.FragmentAddTasks
+import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_goals.*
@@ -43,6 +45,15 @@ class ActivityMain : AppCompatActivity(), FragmentAddTasks.RefreshGoalsListInter
                 }
             }
             true
+        }
+
+        goalsAddButton.setOnClickListener {
+            // очищаем список задач для цели
+            AddTaskSingleton.instance.taskList.clear()
+
+            // надувание диалога
+            val addDialog = FragmentAddGoal()
+            supportFragmentManager.let { supportFM -> addDialog.show(supportFM, "") }
         }
     }
 

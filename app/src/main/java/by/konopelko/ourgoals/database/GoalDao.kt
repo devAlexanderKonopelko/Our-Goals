@@ -5,14 +5,15 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.Deferred
 
 @Dao
 interface GoalDao {
     @Insert
-    suspend fun addGoal(goal: Goal)
+    suspend fun addGoal(goal: Goal): Long
 
-    @Delete
-    suspend fun deleteGoal(goal: Goal)
+    @Query("DELETE FROM Goal WHERE id = :goalId")
+    suspend fun deleteGoal(goalId: Int)
 
     @Query("SELECT * FROM Goal")
     suspend fun getAllGoals(): List<Goal>

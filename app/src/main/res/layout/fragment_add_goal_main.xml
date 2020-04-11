@@ -87,17 +87,6 @@
                 android:padding="0dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/addGoalFragmentAddCategoryButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="5dp"
-            android:layout_gravity="center_vertical"
-
-            android:src="@drawable/plus_icon"
-            app:backgroundTint="@color/colorAccent"
-            app:fabCustomSize="40dp"
-            app:tint="@color/white" />
     </LinearLayout>
 
     <LinearLayout
@@ -116,7 +105,7 @@
             android:text="Фон:" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchMaterial"
+            android:id="@+id/addGoalFragmentSwitchBackground"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:layout_marginStart="10dp"
@@ -149,6 +138,7 @@
             android:text="Общая:" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/addGoalFragmentSwitchSocial"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:layout_marginStart="10dp"
@@ -156,8 +146,8 @@
             android:checked="false" />
 
         <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginStart="10dp"
             android:layout_gravity="center_vertical"
 

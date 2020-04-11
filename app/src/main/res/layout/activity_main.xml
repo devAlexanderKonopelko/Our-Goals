@@ -12,8 +12,20 @@
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/goalsAddButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/plus_icon"
+        app:backgroundTint="@color/colorAccent"
+        app:fabCustomSize="60dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
-         />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/white" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"

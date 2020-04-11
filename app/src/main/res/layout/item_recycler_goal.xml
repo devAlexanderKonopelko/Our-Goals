@@ -26,21 +26,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/itemGoalEditButton"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toStartOf="@+id/itemGoalDeleteButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
 
-    <Button
+        android:src="@drawable/icon_edit"
+        android:background="#00FFFFFF"/>
+
+    <ImageButton
         android:id="@+id/itemGoalDeleteButton"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:src="@drawable/delete_icon"
+        android:background="#00FFFFFF"/>
 
     <FrameLayout
         android:id="@+id/itemGoalProgressBarLayout"
