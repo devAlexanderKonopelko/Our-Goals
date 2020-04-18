@@ -54,6 +54,7 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
         CoroutineScope(Dispatchers.IO).launch {
             fragmentGoals.context?.let {
                 goal.id = DatabaseOperations.getInstance(it).addGoaltoDatabase(goal).await().toInt()
+                Log.e("GOAL DATABASE SIZE: ", DatabaseOperations.getInstance(it).database.getGoalDao().getAllGoals().size.toString())
             }
             if (goal.id != null) {
                 GoalCollection.instance.addGoal(goal)
@@ -68,7 +69,7 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
 
     fun removeGoal(goal: Goal) {
         fragmentGoals.activity?.run {
-            Log.e("-----ENTRANCE------", "removeGoal(), fragmentGoals.activity?.run{...}")
+            Log.e("-----ENTRANCE------", "GOAL_ADAPTER removeGoal(): fragmentGoals.activity?.run{dbOperation}")
             goal.id?.let { DatabaseOperations.getInstance(this).removeGoalfromDatabase(it) }
         }
 

@@ -1,6 +1,7 @@
 package by.konopelko.ourgoals.goals.add
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import by.konopelko.ourgoals.database.Task
 import by.konopelko.ourgoals.temporaryData.GoalCollection
 import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
 import by.konopelko.ourgoals.goals.add.recyclerTasks.TaskAdapter
+import by.konopelko.ourgoals.temporaryData.CurrentSession
 import by.konopelko.ourgoals.temporaryData.DatabaseOperations
 import kotlinx.android.synthetic.main.fragment_add_goal_tasks.*
 
@@ -64,6 +66,7 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
             }
         }
         addGoalFragmentFinishButton.setOnClickListener {
+            val ownerId = CurrentSession.instance.currentUser.id
             val category = NewGoal.instance.goal.category
             val isDone = NewGoal.instance.goal.isDone
             val isSocial = NewGoal.instance.goal.isSocial
@@ -72,6 +75,7 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
             val text = NewGoal.instance.goal.text
 
             val goal = Goal(
+                ownerId,
                 category,
                 text,
                 progress,

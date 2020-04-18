@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
+import by.konopelko.ourgoals.ActivityMain
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.guide.ActivityGuide
+import by.konopelko.ourgoals.temporaryData.CurrentSession
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_log_in.*
 
@@ -34,6 +36,7 @@ class ActivityLogIn : AppCompatActivity(), View.OnClickListener {
         val model = ViewModelProvider(this).get(ViewModelLogIn::class.java)
         when (v?.id) {
             registerButton.id -> {
+                // if user wants to register
                 supportFragmentManager.beginTransaction().replace(logInFragmentLayout.id, registerFragment).commit()
 
                 registerButton.visibility = View.GONE
@@ -41,7 +44,16 @@ class ActivityLogIn : AppCompatActivity(), View.OnClickListener {
                 model.activeFragment = model.REGISTER_FRAGMENT
             }
             guestButton.id -> {
-                startActivity(Intent(this, ActivityGuide::class.java))
+                // if user enters as a guest
+                auth.signInAnonymously()
+
+                if (CurrentSession.instance.firstTimeRun) {
+                    startActivity(Intent(this, ActivityGuide::class.java))
+                    CurrentSession.instance.firstTimeRun = false
+                } else {
+                    startActivity(Intent(this, ActivityMain::class.java))
+                }
+
             }
         }
     }

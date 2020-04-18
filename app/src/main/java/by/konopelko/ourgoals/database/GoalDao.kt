@@ -17,4 +17,7 @@ interface GoalDao {
 
     @Query("SELECT * FROM Goal")
     suspend fun getAllGoals(): List<Goal>
+
+    @Query("SELECT * FROM Goal WHERE ownerId = :ownerId")
+    suspend fun getGoalsByUsersId(ownerId: String): List<Goal>
 }

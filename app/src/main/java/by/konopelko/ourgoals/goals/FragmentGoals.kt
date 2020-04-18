@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.Goal
 import by.konopelko.ourgoals.goals.recyclerGoals.GoalAdapter
+import by.konopelko.ourgoals.temporaryData.CurrentSession
 import by.konopelko.ourgoals.temporaryData.DatabaseOperations
 import by.konopelko.ourgoals.temporaryData.GoalCollection
 import kotlinx.android.synthetic.main.fragment_goals.*
@@ -30,7 +31,8 @@ class FragmentGoals : Fragment() {
 
         val goalsList = GoalCollection.instance.goalsList
         goalsRecyclerView.adapter = GoalAdapter(goalsList, this@FragmentGoals)
-        goalsRecyclerView.adapter?.notifyDataSetChanged()
+        Log.e("ADAPTER LIST SIZE: ", " ${goalsList.size}")
+        (goalsRecyclerView.adapter as GoalAdapter).notifyDataSetChanged()
 
         goalsRecyclerView.layoutManager = LinearLayoutManager(this.context)
         goalsRecyclerView.setHasFixedSize(true)

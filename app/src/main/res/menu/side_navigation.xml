@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_side_friends"
+            android:title="Мои друзья"
+            android:icon="@drawable/icon_my_friends"/>
+        <item android:id="@+id/nav_side_add_friends"
+            android:title="Добавить друга"
+            android:icon="@drawable/icon_nav_add_friend"/>
+        <item android:id="@+id/nav_side_social_goal"
+            android:title="Общие цели"
+            android:icon="@drawable/icon_social_goals"/>
+        <item android:id="@+id/nav_side_help"
+            android:title="Помощь"
+            android:icon="@drawable/icon_info"/>
+        <item android:id="@+id/nav_side_support_dev"
+            android:title="Поддержать разработчика"
+            android:icon="@drawable/icon_support_developer"/>
+        <item android:id="@+id/nav_side_log_out"
+            android:title="Выйти из аккаунта"/>
+    </group>
+</menu>

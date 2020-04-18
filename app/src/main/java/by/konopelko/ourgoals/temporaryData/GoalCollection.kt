@@ -16,9 +16,8 @@ class GoalCollection {
         val instance = GoalCollection()
     }
 
-    fun getDatabase(goals: ArrayList<Goal>) {
+    fun getGoalsDatabase(goals: ArrayList<Goal>) {
         goalsList = goals
-        println("-----LOCAL SIZE----- ${goalsList.size}")
     }
 
     fun addGoal(goal: Goal) {

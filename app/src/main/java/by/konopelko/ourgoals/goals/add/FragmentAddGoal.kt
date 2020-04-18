@@ -51,10 +51,10 @@ class FragmentAddGoal : DialogFragment() {
 
                 NewGoal.instance.goal.text = view.addGoalFragmentGoalText.text.toString()
                 NewGoal.instance.goal.category = view.addGoalFragmentCategoryList.text.toString()
+                NewGoal.instance.goal.isSocial = addGoalFragmentSwitchSocial.isChecked
 
-                //взять значение свича фона и социальной цели
+                //взять значение свича фона
 //                addGoalFragmentSwitchBackground.isChecked
-//                addGoalFragmentSwitchSocial.isChecked
 
                 fragmentManager?.let { it -> addDialogTasks.show(it,"") }
 

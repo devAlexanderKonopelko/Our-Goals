@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 class Goal(
+    var ownerId: String,
     var category: String,
     var text: String,
     var progress: Int,

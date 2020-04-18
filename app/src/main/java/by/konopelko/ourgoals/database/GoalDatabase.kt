@@ -4,8 +4,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Goal::class, Task::class], version = 2)
-@TypeConverters(TaskDataConverter::class)
+@Database(entities = [Goal::class, Task::class, User::class], version = 4)
+@TypeConverters(TaskDataConverter::class, UserDataConverter::class)
 abstract class GoalDatabase : RoomDatabase() {
     abstract fun getGoalDao(): GoalDao
+    abstract fun getUserDao(): UserDao
 }
