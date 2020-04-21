@@ -9,11 +9,13 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import by.konopelko.ourgoals.R
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_add_goal_main.*
 import kotlinx.android.synthetic.main.fragment_add_goal_main.view.*
 
 class FragmentAddGoal : DialogFragment() {
-    val addDialogTasks = FragmentAddTasks(this)
+    private val addDialogTasks = FragmentAddTasks(this)
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +49,6 @@ class FragmentAddGoal : DialogFragment() {
         addGoalFragmentNextButton.setOnClickListener {
             if (view.addGoalFragmentGoalText.text.toString().isNotEmpty() &&
                 view.addGoalFragmentCategoryList.text.toString().isNotEmpty()) {
-
 
                 NewGoal.instance.goal.text = view.addGoalFragmentGoalText.text.toString()
                 NewGoal.instance.goal.category = view.addGoalFragmentCategoryList.text.toString()

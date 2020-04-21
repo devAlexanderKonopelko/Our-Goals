@@ -75,8 +75,8 @@ class FragmentRegister : Fragment() {
                         val user = User(currentUid, registerLoginField.text.toString(), ArrayList())
 
                         Log.e("CURRENT USER ID", user.id)
-                        Log.e("CURRENT USER ID", user.name)
-                        Log.e("CURRENT USER ID", user.friendsList.toString())
+                        Log.e("CURRENT USER NAME", user.name)
+                        Log.e("CURRENT USER FRIENDS_DB", user.friendsList.toString())
 
                         CurrentSession.instance.currentUser = user
                         CoroutineScope(Dispatchers.IO).launch {

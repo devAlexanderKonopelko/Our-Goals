@@ -4,15 +4,22 @@
     tools:showIn="navigation_view">
     <group android:checkableBehavior="none">
         <item
+            android:id="@+id/nav_side_my_goals"
+            android:title="Мои цели"
+            android:icon="@drawable/icon_my_goals"/>
+        <item android:id="@+id/nav_side_social_goals"
+            android:title="Общие цели"
+            android:icon="@drawable/icon_social_goals"/>
+        <item
             android:id="@+id/nav_side_friends"
             android:title="Мои друзья"
             android:icon="@drawable/icon_my_friends"/>
         <item android:id="@+id/nav_side_add_friends"
             android:title="Добавить друга"
             android:icon="@drawable/icon_nav_add_friend"/>
-        <item android:id="@+id/nav_side_social_goal"
-            android:title="Общие цели"
-            android:icon="@drawable/icon_social_goals"/>
+        <item android:id="@+id/nav_side_notifications"
+            android:title="Уведомления"
+            android:icon="@drawable/icon_notifications"/>
         <item android:id="@+id/nav_side_help"
             android:title="Помощь"
             android:icon="@drawable/icon_info"/>

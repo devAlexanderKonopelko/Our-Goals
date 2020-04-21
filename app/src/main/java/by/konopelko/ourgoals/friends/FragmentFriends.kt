@@ -40,7 +40,7 @@ class FragmentFriends : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        получить все запросы в друзья входящие, исходящие для текущего пользователя + список друзей.
+//        получить все запросы в друзья исходящие для текущего пользователя + список друзей.
         findRequests() // выполнится через какое-то время
 
         val friendsList = FriendsListCollection.instance.friendsList
@@ -92,14 +92,12 @@ class FragmentFriends : DialogFragment() {
                                     (friendsFragmentRecyclerView.adapter as FriendsAdapter).notifyDataSetChanged()
                                 }
                             }
-
                             override fun onCancelled(p0: DatabaseError) {
                             }
                         })
                     }
                 }
             }
-
             override fun onCancelled(p0: DatabaseError) {
             }
         })
@@ -117,40 +115,35 @@ class FragmentFriends : DialogFragment() {
                                     name = users.child(uid).child("login").value.toString()
 
                                     // записываем пользователей, к которым есть запросы входящие/исходящие
-                                    FriendsListCollection.instance.friendsList.add(
-                                        User(
-                                            uid,
-                                            name,
-                                            ArrayList()
-                                        )
-                                    )
 
 //                                    Log.e("ADD_FRIEND: ", FriendsListCollection.instance.friendsList.size.toString())
 
                                     // записываем тип запроса к этому пользователю
                                     if (request.child("request_type").value == "sent") {
+                                        FriendsListCollection.instance.friendsList.add(
+                                            User(
+                                                uid,
+                                                name,
+                                                ArrayList()
+                                            )
+                                        )
                                         FriendsListCollection.instance.keysList.add("sent")
-                                    } else if (request.child("request_type").value == "received") {
-                                        FriendsListCollection.instance.keysList.add("received")
                                     }
 
                                     if (this@FragmentFriends.isVisible) {
-                                        Log.e("БД НА ЗАПРОСЫ: ", "TRUE")
+                                        Log.e("СЕРВЕР ЗАПРОСЫ ДРУЖБЫ: ", "TRUE")
 
                                         // обновляем ресайклер по ходу
                                         (friendsFragmentRecyclerView.adapter as FriendsAdapter).notifyDataSetChanged()
                                     }
                                 }
-
                                 override fun onCancelled(p0: DatabaseError) {
                                 }
                             })
                         }
                     }
                 }
-
                 override fun onCancelled(p0: DatabaseError) {
-
                 }
             })
     }

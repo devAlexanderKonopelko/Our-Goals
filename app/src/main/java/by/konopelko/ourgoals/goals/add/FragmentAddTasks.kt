@@ -1,5 +1,6 @@
 package by.konopelko.ourgoals.goals.add
 
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,9 +17,11 @@ import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
 import by.konopelko.ourgoals.goals.add.recyclerTasks.TaskAdapter
 import by.konopelko.ourgoals.temporaryData.CurrentSession
 import by.konopelko.ourgoals.temporaryData.DatabaseOperations
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_add_goal_tasks.*
 
 class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
+    private val chooseFriendsDialog = FragmentChooseFriends(this)
 
     interface RefreshGoalsListInterface {
         fun refreshGoalsRecyclerView(goal: Goal)
@@ -30,6 +33,11 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_add_goal_tasks, container, true)
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        this.isCancelable = false
+        return super.onCreateDialog(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,32 +73,55 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
                 Toast.makeText(this.context, "Завершите редактирование задачи", Toast.LENGTH_SHORT).show()
             }
         }
-        addGoalFragmentFinishButton.setOnClickListener {
-            val ownerId = CurrentSession.instance.currentUser.id
-            val category = NewGoal.instance.goal.category
-            val isDone = NewGoal.instance.goal.isDone
-            val isSocial = NewGoal.instance.goal.isSocial
-            val progress = NewGoal.instance.goal.progress
-            val tasks = AddTaskSingleton.instance.taskList
-            val text = NewGoal.instance.goal.text
 
-            val goal = Goal(
-                ownerId,
-                category,
-                text,
-                progress,
-                tasks,
-                isDone,
-                isSocial
-            )
+        // TODO: Проверять Общий свитч и надувать диалог FragmentChooseFriends
+        if (NewGoal.instance.goal.isSocial) {
+            addGoalFragmentFinishButton.text = "Далее"
+            addGoalFragmentFinishButton.setOnClickListener {
+                if (AddTaskSingleton.instance.taskToComplete == 0) {
 
-            // refreshing recycler with goals and adding new goal to database
-            activity?.run {
-                val refresh = this as RefreshGoalsListInterface
-                refresh.refreshGoalsRecyclerView(goal)
+                    // досеттиваем новую цель
+                    NewGoal.instance.goal.ownerId = CurrentSession.instance.currentUser.id
+                    NewGoal.instance.goal.tasks = AddTaskSingleton.instance.taskList
+
+                    // inflate
+                    fragmentManager?.let { it -> chooseFriendsDialog.show(it, "") }
+
+                    dismiss()
+                }
+                else {
+                    Toast.makeText(this.context, "Завершите редактирование задачи", Toast.LENGTH_SHORT).show()
+                }
             }
+        } else {
+            addGoalFragmentFinishButton.text = "Готово"
+            addGoalFragmentFinishButton.setOnClickListener {
+                val ownerId = CurrentSession.instance.currentUser.id
+                val category = NewGoal.instance.goal.category
+                val isDone = NewGoal.instance.goal.isDone
+                val isSocial = NewGoal.instance.goal.isSocial
+                val progress = NewGoal.instance.goal.progress
+                val tasks = AddTaskSingleton.instance.taskList
+                val text = NewGoal.instance.goal.text
 
-            dismiss()
+                val goal = Goal(
+                    ownerId,
+                    category,
+                    text,
+                    progress,
+                    tasks,
+                    isDone,
+                    isSocial
+                )
+
+                // refreshing recycler with goals and adding new goal to database
+                activity?.run {
+                    val refresh = this as RefreshGoalsListInterface
+                    refresh.refreshGoalsRecyclerView(goal)
+                }
+
+                dismiss()
+            }
         }
     }
 

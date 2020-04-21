@@ -31,7 +31,7 @@
     <string name="finishGuide">Завершить</string>
 
     <!-- Bottom navigation menu items -->
-    <string name="my_goals">Мои Цели</string>
+    <string name="my_goals">Цели</string>
     <string name="categories">Категории</string>
     <string name="analytics">Аналитика</string>
 

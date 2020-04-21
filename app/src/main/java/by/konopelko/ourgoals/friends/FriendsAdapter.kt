@@ -13,6 +13,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.item_recycler_friends.view.*
 
+// TODO: убрать логику для received запросов (перенесена в нотификации)
+
 class FriendsAdapter(
     val list: ArrayList<User>,
     val keysList: ArrayList<String>,
@@ -53,19 +55,20 @@ class FriendsAdapter(
 
                 cancelRequest(position)
             }
-        } else if (keysList[position] == "received") {
-            friendsView.itemFriendsWaitingButton.isEnabled = true
-            friendsView.itemFriendsWaitingButton.setImageResource(R.drawable.icon_accept_request)
-            friendsView.itemFriendsWaitingTitle.text = "Принять \n запрос"
-            friendsView.itemFriendsCancelTitle.text = "Отклонить \n запрос"
-
-            friendsView.itemFriendsWaitingButton.setOnClickListener {
-                acceptRequest(position)
-            }
-            friendsView.itemFriendsCancelReqButton.setOnClickListener {
-                declineRequest(position)
-            }
         }
+//        else if (keysList[position] == "received") {
+//            friendsView.itemFriendsWaitingButton.isEnabled = true
+//            friendsView.itemFriendsWaitingButton.setImageResource(R.drawable.icon_accept_request)
+//            friendsView.itemFriendsWaitingTitle.text = "Принять \n запрос"
+//            friendsView.itemFriendsCancelTitle.text = "Отклонить \n запрос"
+//
+//            friendsView.itemFriendsWaitingButton.setOnClickListener {
+//                acceptRequest(position)
+//            }
+//            friendsView.itemFriendsCancelReqButton.setOnClickListener {
+//                declineRequest(position)
+//            }
+//        }
         else if (keysList[position] == "friends") {
             friendsView.itemFriendsWaitingButton.visibility = View.GONE
             friendsView.itemFriendsWaitingTitle.visibility = View.GONE
@@ -89,50 +92,50 @@ class FriendsAdapter(
         }
     }
 
-    private fun declineRequest(position: Int) {
-        val ourId = auth.currentUser!!.uid
-        val senderId = list[position].id
-        deleteRequest(position)
-    }
+//    private fun declineRequest(position: Int) {
+//        val ourId = auth.currentUser!!.uid
+//        val senderId = list[position].id
+//        deleteRequest(position)
+//    }
+//
+//    private fun acceptRequest(position: Int) {
+//        val ourId = auth.currentUser!!.uid
+//        val senderId = list[position].id
+//
+//        userDatabase.child(ourId).child("friends").child(senderId).setValue("friend").addOnSuccessListener {
+//            userDatabase.child(senderId).child("friends").child(ourId).setValue("friend").addOnSuccessListener {
+//                Toast.makeText(context, "Теперь вы друзья!", Toast.LENGTH_SHORT).show()
+//                deleteRequest("friends", position)
+//            }
+//        }
+//    }
 
-    private fun acceptRequest(position: Int) {
-        val ourId = auth.currentUser!!.uid
-        val senderId = list[position].id
+//    private fun deleteRequest(state: String, position: Int) {
+//        val ourId = auth.currentUser!!.uid
+//        val senderId = list[position].id
+//
+//        friendRequestDatabase.child(ourId).child(senderId).removeValue().addOnSuccessListener {
+//            friendRequestDatabase.child(senderId).child(ourId).removeValue().addOnSuccessListener {
+//                changeItem(state, position)
+//            }
+//        }
+//    }
+//
+//    private fun deleteRequest(position: Int) {
+//        val ourId = auth.currentUser!!.uid
+//        val senderId = list[position].id
+//
+//        friendRequestDatabase.child(ourId).child(senderId).removeValue().addOnSuccessListener {
+//            friendRequestDatabase.child(senderId).child(ourId).removeValue().addOnSuccessListener {
+//                removeItem(position)
+//            }
+//        }
+//    }
 
-        userDatabase.child(ourId).child("friends").child(senderId).setValue("friend").addOnSuccessListener {
-            userDatabase.child(senderId).child("friends").child(ourId).setValue("friend").addOnSuccessListener {
-                Toast.makeText(context, "Теперь вы друзья!", Toast.LENGTH_SHORT).show()
-                deleteRequest("friends", position)
-            }
-        }
-    }
-
-    private fun deleteRequest(state: String, position: Int) {
-        val ourId = auth.currentUser!!.uid
-        val senderId = list[position].id
-
-        friendRequestDatabase.child(ourId).child(senderId).removeValue().addOnSuccessListener {
-            friendRequestDatabase.child(senderId).child(ourId).removeValue().addOnSuccessListener {
-                changeItem(state, position)
-            }
-        }
-    }
-
-    private fun deleteRequest(position: Int) {
-        val ourId = auth.currentUser!!.uid
-        val senderId = list[position].id
-
-        friendRequestDatabase.child(ourId).child(senderId).removeValue().addOnSuccessListener {
-            friendRequestDatabase.child(senderId).child(ourId).removeValue().addOnSuccessListener {
-                removeItem(position)
-            }
-        }
-    }
-
-    private fun changeItem(state: String, position: Int) {
-        FriendsListCollection.instance.keysList[position] = state
-        notifyDataSetChanged()
-    }
+//    private fun changeItem(state: String, position: Int) {
+//        FriendsListCollection.instance.keysList[position] = state
+//        notifyDataSetChanged()
+//    }
 
     private fun cancelRequest(position: Int) {
         val senderId = auth.currentUser!!.uid

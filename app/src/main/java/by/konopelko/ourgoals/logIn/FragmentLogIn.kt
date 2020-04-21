@@ -10,11 +10,14 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import by.konopelko.ourgoals.ActivityMain
 import by.konopelko.ourgoals.R
+import by.konopelko.ourgoals.database.Goal
+import by.konopelko.ourgoals.database.Task
 import by.konopelko.ourgoals.database.User
 import by.konopelko.ourgoals.guide.ActivityGuide
 import by.konopelko.ourgoals.temporaryData.CurrentSession
 import by.konopelko.ourgoals.temporaryData.DatabaseOperations
 import by.konopelko.ourgoals.temporaryData.GoalCollection
+import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -78,10 +81,18 @@ class FragmentLogIn : Fragment() {
 
                             // обновить локальную бд целей пользователя
                             val currentUserId = CurrentSession.instance.currentUser.id
+
+                            // подгружаем список личных целей из локальной бд
                             val goalsDatabase =
                                 DatabaseOperations.getInstance(this@run).loadGoalsDatabase(currentUserId)
                                     .await()
                             GoalCollection.instance.getGoalsDatabase(goalsDatabase)
+
+                            //TODO: загружать в коллекцию SocialGoalCollection список общих целей с СЕРВЕРА
+                            //
+                            loadSocialGoals(currentUserId)
+
+                            runMainActivity()
                         } else {
                             // если авторизация успешна, но в локальной базе этого пользователя ещё нет,
                             // то есть пользователь зарегистрировался, а потом через какое-то время удалил приложение,
@@ -95,26 +106,31 @@ class FragmentLogIn : Fragment() {
                                 override fun onDataChange(currentUser: DataSnapshot) {
                                     val login = currentUser.child("login").value.toString()
                                     val newUser = User(uid, login, ArrayList())
+//                                    Log.e("NEW USER: ", newUser.toString())
 
-                                    // добавить пользователя в локальную бд.
+                                    // задаём пользователя текущей сессии.
+                                    CurrentSession.instance.currentUser = newUser
+                                    Log.e("CURRENT SESSION USER: ", CurrentSession.instance.currentUser.toString())
+
+                                    // добавляем пользователя в локальную бд.
                                     CoroutineScope(Dispatchers.IO).launch {
                                         DatabaseOperations.getInstance(this@run)
                                             .addUsertoDatabase(newUser)
                                             .await()
 
-                                        // задать пользователя текущей сессии.
-                                        CurrentSession.instance.currentUser = newUser
-                                        Log.e("CURRENT SESSION USER: ", CurrentSession.instance.currentUser.toString())
-
-                                        // задать локальную бд целей пользователя
+                                        // задаём локальную бд целей пользователя
                                         val currentUserId = CurrentSession.instance.currentUser.id
                                         val goalsDatabase =
                                             DatabaseOperations.getInstance(this@run).loadGoalsDatabase(currentUserId)
                                                 .await()
                                         GoalCollection.instance.getGoalsDatabase(goalsDatabase)
                                     }
-                                }
 
+                                    //TODO: загружать в коллекцию SocialGoalCollection список общих целей с СЕРВЕРА
+                                    //
+
+                                    runMainActivity()
+                                }
                                 override fun onCancelled(p0: DatabaseError) {
                                 }
                             })
@@ -122,13 +138,7 @@ class FragmentLogIn : Fragment() {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(this@run, "Вход выполнен!", Toast.LENGTH_SHORT).show()
                         }
-                    }
-
-                    if (CurrentSession.instance.firstTimeRun) {
-                        startActivity(Intent(this, ActivityGuide::class.java))
-                        CurrentSession.instance.firstTimeRun = false
-                    } else {
-                        startActivity(Intent(this, ActivityMain::class.java))
+                        // on Job complete
                     }
                 }
             } else {
@@ -136,6 +146,54 @@ class FragmentLogIn : Fragment() {
                     Toast.makeText(this, it.exception?.message.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
+            }
+        }
+    }
+
+    private fun loadSocialGoals(currentUserId: String) {
+        userDatabase.child(currentUserId).child("socialGoals")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(socialGoals: DataSnapshot) {
+                    for (goal in socialGoals.children) {
+
+                        val tasks = ArrayList<Task>()
+                        for (taskSnapshot in goal.child("tasks").children) {
+                            val task = Task(
+                                taskSnapshot.child("text").value.toString(),
+                                taskSnapshot.child("finishDate").value.toString(),
+                                false
+                            )
+
+                            tasks.add(task)
+                        }
+
+                        val newGoal = Goal(
+                            goal.child("ownerId").value.toString(),
+                            goal.child("category").value.toString(),
+                            goal.child("text").value.toString(),
+                            goal.child("progress").value.toString().toInt(),
+                            tasks,
+                            goal.child("done").value.toString().toBoolean(),
+                            goal.child("social").value.toString().toBoolean()
+                        )
+
+                        SocialGoalCollection.instance.goalList.add(newGoal)
+                    }
+                }
+
+                override fun onCancelled(p0: DatabaseError) {
+                }
+            })
+
+    }
+
+    fun runMainActivity() {
+        activity?.run {
+            if (CurrentSession.instance.firstTimeRun) {
+                startActivity(Intent(this, ActivityGuide::class.java))
+                CurrentSession.instance.firstTimeRun = false
+            } else {
+                startActivity(Intent(this, ActivityMain::class.java))
             }
         }
     }

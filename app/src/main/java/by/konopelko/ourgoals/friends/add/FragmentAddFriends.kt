@@ -49,6 +49,8 @@ class FragmentAddFriends : DialogFragment() {
         addFriendsFragmentRecyclerView.layoutManager = LinearLayoutManager(this.context)
         addFriendsFragmentRecyclerView.setHasFixedSize(true)
 
+
+        // TODO: проверить, отправлен ли уже запрос к выбранному пользователю и менять ui соответственно
         searchFriendsButton.setOnClickListener {
             if (!logInEmailField.text.isNullOrEmpty()) {
                 // clearing last search results

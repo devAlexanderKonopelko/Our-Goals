@@ -13,6 +13,7 @@ import by.konopelko.ourgoals.goals.recyclerGoals.GoalAdapter
 import by.konopelko.ourgoals.temporaryData.CurrentSession
 import by.konopelko.ourgoals.temporaryData.DatabaseOperations
 import by.konopelko.ourgoals.temporaryData.GoalCollection
+import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
 import kotlinx.android.synthetic.main.fragment_goals.*
 import kotlinx.coroutines.*
 
@@ -29,20 +30,45 @@ class FragmentGoals : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val goalsList = GoalCollection.instance.goalsList
-        goalsRecyclerView.adapter = GoalAdapter(goalsList, this@FragmentGoals)
-        Log.e("ADAPTER LIST SIZE: ", " ${goalsList.size}")
+        if(GoalCollection.instance.visible) {
+            val goalsList = GoalCollection.instance.goalsList
+            goalsRecyclerView.adapter = GoalAdapter(goalsList, this@FragmentGoals)
+
+            Log.e("ADAPTER LIST SIZE: ", " ${goalsList.size}")
+        }
+        if (SocialGoalCollection.instance.visible) {
+            val socialGoals = SocialGoalCollection.instance.goalList
+            goalsRecyclerView.adapter = GoalAdapter(socialGoals, this)
+
+            Log.e("ADAPTER LIST SIZE: ", " ${socialGoals.size}")
+        }
+
+
         (goalsRecyclerView.adapter as GoalAdapter).notifyDataSetChanged()
 
         goalsRecyclerView.layoutManager = LinearLayoutManager(this.context)
         goalsRecyclerView.setHasFixedSize(true)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-    }
-
     fun refreshRecycler(goal: Goal) {
         (goalsRecyclerView.adapter as GoalAdapter).addGoalToRecycler(goal)
+    }
+
+    fun showLocalGoals() {
+        GoalCollection.instance.visible = true
+        SocialGoalCollection.instance.visible = false
+
+        val localGoals = GoalCollection.instance.goalsList
+        goalsRecyclerView.adapter = GoalAdapter(localGoals, this)
+        (goalsRecyclerView.adapter as GoalAdapter).notifyDataSetChanged()
+    }
+
+    fun showSocialGoals() {
+        GoalCollection.instance.visible = false
+        SocialGoalCollection.instance.visible = true
+
+        val socialGoals = SocialGoalCollection.instance.goalList
+        goalsRecyclerView.adapter = GoalAdapter(socialGoals, this)
+        (goalsRecyclerView.adapter as GoalAdapter).notifyDataSetChanged()
     }
 }

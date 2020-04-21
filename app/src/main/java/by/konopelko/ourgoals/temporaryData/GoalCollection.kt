@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 
 class GoalCollection {
     var goalsList = ArrayList<Goal>()
+    var visible = true
 
     companion object {
         val instance = GoalCollection()

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="10dp"
+    app:cardElevation="5dp">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/notifLayoutContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintTop_toTopOf="parent">
+            <include
+                android:id="@+id/notifGoalLayout"
+                layout="@layout/item_recycler_notifications_goals"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/notifFriendLayout"
+                layout="@layout/item_recycler_notifications_friends"
+                android:visibility="gone" />
+        </FrameLayout>
+
+
+        <Button
+            android:id="@+id/deleteNotificationButton"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/notifLayoutContainer"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            android:text="Ок"
+            android:textColor="@color/colorAccent"
+            app:backgroundTint="@color/white"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</com.google.android.material.card.MaterialCardView>

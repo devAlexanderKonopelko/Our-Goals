@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/itemChooseFriendsName"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+<!--itemChooseFriendsAddButton-->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/itemChooseFriendsAddButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/icon_request_friendship"
+        app:backgroundTint="@color/white"
+        app:fabCustomSize="40dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/itemChooseFriendsCancelReqButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/colorAccent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/itemChooseFriendsCancelReqButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:visibility="invisible"
+        android:src="@drawable/icon_cancel_request"
+        app:backgroundTint="@color/white"
+        app:fabCustomSize="40dp"
+        app:tint="@color/red"/>
+
+    <TextView
+        android:id="@+id/itemChooseFriendsWaitingTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="@+id/itemChooseFriendsAddButton"
+        app:layout_constraintStart_toStartOf="@+id/itemChooseFriendsAddButton"
+        app:layout_constraintTop_toBottomOf="@+id/itemChooseFriendsAddButton"
+
+        android:visibility="invisible"
+        android:text="Ожидание \n ответа"
+        android:textSize="12sp"
+        android:textAlignment="center"
+
+        tools:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/itemChooseFriendsCancelTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="@+id/itemChooseFriendsCancelReqButton"
+        app:layout_constraintStart_toStartOf="@+id/itemChooseFriendsCancelReqButton"
+        app:layout_constraintTop_toBottomOf="@+id/itemChooseFriendsCancelReqButton"
+
+        android:visibility="invisible"
+        android:text="Отменить \n запрос"
+        android:textSize="12sp"
+        android:textAlignment="center"
+
+        tools:visibility="visible"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
