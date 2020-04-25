@@ -15,4 +15,9 @@ class FragmentAnalytics: Fragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_analytics, container, false)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+    }
 }

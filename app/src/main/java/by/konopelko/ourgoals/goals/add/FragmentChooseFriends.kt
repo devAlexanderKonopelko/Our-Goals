@@ -67,11 +67,11 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
             if (goalKey != null) {
                 for (receiverId in GoalReceiversCollection.instance.receiversIds) {
                     // отправка запроса на сервер
-                    sendGoalRequest(receiverId, goalKey)
+                    sendGoalRequest(GoalReceiversCollection.instance.receiversIds, receiverId, goalKey)
                 }
-                // запись цели в аккаунт на сервере
+                // запись цели нам в аккаунт на сервере
                 sendSocialGoaltoAccount(goalKey)
-                addSocialGoalToCollection()
+                addSocialGoalToCollection(goalKey)
 
                 Toast.makeText(this.context, "Цель добавлена в Общие Цели!", Toast.LENGTH_SHORT).show()
                 dismiss()
@@ -131,7 +131,7 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
         })
     }
 
-    private fun sendGoalRequest(receiverId: String, goalKey: String) {
+    private fun sendGoalRequest(receiversList: ArrayList<String>, receiverId: String, goalKey: String) {
         val currentUserId = auth.currentUser!!.uid
 
         // Запись запроса (мы -> друг)
@@ -175,6 +175,28 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
                         .child(goalKey)
                         .child("tasks").setValue(NewGoal.instance.goal.tasks)
 
+                    //записываем в запрос всех остальных пользователей, которые выполняют эту цель
+                    for (otherReceiverID in GoalReceiversCollection.instance.receiversIds) {
+                        // записываем всех других пользователей получателю (всех, кроме данного получателя, receiverId)
+                        if (otherReceiverID != receiverId) {
+                            firebaseDatabase.child("GoalRequests").child(receiverId)
+                                .child(currentUserId)
+                                .child(goalKey)
+                                .child("friends")
+                                .child(otherReceiverID)
+                                .child("progress")
+                                .setValue(0)
+                        }
+                    }
+                    // и записываем нас, как одного из тех, кто выполняет эту цель
+//                    firebaseDatabase.child("GoalRequests").child(receiverId)
+//                        .child(currentUserId)
+//                        .child(goalKey)
+//                        .child("friends")
+//                        .child(currentUserId)
+//                        .child("progress")
+//                        .setValue(0)
+
                     firebaseDatabase.child("GoalRequests").child(receiverId)
                         .child(currentUserId)
                         .child(goalKey)
@@ -216,8 +238,9 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
             })
     }
 
-    private fun addSocialGoalToCollection() {
+    private fun addSocialGoalToCollection(goalKey: String) {
         SocialGoalCollection.instance.goalList.add(NewGoal.instance.goal)
+        SocialGoalCollection.instance.keysList.add(goalKey)
         Log.e(
             "NEW SOCIAL GOAL:",
             "${SocialGoalCollection.instance.goalList[SocialGoalCollection.instance.goalList.size - 1]}"

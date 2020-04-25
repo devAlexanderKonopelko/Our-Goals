@@ -9,10 +9,7 @@ import by.konopelko.ourgoals.database.Goal
 import by.konopelko.ourgoals.database.Task
 import by.konopelko.ourgoals.database.User
 import by.konopelko.ourgoals.logIn.ActivityLogIn
-import by.konopelko.ourgoals.temporaryData.CurrentSession
-import by.konopelko.ourgoals.temporaryData.DatabaseOperations
-import by.konopelko.ourgoals.temporaryData.GoalCollection
-import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
+import by.konopelko.ourgoals.temporaryData.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -95,13 +92,17 @@ class ActivityStart : AppCompatActivity() {
             DatabaseOperations.getInstance(this@ActivityStart).loadGoalsDatabase(currentUserId)
                 .await()
 
-        //TODO: загружать коллекцию в SocialGoalCollection список общих целей с СЕРВЕРА
-        //
+
         loadSocialGoals(currentUserId)
 
+        // загружаем нотификации, если это НЕ гость
+        if ( auth.currentUser != null) {
+            NotificationOperations.instance.loadNotifications().await()
+        }
 
-
+        // вместо delay сделать нормально
         delay(2000)
+
         Log.e("GOAL DATABASE SIZE: ", goalsDatabase.size.toString())
         GoalCollection.instance.getGoalsDatabase(goalsDatabase)
         Log.e("GOAL LOCAL SIZE:", GoalCollection.instance.goalsList.size.toString())
@@ -114,7 +115,9 @@ class ActivityStart : AppCompatActivity() {
         val currentUserId = CurrentSession.instance.currentUser.id
         Log.e("CURRENT SESSION UID: ", currentUserId)
 
+        // вместо delay сделать нормально
         delay(2000)
+
         withContext(Dispatchers.Main) {
             startActivity(Intent(this@ActivityStart, ActivityLogIn::class.java))
         }
@@ -131,7 +134,7 @@ class ActivityStart : AppCompatActivity() {
                             val task = Task(
                                 taskSnapshot.child("text").value.toString(),
                                 taskSnapshot.child("finishDate").value.toString(),
-                                false
+                                taskSnapshot.child("complete").value.toString().toBoolean()
                             )
 
                             tasks.add(task)
@@ -148,6 +151,7 @@ class ActivityStart : AppCompatActivity() {
                         )
 
                         SocialGoalCollection.instance.goalList.add(newGoal)
+                        SocialGoalCollection.instance.keysList.add(goal.key.toString())
                     }
                 }
 

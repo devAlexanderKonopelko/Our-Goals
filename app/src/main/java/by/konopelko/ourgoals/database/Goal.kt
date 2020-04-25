@@ -9,7 +9,7 @@ class Goal(
     var category: String,
     var text: String,
     var progress: Int,
-    var tasks: ArrayList<Task>,
+    var tasks: ArrayList<Task>?,
 
     var isDone: Boolean,
     var isSocial: Boolean

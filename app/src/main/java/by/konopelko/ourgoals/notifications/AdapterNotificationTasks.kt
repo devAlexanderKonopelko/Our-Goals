@@ -8,7 +8,7 @@ import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.Task
 import kotlinx.android.synthetic.main.item_recycler_notification_tasks.view.*
 
-class AdapterNotificationTasks(val tasksList: ArrayList<Task>) :
+class AdapterNotificationTasks(val tasksList: ArrayList<Task>?) :
     RecyclerView.Adapter<AdapterNotificationTasks.NotificationTasksViewHolder>() {
     class NotificationTasksViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -20,15 +20,19 @@ class AdapterNotificationTasks(val tasksList: ArrayList<Task>) :
     }
 
     override fun getItemCount(): Int {
-        return tasksList.size
+        if (tasksList != null) {
+            return tasksList.size
+        }
+        else return 0
     }
 
     override fun onBindViewHolder(holder: NotificationTasksViewHolder, position: Int) {
         // setting task's fields
-        val view = holder.itemView
-        val task = tasksList[position]
-        view.itemNotificationRecyclerTaskText.text = task.text
-        view.itemNotificationRecyclerTaskDate.text = task.finishDate
-
+        if (tasksList != null) {
+            val view = holder.itemView
+            val task = tasksList[position]
+            view.itemNotificationRecyclerTaskText.text = task.text
+            view.itemNotificationRecyclerTaskDate.text = task.finishDate
+        }
     }
 }

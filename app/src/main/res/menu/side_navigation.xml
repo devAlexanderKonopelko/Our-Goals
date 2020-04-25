@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
     <group android:checkableBehavior="none">
         <item
@@ -19,7 +20,8 @@
             android:icon="@drawable/icon_nav_add_friend"/>
         <item android:id="@+id/nav_side_notifications"
             android:title="Уведомления"
-            android:icon="@drawable/icon_notifications"/>
+            android:icon="@drawable/icon_notifications"
+            android:actionLayout="@layout/badge_notifications" />
         <item android:id="@+id/nav_side_help"
             android:title="Помощь"
             android:icon="@drawable/icon_info"/>

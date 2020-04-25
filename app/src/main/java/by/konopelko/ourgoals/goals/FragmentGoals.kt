@@ -10,12 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.Goal
 import by.konopelko.ourgoals.goals.recyclerGoals.GoalAdapter
-import by.konopelko.ourgoals.temporaryData.CurrentSession
-import by.konopelko.ourgoals.temporaryData.DatabaseOperations
 import by.konopelko.ourgoals.temporaryData.GoalCollection
 import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
 import kotlinx.android.synthetic.main.fragment_goals.*
-import kotlinx.coroutines.*
 
 class FragmentGoals : Fragment() {
 
@@ -70,5 +67,9 @@ class FragmentGoals : Fragment() {
         val socialGoals = SocialGoalCollection.instance.goalList
         goalsRecyclerView.adapter = GoalAdapter(socialGoals, this)
         (goalsRecyclerView.adapter as GoalAdapter).notifyDataSetChanged()
+    }
+
+    fun updateRecyclerItemProgress(goalPosition: Int) {
+        (goalsRecyclerView.adapter as GoalAdapter).updateGoalProgress(goalPosition)
     }
 }

@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,9 +31,14 @@ class AdapterNotifications(
     val goalsRequestsGNumber: ArrayList<String>,
     val requestsKeys: ArrayList<String>,
     val fragmentManager: FragmentManager,
-    val context: Context
+    val context: Context,
+    val activity: FragmentActivity
 ) : RecyclerView.Adapter<AdapterNotifications.NotificationsViewHolder>() {
     class NotificationsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    interface NotificationActions {
+        fun notificationDeleted(listSize: Int)
+    }
 
     private val friendRequestDatabase =
         FirebaseDatabase.getInstance().reference.child("FriendRequests")
@@ -263,23 +270,22 @@ class AdapterNotifications(
     private fun acceptSocialGoal(sender: User, goalKey: String, position: Int) {
 //        Log.e("GOAL KEY: ", goalKey)
         val currentUserId = auth.currentUser!!.uid
-
-        // удалить цель по КЛЮЧУ_ЦЕЛИ из НАШЕГО ЗАПРОСА
-        goalRequestDatabase.child(currentUserId).child(sender.id).child(goalKey).removeValue()
-            .addOnSuccessListener {
-                // у отправителя изменить цель на accepted
-                goalRequestDatabase.child(sender.id).child(currentUserId).child(goalKey)
-                    .child("request_status").setValue("accepted").addOnSuccessListener {
-                        // добавить цель в НАШ список с пометкой ПРОГРЕССА у отправителя
-                        sendSocialGoaltoAccount(currentUserId, sender, goalKey, position)
-                    }
-
+        // у отправителя изменить цель на accepted
+        goalRequestDatabase.child(sender.id).child(currentUserId).child(goalKey)
+            .child("request_status").setValue("accepted").addOnSuccessListener {
+                // добавить цель в НАШ список с пометкой ПРОГРЕССА у отправителя
+                sendSocialGoaltoAccount(currentUserId, sender, goalKey, position)
             }
 
 
     }
 
-    private fun sendSocialGoaltoAccount(currentUserId: String, sender: User, goalKey: String, position: Int) {
+    private fun sendSocialGoaltoAccount(
+        currentUserId: String,
+        sender: User,
+        goalKey: String,
+        position: Int
+    ) {
         val goal = Goal(
             ownerId = currentUserId,
             category = "Совместные",
@@ -293,6 +299,7 @@ class AdapterNotifications(
 
         // добавляем цель в локальную КОЛЛЕКЦИЮ общих целей
         SocialGoalCollection.instance.goalList.add(goal)
+        SocialGoalCollection.instance.keysList.add(goalKey)
 
         // записываем принятую цель в НАШ список соц. целей
         userDatabase.child(currentUserId).child("socialGoals")
@@ -309,15 +316,36 @@ class AdapterNotifications(
                     updateRecycler(position)
                 }
 
-                // пометить у отправителя ПРОГРЕСС (начальный = 0)
+                // пометить всех пользователей, которые также выполняют эту цель
                 private fun markReceiversInSocialGoal(goalKey: String) {
+                    //пометить отправителя как пользователя, выполняющего цель
                     userDatabase.child(currentUserId).child("socialGoals")
                         .child(goalKey)
                         .child("friends")
                         .child(sender.id)
                         .child("progress").setValue(0)
-                }
 
+                    //пометить остальных пользователей
+                    goalRequestDatabase.child(currentUserId).child(sender.id).child(goalKey)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(acceptedGoal: DataSnapshot) {
+                                for (otherUser in acceptedGoal.child("friends").children) {
+                                    userDatabase.child(currentUserId).child("socialGoals")
+                                        .child(goalKey)
+                                        .child("friends")
+                                        .child(otherUser.key!!)
+                                        .child("progress").setValue(0)
+                                }
+
+                                // удалить цель по КЛЮЧУ_ЦЕЛИ из НАШЕГО ЗАПРОСА
+                                goalRequestDatabase.child(currentUserId).child(sender.id).child(goalKey)
+                                    .removeValue()
+                            }
+
+                            override fun onCancelled(p0: DatabaseError) {
+                            }
+                        })
+                }
                 override fun onCancelled(p0: DatabaseError) {
                 }
             })
@@ -361,6 +389,11 @@ class AdapterNotifications(
 
         // обновить датасет ресайклера
         notifyDataSetChanged()
+
+        activity.run {
+            val notificationAction = this as NotificationActions
+            notificationAction.notificationDeleted(NotificationsCollection.instance.requestsKeys.size)
+        }
     }
 
 }

@@ -1,10 +1,7 @@
 package by.konopelko.ourgoals.database
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import kotlinx.coroutines.Deferred
 
 @Dao
@@ -14,6 +11,9 @@ interface GoalDao {
 
     @Query("DELETE FROM Goal WHERE id = :goalId")
     suspend fun deleteGoal(goalId: Int)
+
+    @Update
+    suspend fun updateGoal(goal: Goal)
 
     @Query("SELECT * FROM Goal")
     suspend fun getAllGoals(): List<Goal>

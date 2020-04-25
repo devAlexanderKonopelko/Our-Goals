@@ -1,5 +1,4 @@
 package by.konopelko.ourgoals.temporaryData
-
 import by.konopelko.ourgoals.database.User
 
 class CurrentSession {

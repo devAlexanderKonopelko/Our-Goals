@@ -71,4 +71,15 @@
         app:layout_constraintTop_toBottomOf="@+id/passwordLogInFieldContainer"
         android:layout_gravity="center_horizontal" />
 
+    <ProgressBar
+        android:id="@+id/logInProgressBar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/logInButton"
+        app:layout_constraintStart_toEndOf="@+id/logInButton"
+        app:layout_constraintTop_toTopOf="@+id/logInButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

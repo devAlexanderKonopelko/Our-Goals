@@ -94,6 +94,13 @@ class DatabaseOperations(context: Context) {
         }
     }
 
+    fun updateGoalInDatabase(goal: Goal) {
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.e("-----ENTRANCE------", "DB_OPERATIONS: updateGoalInDatabase()")
+            database.getGoalDao().updateGoal(goal)
+        }
+    }
+
     fun resetDatabase() {
         CoroutineScope(Dispatchers.IO).launch {
             database.clearAllTables()

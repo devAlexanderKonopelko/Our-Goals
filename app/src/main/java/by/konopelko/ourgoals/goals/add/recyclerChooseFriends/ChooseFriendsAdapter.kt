@@ -8,16 +8,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.Goal
 import by.konopelko.ourgoals.database.User
 import by.konopelko.ourgoals.goals.add.NewGoal
 import by.konopelko.ourgoals.temporaryData.GoalReceiversCollection
-import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.item_recycler_choose_friends.view.*
 
 class ChooseFriendsAdapter(

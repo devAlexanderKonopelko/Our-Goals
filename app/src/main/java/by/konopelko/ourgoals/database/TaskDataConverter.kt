@@ -17,10 +17,13 @@ class TaskDataConverter: Serializable {
     }
 
     @TypeConverter
-    fun toTaskList(taskListString: String): ArrayList<Task>? {
-        if (taskListString.isEmpty()) {
-            return null
+    fun toTaskList(taskListString: String?): ArrayList<Task>? {
+        if (taskListString != null) {
+            if (taskListString.isEmpty()) {
+                return null
+            }
         }
+        else return null
         val gson = Gson()
         val taskListType = object: TypeToken<ArrayList<Task>>(){}.type
 

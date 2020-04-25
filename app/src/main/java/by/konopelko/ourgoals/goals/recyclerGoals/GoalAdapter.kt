@@ -4,19 +4,33 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.Goal
+import by.konopelko.ourgoals.goals.AdapterTasksList
+import by.konopelko.ourgoals.goals.FragmentFriendsProgress
 import by.konopelko.ourgoals.goals.FragmentGoals
 import by.konopelko.ourgoals.temporaryData.DatabaseOperations
 import by.konopelko.ourgoals.temporaryData.GoalCollection
+import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.item_recycler_goal.view.*
 import kotlinx.coroutines.*
 
 class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
     RecyclerView.Adapter<GoalAdapter.GoalViewHolder>() {
-
     class GoalViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    private var tasksVisible = false
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GoalViewHolder {
         val itemView =
@@ -36,17 +50,154 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
         goalView.itemGoalProgressBarIndicator.progress = list[position].progress
         goalView.itemGoalProgressBarValue.text = list[position].progress.toString() + "%"
 
-        if (list[position].isDone) goalView.itemGoalCompleteButton.visibility = View.VISIBLE
+        if (tasksVisible) {
+            goalView.itemGoalTasksRecycler.visibility = View.VISIBLE
+            goalView.itemGoalDetailsButton.text = "Свернуть"
+        } else {
+            goalView.itemGoalTasksRecycler.visibility = View.GONE
+            goalView.itemGoalDetailsButton.text = "Подробнее"
+        }
+
+        goalView.itemGoalTasksRecycler.adapter =
+            AdapterTasksList(list[position].tasks, fragmentGoals, position)
+        goalView.itemGoalTasksRecycler.layoutManager = LinearLayoutManager(fragmentGoals.context)
+        goalView.itemGoalTasksRecycler.setHasFixedSize(true)
+
+        if (list[position].progress == 100) {
+            goalView.itemGoalCompleteButton.visibility = View.VISIBLE
+
+            goalView.itemGoalCompleteButton.setOnClickListener {
+                MaterialAlertDialogBuilder(fragmentGoals.context)
+                    .setTitle("Подтвердите действие")
+                    .setMessage("Вы уверены, что хотите завершить данную цель?")
+                    .setNegativeButton("Отмена") { dialog, which ->
+                        // Respond to negative button press
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton("Завершить") { dialog, which ->
+                        // Respond to positive button press
+                        if (list[position].isSocial) {
+                            // completing social goal
+                            // удалить цель из локальной коллекции
+                            SocialGoalCollection.instance.goalList.removeAt(position)
+                            val goalKey = SocialGoalCollection.instance.keysList[position]
+                            SocialGoalCollection.instance.keysList.removeAt(position)
+                            notifyItemRemoved(position)
+                            // удалить цель из нашего аккаунта на сервере
+                            removeSocialGoalFromAccount(goalKey)
+
+                            // TODO
+                            // добавить в статистику инфу
+                        } else {
+                            //completing personal goal
+                            // удалить из локальной коллекции ( в локальной бд остаётся для аналитики)
+                            GoalCollection.instance.goalsList.removeAt(position)
+                            // обновить ресайклер
+                            notifyItemRemoved(position)
+
+                            // TODO
+                            // добавить в статистику инфу
+                        }
+
+                    }
+                    .show()
+            }
+        }
         else goalView.itemGoalCompleteButton.visibility = View.GONE
 
-        if (list[position].isSocial) goalView.itemGoalSocialButton.visibility = View.VISIBLE
-        else goalView.itemGoalSocialButton.visibility = View.INVISIBLE
+        if (list[position].isSocial) {
+            goalView.itemGoalSocialButton.visibility = View.VISIBLE
+            // социальные цели редактировать нельзя (пока что)
+            goalView.itemGoalEditButton.visibility = View.INVISIBLE
 
+            goalView.itemGoalSocialButton.setOnClickListener {
+                // надуваем фрагмент просмотра прогресса друзей
+                val friendsProgressDialog = FragmentFriendsProgress(
+                    SocialGoalCollection.instance.keysList[position],
+                    list[position].text
+                )
+                fragmentGoals.fragmentManager?.let { fm -> friendsProgressDialog.show(fm, "") }
+            }
+        } else goalView.itemGoalSocialButton.visibility = View.INVISIBLE
+
+        // удалять в зависимости от цели (социальная или нет)
         goalView.itemGoalDeleteButton.setOnClickListener {
-            //deleting a goal from database a updating goal recycler view
-            //BUG. DELETED FROM THE SECOND TRY.
-            removeGoal(list[position])
+
+            // inflating confirmation dialog
+            MaterialAlertDialogBuilder(fragmentGoals.context)
+                .setTitle("Подтвердите действие")
+                .setMessage("Вы уверены, что хотите удалить данную цель?")
+                .setNegativeButton("Отмена") { dialog, which ->
+                    // Respond to negative button press
+                    dialog.dismiss()
+                }
+                .setPositiveButton("Удалить") { dialog, which ->
+                    // Respond to positive button press
+                    if (list[position].isSocial) {
+                        // deleting social goal
+                        deleteSocialGoal(position)
+                    } else {
+                        //deleting personal goal from database a updating goal recycler view
+                        removeGoal(list[position])
+                    }
+
+                }
+                .show()
         }
+        goalView.itemGoalDetailsButton.setOnClickListener {
+            // развёртывание цели ("подробнее")
+            if (goalView.itemGoalTasksRecycler.visibility == View.GONE) {
+                goalView.itemGoalTasksRecycler.visibility = View.VISIBLE
+                goalView.itemGoalDetailsButton.text = "Свернуть"
+            } else { // свёртывание цели ("свернуть")
+                goalView.itemGoalTasksRecycler.visibility = View.GONE
+
+                goalView.itemGoalDetailsButton.text = "Подробнее"
+            }
+        }
+    }
+
+    private fun removeSocialGoalFromAccount(goalKey: String) {
+        val currentUserId = auth.currentUser!!.uid
+
+        userDatabase.child(currentUserId).child("socialGoals")
+            .child(goalKey).removeValue().addOnSuccessListener {
+                Toast.makeText(fragmentGoals.context, "Цель завершена!", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun deleteSocialGoal(position: Int) {
+        val goalKey = SocialGoalCollection.instance.keysList[position]
+        val currentUserId = auth.currentUser!!.uid
+
+        // удаляем нашего пользователя из списка выполняющих у всех вовлечённых пользователей
+        userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(userDatabaseSnapshot: DataSnapshot) {
+                for (user in userDatabaseSnapshot.children) {
+                    if (user.hasChild("socialGoals")) {
+                        if (user.child("socialGoals").hasChild(goalKey)) {
+                            userDatabase.child(user.key!!).child("socialGoals").child(goalKey)
+                                .child("friends").child(currentUserId).removeValue()
+                                .addOnSuccessListener {
+                                    // удаляем цель из нашего аккаунта
+                                    userDatabase.child(currentUserId).child("socialGoals")
+                                        .child(goalKey).removeValue().addOnSuccessListener {
+                                            Toast.makeText(fragmentGoals.context, "Цель удалена!", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+            }
+        })
+
+        // удаляем цель из локальной коллекции
+        SocialGoalCollection.instance.goalList.removeAt(position)
+        SocialGoalCollection.instance.keysList.removeAt(position)
+        notifyItemRemoved(position)
     }
 
     fun addGoalToRecycler(goal: Goal) {
@@ -54,7 +205,10 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
         CoroutineScope(Dispatchers.IO).launch {
             fragmentGoals.context?.let {
                 goal.id = DatabaseOperations.getInstance(it).addGoaltoDatabase(goal).await().toInt()
-                Log.e("GOAL DATABASE SIZE: ", DatabaseOperations.getInstance(it).database.getGoalDao().getAllGoals().size.toString())
+                Log.e(
+                    "GOAL DATABASE SIZE: ",
+                    DatabaseOperations.getInstance(it).database.getGoalDao().getAllGoals().size.toString()
+                )
             }
             if (goal.id != null) {
                 GoalCollection.instance.addGoal(goal)
@@ -69,11 +223,19 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
 
     fun removeGoal(goal: Goal) {
         fragmentGoals.activity?.run {
-            Log.e("-----ENTRANCE------", "GOAL_ADAPTER removeGoal(): fragmentGoals.activity?.run{dbOperation}")
+            Log.e(
+                "-----ENTRANCE------",
+                "GOAL_ADAPTER removeGoal(): fragmentGoals.activity?.run{dbOperation}"
+            )
             goal.id?.let { DatabaseOperations.getInstance(this).removeGoalfromDatabase(it) }
         }
 
         GoalCollection.instance.removeGoal(goal)
         notifyDataSetChanged()
+    }
+
+    fun updateGoalProgress(goalPosition: Int) {
+        tasksVisible = true
+        notifyItemChanged(goalPosition)
     }
 }

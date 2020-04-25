@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="10dp"
     app:cardElevation="3dp">
 
@@ -89,18 +89,40 @@
             android:maxLines="3"
             android:hint="Сделать андроид-приложение OurGoals до конца 2020 года и залить его в Play Market с рекламой чтобы зарабатывать на нём."/>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/itemGoalTasksRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/itemGoalText" />
+
         <Button
             android:id="@+id/itemGoalCompleteButton"
             android:layout_width="120dp"
             android:layout_height="40dp"
-            android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
+            android:text="Завершить"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/itemGoalProgressBarLayout"
+            app:layout_constraintTop_toBottomOf="@+id/itemGoalTasksRecycler"
+            tools:visibility="visible" />
 
-            android:hint="Завершить"/>
+        <Button
+            android:id="@+id/itemGoalDetailsButton"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:padding="0dp"
+            android:text="Подробнее"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/itemGoalCompleteButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
