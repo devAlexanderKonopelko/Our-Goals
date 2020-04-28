@@ -12,6 +12,7 @@ import by.konopelko.ourgoals.ActivityMain
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.User
 import by.konopelko.ourgoals.guide.ActivityGuide
+import by.konopelko.ourgoals.temporaryData.CategoryCollection
 import by.konopelko.ourgoals.temporaryData.CurrentSession
 import by.konopelko.ourgoals.temporaryData.DatabaseOperations
 import com.google.firebase.auth.FirebaseAuth
@@ -80,8 +81,18 @@ class FragmentRegister : Fragment() {
 
                         CurrentSession.instance.currentUser = user
                         CoroutineScope(Dispatchers.IO).launch {
+                            // добавление пользователя в локальную бд
                             DatabaseOperations.getInstance(this@run).addUsertoDatabase(user).await()
+
+                            // добавление дефолтных категорий для пользователя в локальную бд
+                            DatabaseOperations.getInstance(this@run).setDefaultCategoriesList(currentUid).await()
                         }
+
+                        // очищаем локальную коллекцию пользовательских категорий
+                        CategoryCollection.instance.categoryList.clear()
+
+                        // загружаем дефолтные категории в локальную коллекцию
+                        CategoryCollection.instance.setDefaultCategories(currentUid)
 
                         Toast.makeText(this, "Пользователь Зарегистрирован!", Toast.LENGTH_SHORT)
                             .show()

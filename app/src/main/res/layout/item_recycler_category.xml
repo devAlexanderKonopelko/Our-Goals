@@ -1,35 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
+    app:strokeWidth="5dp"
     app:cardElevation="3dp">
 
     <LinearLayout
+        android:id="@+id/itemCategoryContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <!-- Media -->
         <ImageView
+            android:id="@+id/itemCategoryBgImage"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/logo" />
+            android:scaleType="centerCrop" />
 
         <LinearLayout
+            android:id="@+id/itemCategoryTitleContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:paddingTop="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
             <!-- Title, secondary and supporting text -->
             <TextView
+                android:id="@+id/itemCategoryTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|end"
+                android:layout_marginEnd="8dp"
                 android:text="Категория"
+                android:textSize="24sp"
                 android:textAppearance="?attr/textAppearanceHeadline6" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp">
+
+                <ImageButton
+                    android:id="@+id/itemCategoryEditButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintEnd_toStartOf="@+id/itemGoalDeleteButton"
+                    app:layout_constraintTop_toTopOf="parent"
+
+                    android:src="@drawable/icon_edit"
+                    android:background="#00FFFFFF"/>
+
+                <ImageButton
+                    android:id="@+id/itemCategoryDeleteButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+
+                    android:src="@drawable/delete_icon"
+                    android:background="#00FFFFFF"/>
+            </LinearLayout>
+
 
         </LinearLayout>
 
@@ -37,10 +76,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="0dp"
-            android:paddingStart="8dp"
+            android:paddingStart="16dp"
             android:paddingEnd="8dp"
-            android:paddingBottom="8dp">
+            android:paddingBottom="16dp">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/itemCategoryMotivationsButton"

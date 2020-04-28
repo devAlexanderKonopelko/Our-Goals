@@ -3,6 +3,7 @@ package by.konopelko.ourgoals.temporaryData
 import android.content.Context
 import android.util.Log
 import androidx.room.Room
+import by.konopelko.ourgoals.database.Category
 import by.konopelko.ourgoals.database.Goal
 import by.konopelko.ourgoals.database.GoalDatabase
 import by.konopelko.ourgoals.database.User
@@ -104,6 +105,56 @@ class DatabaseOperations(context: Context) {
     fun resetDatabase() {
         CoroutineScope(Dispatchers.IO).launch {
             database.clearAllTables()
+        }
+    }
+
+    suspend fun getCategoriesByUserId(ownerId: String): Deferred<ArrayList<Category>> {
+        val categoriesList = CoroutineScope(Dispatchers.IO).async {
+            Log.e("CATEGORIES_", "$ownerId: ${database.getCategoryDao().getCategoriesByUsersId(ownerId).size}")
+            database.getCategoryDao().getCategoriesByUsersId(ownerId) as ArrayList<Category>
+        }
+        return categoriesList
+    }
+
+    suspend fun setDefaultCategoriesList(ownerId: String): Deferred<Unit> {
+        val defaultCategories = ArrayList<Category>()
+        defaultCategories.add(Category(ownerId, "Здоровье", null, -49862))
+        defaultCategories.add(Category(ownerId, "Образование", null, -12168193))
+        defaultCategories.add(Category(ownerId, "Финансы", null, -7591681))
+        defaultCategories.add(Category(ownerId, "Хобби", null, -11862145))
+
+        val result = CoroutineScope(Dispatchers.IO).async {
+            for (category in defaultCategories) {
+                database.getCategoryDao().addCategory(category)
+            }
+        }
+
+        return result
+    }
+
+    suspend fun addCategoryToDatabase(category: Category): Deferred<Long> {
+        val newId =
+            CoroutineScope(Dispatchers.IO).async {
+                database.getCategoryDao().addCategory(category)
+            }
+        return newId
+    }
+
+    fun updateCategoryInDatabase(category: Category) {
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.e("-----ENTRANCE------", "DB_OPERATIONS: updateCategoryInDatabase()")
+            database.getCategoryDao().updateCategory(category)
+        }
+    }
+
+    fun removeCategoryFromDatabase(id: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.e("-----ENTRANCE------", "DB_OPERATIONS: removeCategoryFromDatabase()")
+            database.getCategoryDao().deleteCategory(id)
+            Log.e(
+                "DATABASE OPERATION",
+                " DELETED ----- DB_SIZE: ${database.getCategoryDao().getAllCategories().size}"
+            )
         }
     }
 }

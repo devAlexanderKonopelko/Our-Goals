@@ -16,7 +16,6 @@ import by.konopelko.ourgoals.logIn.core.LogInPresenter
 import by.konopelko.ourgoals.temporaryData.*
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_log_in.*
 import kotlinx.coroutines.*
 
@@ -104,8 +103,7 @@ class FragmentLogIn : Fragment(), LogInContract.View {
             Log.e("INSIDE", "loadUsersPersonalGoals(): FINISH $goalsDatabase")
 
             return true
-        }
-        else return false
+        } else return false
     }
 
     private suspend fun addUserToDatabase(user: User?): Boolean {
@@ -165,8 +163,7 @@ class FragmentLogIn : Fragment(), LogInContract.View {
             if (currentUser == null) {
                 Log.e("USER", "$currentUser. Loading from server...")
                 presenter.loadUserFromServer(uid) // load user from server
-            }
-            else {
+            } else {
                 proceedLoadingUsersData(USER_PROFILE_LOADED)
             }
         }
@@ -179,8 +176,29 @@ class FragmentLogIn : Fragment(), LogInContract.View {
         CoroutineScope(Dispatchers.IO).launch {
             // add user to database
             addUserToDatabase(currentUser)
+
+            // setting default categories to users local database
+            setDefaultCategories(currentUser!!.id)
+
             proceedLoadingUsersData(USER_PROFILE_LOADED)
         }
+    }
+
+    private suspend fun setDefaultCategories(id: String): Boolean {
+        Log.e("INSIDE", "setDefaultCategories()")
+
+        val result = CoroutineScope(Dispatchers.IO).async {
+            activity?.run {
+                DatabaseOperations.getInstance(this@run)
+                    .setDefaultCategoriesList(id)
+                    .await()
+                Log.e("INSIDE", "addUserToDatabase(): FINISH")
+            }
+
+            true
+        }.await()
+
+        return result
     }
 
     override fun onSocialGoalsLoaded(result: Boolean) {
@@ -202,6 +220,7 @@ class FragmentLogIn : Fragment(), LogInContract.View {
         CoroutineScope(Dispatchers.IO).launch {
             if (tag.equals(USER_PROFILE_LOADED)) {
                 currentUser?.let { setCurrentSessionUser(it) }
+                currentUser?.id?.let { loadUsersCategories(it) }
                 currentUser?.id?.let { loadUsersPersonalGoals(it) }
                 currentUser?.id?.let { presenter.loadSocialGoalsFromServer(it) }
             }
@@ -209,13 +228,34 @@ class FragmentLogIn : Fragment(), LogInContract.View {
                 clearTempNotificationsList()
                 currentUser?.id?.let { presenter.loadFriendsNotifications(it) }
             }
-            if(tag.equals(USER_FRIENDS_NOTIFICATIONS_LOADED)) {
+            if (tag.equals(USER_FRIENDS_NOTIFICATIONS_LOADED)) {
                 currentUser?.id?.let { presenter.loadGoalsNotifications(it) }
             }
             if (tag.equals(USER_GOALS_NOTIFICATIONS_LOADED)) {
                 runMainActivity()
             }
         }
+    }
+
+    private suspend fun loadUsersCategories(userId: String): Boolean {
+        Log.e("INSIDE", "loadUsersCategories()")
+
+        // очищаем локальную коллекцию пользовательских категорий
+        CategoryCollection.instance.categoryList.clear()
+
+        // подгружаем список личных целей из локальной бд
+        val categoriesList = CoroutineScope(Dispatchers.IO).async {
+            activity?.run {
+                DatabaseOperations.getInstance(this@run).getCategoriesByUserId(userId).await()
+            }
+        }.await()
+
+        if (categoriesList != null) {
+            CategoryCollection.instance.categoryList.addAll(categoriesList)
+            Log.e("INSIDE", "loadUsersCategories(): FINISH $categoriesList")
+
+            return true
+        } else return false
     }
 
     private fun clearTempNotificationsList() {

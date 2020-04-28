@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "by.konopelko.ourgoals"
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -58,6 +58,9 @@ dependencies {
 
     //Material design api
     api 'com.google.android.material:material:1.2.0-alpha05'
+
+    // color picker github
+    implementation "com.github.skydoves:colorpickerview:2.1.6"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

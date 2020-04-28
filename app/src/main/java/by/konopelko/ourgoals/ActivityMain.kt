@@ -9,12 +9,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import by.konopelko.ourgoals.analytics.FragmentAnalytics
 import by.konopelko.ourgoals.categories.FragmentCategories
+import by.konopelko.ourgoals.categories.add.FragmentAddCategory
 import by.konopelko.ourgoals.core.main.MainContract
 import by.konopelko.ourgoals.core.main.MainPresenter
+import by.konopelko.ourgoals.database.Category
 import by.konopelko.ourgoals.database.Goal
 import by.konopelko.ourgoals.friends.add.FragmentAddFriends
 import by.konopelko.ourgoals.friends.FragmentFriends
@@ -37,7 +38,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-    FragmentAddTasks.RefreshGoalsListInterface, AdapterNotifications.NotificationActions, MainContract.View {
+    FragmentAddTasks.RefreshGoalsListInterface, AdapterNotifications.NotificationActions,
+    MainContract.View, FragmentAddCategory.CategoryInterface {
 
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     val presenter = MainPresenter(this)
@@ -73,7 +75,8 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             nav_view.getHeaderView(0).currentUserEmail.visibility = View.INVISIBLE
 
             notificationBadge.visibility = View.INVISIBLE
-            nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility = View.INVISIBLE
+            nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
+                View.INVISIBLE
         } else {
             Log.e("CURRENT SESSION USER: ", CurrentSession.instance.currentUser.toString())
 
@@ -84,15 +87,21 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             nav_view.getHeaderView(0).currentUserEmail.visibility = View.VISIBLE
             nav_view.getHeaderView(0).currentUserEmail.text = auth.currentUser!!.email
 
-            Log.e("NOTIFICATIONS AMOUNT:", NotificationsCollection.instance.requestsKeys.size.toString())
+            Log.e(
+                "NOTIFICATIONS AMOUNT:",
+                NotificationsCollection.instance.requestsKeys.size.toString()
+            )
             // загружаем нотификации для текущего пользователя
             if (NotificationsCollection.instance.friendsRequests.size != 0 ||
-                NotificationsCollection.instance.goalsRequests.size != 0) {
+                NotificationsCollection.instance.goalsRequests.size != 0
+            ) {
                 notificationBadge.visibility = View.VISIBLE
-                nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility = View.VISIBLE
+                nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
+                    View.VISIBLE
             } else {
                 notificationBadge.visibility = View.INVISIBLE
-                nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility = View.INVISIBLE
+                nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
+                    View.INVISIBLE
             }
 
             // постоянно следить за изменениями в уведомлениях:
@@ -123,12 +132,22 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // add goal button
         goalsAddButton.setOnClickListener {
-            // clear tasks list for new goal
-            AddTaskSingleton.instance.taskList.clear()
+            if (fragmentGoals.isVisible) {
+                // clear tasks list for new goal
+                AddTaskSingleton.instance.taskList.clear()
 
-            // inflating dialog fragment
-            val addDialog = FragmentAddGoal()
-            supportFragmentManager.let { supportFM -> addDialog.show(supportFM, "") }
+                // inflating dialog fragment
+                val addDialog = FragmentAddGoal()
+                supportFragmentManager.let { supportFM -> addDialog.show(supportFM, "") }
+            }
+            if (fragmentCategories.isVisible) {
+                // show add category dialog
+                val addDialog = FragmentAddCategory()
+                supportFragmentManager.let { supportFM -> addDialog.show(supportFM, "") }
+            }
+            if (fragmentAnalytics.isVisible) {
+                // show add analytics dialog
+            }
         }
     }
 
@@ -136,10 +155,28 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_side_my_goals -> {
-                fragmentGoals.showLocalGoals()
+                if (!fragmentGoals.isVisible) {
+                    GoalCollection.instance.visible = true
+                    SocialGoalCollection.instance.visible = false
+
+                    bottomNavigation.selectedItemId = R.id.nav_goals
+                    getFragment(fragmentGoals)
+                }
+                else {
+                    fragmentGoals.showLocalGoals()
+                }
             }
             R.id.nav_side_social_goals -> {
-                fragmentGoals.showSocialGoals()
+                if (!fragmentGoals.isVisible) {
+                    GoalCollection.instance.visible = false
+                    SocialGoalCollection.instance.visible = true
+
+                    bottomNavigation.selectedItemId = R.id.nav_goals
+                    getFragment(fragmentGoals)
+                }
+                else {
+                    fragmentGoals.showSocialGoals()
+                }
             }
 
             R.id.nav_side_notifications -> {
@@ -197,7 +234,8 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun notificationDeleted(listSize: Int) {
         if (listSize == 0) {
             notificationBadge.visibility = View.INVISIBLE
-            nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility = View.INVISIBLE
+            nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
+                View.INVISIBLE
         }
     }
 
@@ -208,7 +246,16 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility = View.VISIBLE
         } else {
             notificationBadge.visibility = View.INVISIBLE
-            nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility = View.INVISIBLE
+            nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
+                View.INVISIBLE
         }
+    }
+
+    override fun addCategory(category: Category) {
+        fragmentCategories.addCategory(category)
+    }
+
+    override fun updateCategory(category: Category, position: Int) {
+        fragmentCategories.updateCategory(category, position)
     }
 }

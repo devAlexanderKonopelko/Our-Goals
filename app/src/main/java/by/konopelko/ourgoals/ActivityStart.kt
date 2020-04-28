@@ -1,10 +1,13 @@
 package by.konopelko.ourgoals
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import by.konopelko.ourgoals.database.Goal
 import by.konopelko.ourgoals.database.Task
 import by.konopelko.ourgoals.database.User
@@ -47,6 +50,7 @@ class ActivityStart : AppCompatActivity() {
                 }
                 savedVersionCode == PREFS_CODE_DOESNT_EXIST -> {
                     // Первый запуск/очищены prefs
+
                     auth.signOut() // зачем?
 
                     CurrentSession.instance.firstTimeRun = true
@@ -69,6 +73,10 @@ class ActivityStart : AppCompatActivity() {
         if (databaseSize == 0) {
             val guest = User("0", "Гость", ArrayList())
             DatabaseOperations.getInstance(this).addUsertoDatabase(guest).await()
+
+            // загружаем в бд стандартные категории для гостя
+            DatabaseOperations.getInstance(this).setDefaultCategoriesList(guest.id).await()
+            CategoryCollection.instance.setDefaultCategories(guest.id)
         }
     }
 
@@ -87,16 +95,18 @@ class ActivityStart : AppCompatActivity() {
     private suspend fun waitAndTransitToMain() {
         val currentUserId = CurrentSession.instance.currentUser.id
 
+        val categories =
+            DatabaseOperations.getInstance(this).getCategoriesByUserId(currentUserId).await()
+        CategoryCollection.instance.categoryList.addAll(categories)
+
         // загружаем список личных целей из локальной бд
         val goalsDatabase =
             DatabaseOperations.getInstance(this@ActivityStart).loadGoalsDatabase(currentUserId)
                 .await()
-
-
         loadSocialGoals(currentUserId)
 
         // загружаем нотификации, если это НЕ гость
-        if ( auth.currentUser != null) {
+        if (auth.currentUser != null) {
             NotificationOperations.instance.loadNotifications().await()
         }
 

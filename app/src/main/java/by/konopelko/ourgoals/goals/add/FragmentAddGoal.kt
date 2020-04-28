@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import by.konopelko.ourgoals.R
+import by.konopelko.ourgoals.temporaryData.CategoryCollection
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_add_goal_main.*
 import kotlinx.android.synthetic.main.fragment_add_goal_main.view.*
@@ -38,7 +39,10 @@ class FragmentAddGoal : DialogFragment() {
             view.addGoalFragmentCategoryList.setText(savedInstanceState.getString("GOAL_CATEGORY"))
         }
         // получать текущий список категорий из базы
-        val items = listOf("Material", "Design", "Components", "Android")
+        val items = ArrayList<String>()
+        for(category in CategoryCollection.instance.categoryList) {
+            items.add(category.title)
+        }
 
         val adapter = ArrayAdapter(view.context, R.layout.item_add_goal_category, items)
         view.addGoalFragmentCategoryList.setAdapter(adapter)
