@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.User
+import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.temporaryData.FriendsListCollection
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -16,7 +16,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_friends.*
-import kotlinx.coroutines.*
 
 class FragmentFriends : DialogFragment() {
     private val friendRequestDatabase =
@@ -80,7 +79,13 @@ class FragmentFriends : DialogFragment() {
                                 val uid = ourFriend.child("uid").value.toString()
                                 val name = ourFriend.child("login").value.toString()
 
-                                FriendsListCollection.instance.friendsList.add(User(uid, name, ArrayList()))
+                                FriendsListCollection.instance.friendsList.add(
+                                    User(
+                                        uid,
+                                        name,
+                                        ArrayList()
+                                    )
+                                )
 
                                 // Добавляем в коллекцию ключ о состоянии friends
                                 FriendsListCollection.instance.keysList.add("friends")

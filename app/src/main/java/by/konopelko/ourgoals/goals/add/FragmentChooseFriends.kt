@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.User
+import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.goals.add.recyclerChooseFriends.ChooseFriendsAdapter
 import by.konopelko.ourgoals.temporaryData.FriendsListCollection
 import by.konopelko.ourgoals.temporaryData.GoalReceiversCollection

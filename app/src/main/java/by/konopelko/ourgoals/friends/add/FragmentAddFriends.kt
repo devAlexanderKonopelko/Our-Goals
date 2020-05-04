@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.User
+import by.konopelko.ourgoals.database.entities.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -63,7 +63,12 @@ class FragmentAddFriends : DialogFragment() {
                         for (user in dataSnapshot.children) {
                             if (user.child("login").value.toString().equals(loginToFind)) {
                                 val foundUserLogin = user.child("login").value.toString()
-                                val foundFriend = User(user.child("uid").value.toString(), foundUserLogin, ArrayList())
+                                val foundFriend =
+                                    User(
+                                        user.child("uid").value.toString(),
+                                        foundUserLogin,
+                                        ArrayList()
+                                    )
 
                                 AddFriendsCollection.instance.foundFriendsList.add(foundFriend)
                                 (addFriendsFragmentRecyclerView.adapter as AddFriendsAdapter).notifyDataSetChanged()

@@ -8,7 +8,7 @@ import android.widget.DatePicker
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.Task
+import by.konopelko.ourgoals.database.entities.Task
 import kotlinx.android.synthetic.main.item_recycler_add_task.view.*
 import kotlinx.android.synthetic.main.item_recycler_complete_task.view.*
 import java.util.*
@@ -76,7 +76,11 @@ class TaskAdapter(val list: List<Task>) : RecyclerView.Adapter<TaskAdapter.TaskV
                 date = taskView.itemAddTaskDate.text.toString()
 
                 AddTaskSingleton.instance.taskList[AddTaskSingleton.instance.taskList.size - 1] =
-                    Task(text, date, false)
+                    Task(
+                        text,
+                        date,
+                        false
+                    )
 
                 taskView.itemAddTaskLayout.visibility = View.GONE
                 taskView.itemTaskCompleteLayout.visibility = View.VISIBLE

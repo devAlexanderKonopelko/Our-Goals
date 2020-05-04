@@ -1,7 +1,5 @@
 package by.konopelko.ourgoals.core.main
 
-import by.konopelko.ourgoals.database.User
-
 interface MainContract {
     interface View {
         fun onNotificationsChanged(listSize: Int)

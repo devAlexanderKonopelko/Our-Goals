@@ -6,13 +6,14 @@ import android.content.Intent
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.Category
+import by.konopelko.ourgoals.database.entities.Category
 import by.konopelko.ourgoals.temporaryData.CurrentSession
 import kotlinx.android.synthetic.main.fragment_add_category.*
 
@@ -21,6 +22,11 @@ const val GET_IMAGE_CODE = 111
 class FragmentAddCategory() : DialogFragment() {
     constructor(category: Category?, position: Int) : this() {
         this.category = category
+        if (category?.bgImageURI != null) {
+            if (category.bgImageURI!!.isNotEmpty()) {
+                imageURI = Uri.parse(category.bgImageURI)
+            }
+        }
         this.position = position
     }
 
@@ -134,9 +140,27 @@ class FragmentAddCategory() : DialogFragment() {
                 val bgImageUri = imageURI.toString()
                 val bgColor = bgColor
 
-                val category = Category(ownerId, title, bgImageUri, bgColor)
+                val category = Category(
+                    ownerId,
+                    title,
+                    bgImageUri,
+                    bgColor
+                )
                 activity?.run {
                     if (this@FragmentAddCategory.category != null) {
+                        if (title.isNotEmpty()) {
+                            this@FragmentAddCategory.category!!.title = title
+                        }
+                        if (bgImageUri.isNotEmpty()) {
+                            this@FragmentAddCategory.category!!.bgImageURI = bgImageUri
+//                            Log.e("CATEGORY SET URI:", bgImageUri)
+                        }
+                        if(bgColor != 0) {
+                            this@FragmentAddCategory.category!!.bgColor = bgColor
+                        }
+
+
+                        Log.e("CATEGORY:", this@FragmentAddCategory.category!!.toString())
                         // обновление существующей категории
                         val updateCategory = this as CategoryInterface
                         updateCategory.updateCategory(this@FragmentAddCategory.category!!, position)

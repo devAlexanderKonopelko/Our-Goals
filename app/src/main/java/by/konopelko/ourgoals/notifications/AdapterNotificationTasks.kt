@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.Task
+import by.konopelko.ourgoals.database.entities.Task
 import kotlinx.android.synthetic.main.item_recycler_notification_tasks.view.*
 
 class AdapterNotificationTasks(val tasksList: ArrayList<Task>?) :

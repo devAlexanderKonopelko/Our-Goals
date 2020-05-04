@@ -1,22 +1,15 @@
 package by.konopelko.ourgoals.notifications
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.Goal
-import by.konopelko.ourgoals.database.Task
-import by.konopelko.ourgoals.database.User
 import by.konopelko.ourgoals.temporaryData.NotificationsCollection
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_notifications.*
 
 class FragmentNotifications : DialogFragment() {

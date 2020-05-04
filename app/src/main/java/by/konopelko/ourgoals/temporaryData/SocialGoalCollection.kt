@@ -1,6 +1,6 @@
 package by.konopelko.ourgoals.temporaryData
 
-import by.konopelko.ourgoals.database.Goal
+import by.konopelko.ourgoals.database.entities.Goal
 
 class SocialGoalCollection {
     val goalList = ArrayList<Goal>()

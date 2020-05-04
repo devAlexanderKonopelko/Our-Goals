@@ -71,7 +71,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="150dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_gravity="center_vertical"
@@ -83,73 +83,79 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:hint="Категория"
+                android:enabled="false"
+                android:focusable="false"
+                android:inputType="none"
                 android:textSize="14sp"
                 android:padding="0dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/addGoalFragmentBackgroundLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@id/addGoalFragmentCategoryLayout"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/textView5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="center_vertical"
-            android:text="Фон:" />
+<!--    Background option - in future-->
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/addGoalFragmentSwitchBackground"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_marginStart="10dp"
-            android:layout_gravity="center_vertical"
-            android:checked="false" />
+<!--    <LinearLayout-->
+<!--        android:id="@+id/addGoalFragmentBackgroundLayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/addGoalFragmentCategoryLayout"-->
+<!--        android:orientation="horizontal">-->
+<!--        <TextView-->
+<!--            android:id="@+id/textView5"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="20dp"-->
+<!--            android:layout_gravity="center_vertical"-->
+<!--            android:text="Фон:" />-->
 
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="10dp"
-            android:layout_gravity="center_vertical"
+<!--        <com.google.android.material.switchmaterial.SwitchMaterial-->
+<!--            android:id="@+id/addGoalFragmentSwitchBackground"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="20dp"-->
+<!--            android:layout_marginStart="10dp"-->
+<!--            android:layout_gravity="center_vertical"-->
+<!--            android:checked="false" />-->
 
-            android:src="@drawable/gallery_button"
-            android:background="@color/white"/>
-    </LinearLayout>
+<!--        <ImageButton-->
+<!--            android:layout_width="40dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:layout_marginStart="10dp"-->
+<!--            android:layout_gravity="center_vertical"-->
+
+<!--            android:src="@drawable/gallery_button"-->
+<!--            android:background="@color/white"/>-->
+<!--    </LinearLayout>-->
 
     <LinearLayout
         android:id="@+id/addGoalFragmentSocialLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@id/addGoalFragmentBackgroundLayout"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/addGoalFragmentCategoryLayout">
+
         <TextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
             android:layout_gravity="center_vertical"
+            android:layout_marginStart="20dp"
             android:text="Общая:" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/addGoalFragmentSwitchSocial"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
-            android:layout_marginStart="10dp"
             android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
             android:checked="false" />
 
         <ImageButton
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginStart="10dp"
             android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
 
             android:src="@drawable/info_button"
             app:backgroundTint="@color/white" />

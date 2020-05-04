@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.User
+import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.goals.recyclerFriendsProgress.AdapterFriendsProgress
 import by.konopelko.ourgoals.temporaryData.FriendsProgressCollection
 import com.google.firebase.auth.FirebaseAuth

@@ -28,7 +28,8 @@
             android:orientation="vertical"
             android:paddingTop="8dp"
             android:paddingStart="8dp"
-            android:paddingEnd="8dp">
+            android:paddingEnd="8dp"
+            android:paddingBottom="16dp">
             <!-- Title, secondary and supporting text -->
             <TextView
                 android:id="@+id/itemCategoryTitle"
@@ -73,119 +74,119 @@
         </LinearLayout>
 
         <!-- Buttons -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="16dp">
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:paddingStart="16dp"-->
+<!--            android:paddingEnd="8dp"-->
+<!--            android:paddingBottom="16dp">-->
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/itemCategoryMotivationsButton"
-                style="?attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="8dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                android:id="@+id/itemCategoryMotivationsButton"-->
+<!--                style="?attr/borderlessButtonStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
 
-                android:text="Мотивации"
-                android:textSize="12sp"
-                app:srcCompat="@drawable/motivations_category_icon"
-                android:elevation="3dp"/>
+<!--                android:text="Мотивации"-->
+<!--                android:textSize="12sp"-->
+<!--                app:srcCompat="@drawable/motivations_category_icon"-->
+<!--                android:elevation="3dp"/>-->
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                style="?attr/borderlessButtonStyle"
-                android:id="@+id/itemCategoryGoalsButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                app:layout_constraintTop_toTopOf="@id/itemCategoryMotivationsButton"
-                app:layout_constraintStart_toEndOf="@id/itemCategoryMotivationsButton"
+<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                android:id="@+id/itemCategoryGoalsButton"-->
+<!--                style="?attr/borderlessButtonStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                app:layout_constraintTop_toTopOf="@id/itemCategoryMotivationsButton"-->
+<!--                app:layout_constraintStart_toEndOf="@id/itemCategoryMotivationsButton"-->
 
-                android:text="Цели"
-                android:textSize="12sp"
-                app:srcCompat="@drawable/goals_category_icon" />
+<!--                android:text="Цели"-->
+<!--                android:textSize="12sp"-->
+<!--                app:srcCompat="@drawable/goals_category_icon" />-->
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/itemCategoryMaterialsButton"
-                style="?attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                app:layout_constraintTop_toTopOf="@id/itemCategoryMotivationsButton"
-                app:layout_constraintStart_toEndOf="@id/itemCategoryGoalsButton"
+<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                android:id="@+id/itemCategoryMaterialsButton"-->
+<!--                style="?attr/borderlessButtonStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                app:layout_constraintTop_toTopOf="@id/itemCategoryMotivationsButton"-->
+<!--                app:layout_constraintStart_toEndOf="@id/itemCategoryGoalsButton"-->
 
-                android:text="Материалы"
-                android:textSize="12sp"
-                app:srcCompat="@drawable/materials_category_icon" />
+<!--                android:text="Материалы"-->
+<!--                android:textSize="12sp"-->
+<!--                app:srcCompat="@drawable/materials_category_icon" />-->
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/itemCategoryResultsButton"
-                style="?attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                app:layout_constraintTop_toTopOf="@id/itemCategoryMotivationsButton"
-                app:layout_constraintStart_toEndOf="@id/itemCategoryMaterialsButton"
+<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                android:id="@+id/itemCategoryResultsButton"-->
+<!--                style="?attr/borderlessButtonStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                app:layout_constraintTop_toTopOf="@id/itemCategoryMotivationsButton"-->
+<!--                app:layout_constraintStart_toEndOf="@id/itemCategoryMaterialsButton"-->
 
-                android:text="Результаты"
-                android:textSize="12sp"
-                app:srcCompat="@drawable/results_category_icon" />
+<!--                android:text="Результаты"-->
+<!--                android:textSize="12sp"-->
+<!--                app:srcCompat="@drawable/results_category_icon" />-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                app:layout_constraintEnd_toEndOf="@+id/itemCategoryMotivationsButton"
-                app:layout_constraintStart_toStartOf="@+id/itemCategoryMotivationsButton"
-                app:layout_constraintTop_toBottomOf="@id/itemCategoryMotivationsButton"
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                app:layout_constraintEnd_toEndOf="@+id/itemCategoryMotivationsButton"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/itemCategoryMotivationsButton"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/itemCategoryMotivationsButton"-->
 
-                android:text="Мотивации"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textAlignment="center"
-                android:textSize="12sp"/>
+<!--                android:text="Мотивации"-->
+<!--                android:textColor="?android:attr/textColorSecondary"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textSize="12sp"/>-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                app:layout_constraintEnd_toEndOf="@+id/itemCategoryGoalsButton"
-                app:layout_constraintStart_toStartOf="@+id/itemCategoryGoalsButton"
-                app:layout_constraintTop_toBottomOf="@id/itemCategoryGoalsButton"
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                app:layout_constraintEnd_toEndOf="@+id/itemCategoryGoalsButton"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/itemCategoryGoalsButton"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/itemCategoryGoalsButton"-->
 
-                android:text="Цели"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textAlignment="center"
-                android:textSize="12sp"/>
+<!--                android:text="Цели"-->
+<!--                android:textColor="?android:attr/textColorSecondary"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textSize="12sp"/>-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                app:layout_constraintEnd_toEndOf="@+id/itemCategoryMaterialsButton"
-                app:layout_constraintStart_toStartOf="@+id/itemCategoryMaterialsButton"
-                app:layout_constraintTop_toBottomOf="@id/itemCategoryMaterialsButton"
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                app:layout_constraintEnd_toEndOf="@+id/itemCategoryMaterialsButton"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/itemCategoryMaterialsButton"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/itemCategoryMaterialsButton"-->
 
-                android:text="Материалы"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textAlignment="center"
-                android:textSize="12sp"/>
+<!--                android:text="Материалы"-->
+<!--                android:textColor="?android:attr/textColorSecondary"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textSize="12sp"/>-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                app:layout_constraintEnd_toEndOf="@+id/itemCategoryResultsButton"
-                app:layout_constraintStart_toStartOf="@+id/itemCategoryResultsButton"
-                app:layout_constraintTop_toBottomOf="@id/itemCategoryResultsButton"
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                app:layout_constraintEnd_toEndOf="@+id/itemCategoryResultsButton"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/itemCategoryResultsButton"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/itemCategoryResultsButton"-->
 
-                android:text="Результаты"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textAlignment="center"
-                android:textSize="12sp"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--                android:text="Результаты"-->
+<!--                android:textColor="?android:attr/textColorSecondary"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textSize="12sp"/>-->
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     </LinearLayout>
 

@@ -1,17 +1,14 @@
 package by.konopelko.ourgoals
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import by.konopelko.ourgoals.database.Goal
-import by.konopelko.ourgoals.database.Task
-import by.konopelko.ourgoals.database.User
-import by.konopelko.ourgoals.logIn.ActivityLogIn
+import by.konopelko.ourgoals.database.entities.Goal
+import by.konopelko.ourgoals.database.entities.Task
+import by.konopelko.ourgoals.database.entities.User
+import by.konopelko.ourgoals.authentication.ActivityLogIn
 import by.konopelko.ourgoals.temporaryData.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -34,7 +31,6 @@ class ActivityStart : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
 
-
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val savedVersionCode = prefs.getInt(PREFS_VERSION_CODE_KEY, PREFS_CODE_DOESNT_EXIST)
 
@@ -46,7 +42,14 @@ class ActivityStart : AppCompatActivity() {
                 currentVersionCode == savedVersionCode -> {
                     // Не первый запуск
                     CurrentSession.instance.firstTimeRun = false
-                    waitAndTransitToMain()
+                    if (auth.currentUser != null) {
+                        if (auth.currentUser!!.isEmailVerified) {
+                            waitAndTransitToMain()
+                        }
+                        else waitAndTransitToLogIn()
+                    } else {
+                        waitAndTransitToMain()
+                    }
                 }
                 savedVersionCode == PREFS_CODE_DOESNT_EXIST -> {
                     // Первый запуск/очищены prefs
@@ -71,12 +74,20 @@ class ActivityStart : AppCompatActivity() {
         val databaseSize = DatabaseOperations.getInstance(this).getUsersDatabaseSize().await()
         Log.e("USER_DATABASE_SIZE: ", databaseSize.toString())
         if (databaseSize == 0) {
-            val guest = User("0", "Гость", ArrayList())
+            val guest = User(
+                "0",
+                "Гость",
+                ArrayList()
+            )
             DatabaseOperations.getInstance(this).addUsertoDatabase(guest).await()
 
-            // загружаем в бд стандартные категории для гостя
+            // загружаем в бд стандартные категории (со всеми разделами) для гостя
             DatabaseOperations.getInstance(this).setDefaultCategoriesList(guest.id).await()
             CategoryCollection.instance.setDefaultCategories(guest.id)
+            Log.e("DEFAULT CATEGORIES: ", " LOADED: ${CategoryCollection.instance.categoryList}")
+
+            // задаём изначальную аналитику
+            DatabaseOperations.getInstance(this).setDefaultAnalytics(guest.id).await()
         }
     }
 
@@ -98,12 +109,16 @@ class ActivityStart : AppCompatActivity() {
         val categories =
             DatabaseOperations.getInstance(this).getCategoriesByUserId(currentUserId).await()
         CategoryCollection.instance.categoryList.addAll(categories)
+        Log.e("----CATEGORIES----", " LOADED: ${CategoryCollection.instance.categoryList}")
 
         // загружаем список личных целей из локальной бд
         val goalsDatabase =
             DatabaseOperations.getInstance(this@ActivityStart).loadGoalsDatabase(currentUserId)
                 .await()
         loadSocialGoals(currentUserId)
+
+        val analytics = DatabaseOperations.getInstance(this).loadAnalytics(currentUserId).await()
+        AnalyticsSingleton.instance.analytics = analytics
 
         // загружаем нотификации, если это НЕ гость
         if (auth.currentUser != null) {
@@ -114,8 +129,9 @@ class ActivityStart : AppCompatActivity() {
         delay(2000)
 
         Log.e("GOAL DATABASE SIZE: ", goalsDatabase.size.toString())
-        GoalCollection.instance.getGoalsDatabase(goalsDatabase)
-        Log.e("GOAL LOCAL SIZE:", GoalCollection.instance.goalsList.size.toString())
+        GoalCollection.instance.setGoalsInProgress(goalsDatabase)
+        GoalCollection.instance.visible = true
+        Log.e("GOAL LOCAL SIZE:", GoalCollection.instance.goalsInProgressList.size.toString())
         withContext(Dispatchers.Main) {
             startActivity(Intent(this@ActivityStart, ActivityMain::class.java))
         }
@@ -141,24 +157,26 @@ class ActivityStart : AppCompatActivity() {
 
                         val tasks = ArrayList<Task>()
                         for (taskSnapshot in goal.child("tasks").children) {
-                            val task = Task(
-                                taskSnapshot.child("text").value.toString(),
-                                taskSnapshot.child("finishDate").value.toString(),
-                                taskSnapshot.child("complete").value.toString().toBoolean()
-                            )
+                            val task =
+                                Task(
+                                    taskSnapshot.child("text").value.toString(),
+                                    taskSnapshot.child("finishDate").value.toString(),
+                                    taskSnapshot.child("complete").value.toString().toBoolean()
+                                )
 
                             tasks.add(task)
                         }
 
-                        val newGoal = Goal(
-                            goal.child("ownerId").value.toString(),
-                            goal.child("category").value.toString(),
-                            goal.child("text").value.toString(),
-                            goal.child("progress").value.toString().toInt(),
-                            tasks,
-                            goal.child("done").value.toString().toBoolean(),
-                            goal.child("social").value.toString().toBoolean()
-                        )
+                        val newGoal =
+                            Goal(
+                                goal.child("ownerId").value.toString(),
+                                goal.child("category").value.toString(),
+                                goal.child("text").value.toString(),
+                                goal.child("progress").value.toString().toInt(),
+                                tasks,
+                                goal.child("done").value.toString().toBoolean(),
+                                goal.child("social").value.toString().toBoolean()
+                            )
 
                         SocialGoalCollection.instance.goalList.add(newGoal)
                         SocialGoalCollection.instance.keysList.add(goal.key.toString())

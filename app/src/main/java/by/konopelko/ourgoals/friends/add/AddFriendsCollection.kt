@@ -1,6 +1,6 @@
 package by.konopelko.ourgoals.friends.add
 
-import by.konopelko.ourgoals.database.User
+import by.konopelko.ourgoals.database.entities.User
 
 class AddFriendsCollection {
     val foundFriendsList = ArrayList<User>()

@@ -1,7 +1,7 @@
 package by.konopelko.ourgoals.temporaryData
 
-import by.konopelko.ourgoals.database.Goal
-import by.konopelko.ourgoals.database.User
+import by.konopelko.ourgoals.database.entities.Goal
+import by.konopelko.ourgoals.database.entities.User
 
 class NotificationsCollection {
     val friendsRequests = ArrayList<User>()

@@ -3,17 +3,19 @@ package by.konopelko.ourgoals.temporaryData
 import android.content.Context
 import android.util.Log
 import androidx.room.Room
-import by.konopelko.ourgoals.database.Category
-import by.konopelko.ourgoals.database.Goal
-import by.konopelko.ourgoals.database.GoalDatabase
-import by.konopelko.ourgoals.database.User
+import by.konopelko.ourgoals.database.entities.Category
+import by.konopelko.ourgoals.database.entities.Goal
+import by.konopelko.ourgoals.database.Database
+import by.konopelko.ourgoals.database.entities.Analytics
+import by.konopelko.ourgoals.database.entities.User
+import by.konopelko.ourgoals.database.motivations.Motivation
 import kotlinx.coroutines.*
 
 class DatabaseOperations(context: Context) {
     val database by lazy {
         Room.databaseBuilder(
             context,
-            GoalDatabase::class.java,
+            Database::class.java,
             "goals-database"
         )
             .fallbackToDestructiveMigration()
@@ -67,15 +69,6 @@ class DatabaseOperations(context: Context) {
         return goalsList
     }
 
-    suspend fun getLastGoal(): Deferred<Goal> {
-        val lastIndex = database.getGoalDao().getAllGoals().lastIndex
-        val lastGoal = CoroutineScope(Dispatchers.IO).async {
-            database.getGoalDao().getAllGoals()[lastIndex]
-        }
-        return lastGoal
-    }
-
-
     fun addGoaltoDatabase(goal: Goal): Deferred<Long> {
         val newId =
             CoroutineScope(Dispatchers.IO).async {
@@ -111,6 +104,7 @@ class DatabaseOperations(context: Context) {
     suspend fun getCategoriesByUserId(ownerId: String): Deferred<ArrayList<Category>> {
         val categoriesList = CoroutineScope(Dispatchers.IO).async {
             Log.e("CATEGORIES_", "$ownerId: ${database.getCategoryDao().getCategoriesByUsersId(ownerId).size}")
+
             database.getCategoryDao().getCategoriesByUsersId(ownerId) as ArrayList<Category>
         }
         return categoriesList
@@ -118,14 +112,45 @@ class DatabaseOperations(context: Context) {
 
     suspend fun setDefaultCategoriesList(ownerId: String): Deferred<Unit> {
         val defaultCategories = ArrayList<Category>()
-        defaultCategories.add(Category(ownerId, "Здоровье", null, -49862))
-        defaultCategories.add(Category(ownerId, "Образование", null, -12168193))
-        defaultCategories.add(Category(ownerId, "Финансы", null, -7591681))
-        defaultCategories.add(Category(ownerId, "Хобби", null, -11862145))
+        defaultCategories.add(
+            Category(
+                ownerId,
+                "Здоровье",
+                null,
+                -49862
+            )
+        )
+        defaultCategories.add(
+            Category(
+                ownerId,
+                "Образование",
+                null,
+                -12168193
+            )
+        )
+        defaultCategories.add(
+            Category(
+                ownerId,
+                "Финансы",
+                null,
+                -7591681
+            )
+        )
+        defaultCategories.add(
+            Category(
+                ownerId,
+                "Хобби",
+                null,
+                -11862145
+            )
+        )
 
         val result = CoroutineScope(Dispatchers.IO).async {
             for (category in defaultCategories) {
                 database.getCategoryDao().addCategory(category)
+
+                // создаём пустой объект мотиваций
+                database.getMotivationsDao().addMotivations(Motivation(ownerId, category.title, ArrayList(), ArrayList(), ArrayList()))
             }
         }
 
@@ -135,6 +160,9 @@ class DatabaseOperations(context: Context) {
     suspend fun addCategoryToDatabase(category: Category): Deferred<Long> {
         val newId =
             CoroutineScope(Dispatchers.IO).async {
+                // создаём пустой объект мотиваций для новой категории
+                database.getMotivationsDao().addMotivations(Motivation(category.ownerId, category.title, ArrayList(), ArrayList(), ArrayList()))
+
                 database.getCategoryDao().addCategory(category)
             }
         return newId
@@ -143,6 +171,7 @@ class DatabaseOperations(context: Context) {
     fun updateCategoryInDatabase(category: Category) {
         CoroutineScope(Dispatchers.IO).launch {
             Log.e("-----ENTRANCE------", "DB_OPERATIONS: updateCategoryInDatabase()")
+            Log.e("-----UPDATE------", "$category")
             database.getCategoryDao().updateCategory(category)
         }
     }
@@ -156,5 +185,58 @@ class DatabaseOperations(context: Context) {
                 " DELETED ----- DB_SIZE: ${database.getCategoryDao().getAllCategories().size}"
             )
         }
+    }
+
+    suspend fun getGoalsByCategory(category: String): Deferred<ArrayList<Goal>> {
+        val goals = CoroutineScope(Dispatchers.IO).async {
+            Log.e("UPDATE GOALS", ": ${database.getGoalDao().getGoalsByCategory(category)}")
+            database.getGoalDao().getGoalsByCategory(category) as ArrayList<Goal>
+        }
+
+        return goals
+    }
+
+    suspend fun getMotivationsByCategory(category: String, ownerId: String): Deferred<Motivation> {
+        val motivations = CoroutineScope(Dispatchers.IO).async {
+            Log.e("GET MOTIVATIONS", ": ${database.getMotivationsDao().getMotivationsByCategory(category, ownerId)}")
+            database.getMotivationsDao().getMotivationsByCategory(category, ownerId)
+        }
+
+        return motivations
+    }
+
+    fun updateMotivationInDatabase(motivation: Motivation) {
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.e("-----ENTRANCE------", "DB_OPERATIONS: updateMotivationInDatabase()")
+            Log.e("-----UPDATE TO------", "$motivation")
+            database.getMotivationsDao().updateMotivations(motivation)
+            Log.e("-----UPDATED------", "${database.getMotivationsDao().getMotivationsByCategory(motivation.category, motivation.ownerId)}")
+        }
+    }
+
+    suspend fun loadAnalytics(currentUserId: String): Deferred<Analytics> {
+        val analytics = CoroutineScope(Dispatchers.IO).async {
+            Log.e(
+                "---ANALYTICS---",
+                database.getAnalyticsDao().getAnalyticsByUid(currentUserId).toString()
+            )
+            database.getAnalyticsDao().getAnalyticsByUid(currentUserId)
+        }
+        return analytics
+    }
+
+    suspend fun setDefaultAnalytics(id: String): Deferred<Unit> {
+        val analytics = Analytics(id, 0, 0, 0, 0)
+        val result = CoroutineScope(Dispatchers.IO).async {
+            database.getAnalyticsDao().addAnalytics(analytics)
+        }
+        return result
+    }
+
+    fun updateAnalytics(analytics: Analytics): Deferred<Unit> {
+        val result  = CoroutineScope(Dispatchers.IO).async {
+            database.getAnalyticsDao().updateAnalytics(analytics)
+        }
+        return result
     }
 }

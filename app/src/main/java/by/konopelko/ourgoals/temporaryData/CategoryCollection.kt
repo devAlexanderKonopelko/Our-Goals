@@ -1,6 +1,6 @@
 package by.konopelko.ourgoals.temporaryData
 
-import by.konopelko.ourgoals.database.Category
+import by.konopelko.ourgoals.database.entities.Category
 
 class CategoryCollection {
     var categoryList = ArrayList<Category>()
@@ -11,10 +11,38 @@ class CategoryCollection {
 
     fun setDefaultCategories(ownerId: String) {
         val defaultCategories = ArrayList<Category>()
-        defaultCategories.add(Category(ownerId, "Здоровье", null, -49862))
-        defaultCategories.add(Category(ownerId, "Образование", null, -12168193))
-        defaultCategories.add(Category(ownerId, "Финансы", null, -7591681))
-        defaultCategories.add(Category(ownerId, "Хобби", null, -11862145))
+        defaultCategories.add(
+            Category(
+                ownerId,
+                "Здоровье",
+                null,
+                -49862
+            )
+        )
+        defaultCategories.add(
+            Category(
+                ownerId,
+                "Образование",
+                null,
+                -12168193
+            )
+        )
+        defaultCategories.add(
+            Category(
+                ownerId,
+                "Финансы",
+                null,
+                -7591681
+            )
+        )
+        defaultCategories.add(
+            Category(
+                ownerId,
+                "Хобби",
+                null,
+                -11862145
+            )
+        )
 
         categoryList.addAll(defaultCategories)
     }

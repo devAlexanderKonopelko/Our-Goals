@@ -1,9 +1,9 @@
 package by.konopelko.ourgoals.core.main
 
 import android.util.Log
-import by.konopelko.ourgoals.database.Goal
-import by.konopelko.ourgoals.database.Task
-import by.konopelko.ourgoals.database.User
+import by.konopelko.ourgoals.database.entities.Goal
+import by.konopelko.ourgoals.database.entities.Task
+import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.temporaryData.NotificationsCollection
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -44,7 +44,12 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
                                     ) {
 
                                         // записываем пользователя, который прислал запрос на дружбу
-                                        val user = User(requestUid, name, ArrayList())
+                                        val user =
+                                            User(
+                                                requestUid,
+                                                name,
+                                                ArrayList()
+                                            )
 
                                         var userExists = false
 
@@ -89,7 +94,11 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
                                                 )
                                             )
                                             NotificationsCollection.instance.goalsRequestsSenders.add(
-                                                User("", "", ArrayList())
+                                                User(
+                                                    "",
+                                                    "",
+                                                    ArrayList()
+                                                )
                                             )
                                             NotificationsCollection.instance.goalsRequestsGoalKeys.add(
                                                 ""
@@ -132,11 +141,12 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
                                     // записываем задачи для текущей цели
                                     val tasks = ArrayList<Task>()
                                     for (taskSnapshot in socialGoal.child("tasks").children) {
-                                        val task = Task(
-                                            taskSnapshot.child("text").value.toString(),
-                                            taskSnapshot.child("finishDate").value.toString(),
-                                            false
-                                        )
+                                        val task =
+                                            Task(
+                                                taskSnapshot.child("text").value.toString(),
+                                                taskSnapshot.child("finishDate").value.toString(),
+                                                false
+                                            )
 
                                         tasks.add(task)
                                     }
@@ -176,11 +186,12 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
                                             .addListenerForSingleValueEvent(object :
                                                 ValueEventListener {
                                                 override fun onDataChange(sender: DataSnapshot) {
-                                                    val user = User(
-                                                        sender.child("uid").value.toString(),
-                                                        sender.child("login").value.toString(),
-                                                        ArrayList()
-                                                    )
+                                                    val user =
+                                                        User(
+                                                            sender.child("uid").value.toString(),
+                                                            sender.child("login").value.toString(),
+                                                            ArrayList()
+                                                        )
                                                     NotificationsCollection.instance.goalsRequestsSenders.add(
                                                         user
                                                     )
@@ -208,7 +219,11 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
                                                     // делаем заглушку по этому индексу для коллекции запросов дружбы.
                                                     // Это нужно для того, чтобы адаптер нотификаций брал корректные индексы.
                                                     NotificationsCollection.instance.friendsRequests.add(
-                                                        User("", "", ArrayList())
+                                                        User(
+                                                            "",
+                                                            "",
+                                                            ArrayList()
+                                                        )
                                                     )
 
                                                     Log.e(

@@ -119,4 +119,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/confirmPasswordFieldContainer" />
 
+    <ProgressBar
+        android:id="@+id/registerFragmentProgressBar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/registerFragmentButton"
+        app:layout_constraintStart_toEndOf="@+id/registerFragmentButton"
+        app:layout_constraintTop_toTopOf="@+id/registerFragmentButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

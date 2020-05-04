@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    app:cardElevation="3dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/itemMotivationsNoteDeleteButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="end"
+
+            android:background="#00FFFFFF"
+            android:src="@drawable/delete_icon" />
+
+        <TextView
+            android:id="@+id/itemMotivationsNoteTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="Title of the note which is very long so it takes 2 lines"
+            android:maxLines="2"
+            android:textAlignment="center"
+            android:textSize="24dp" />
+
+        <TextView
+            android:id="@+id/itemMotivationsNoteText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="16dp"
+            android:hint="safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg "
+            android:maxLines="5"
+            android:textAlignment="center" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

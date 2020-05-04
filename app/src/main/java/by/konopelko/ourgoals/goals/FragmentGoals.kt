@@ -8,11 +8,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.Goal
+import by.konopelko.ourgoals.database.entities.Goal
 import by.konopelko.ourgoals.goals.recyclerGoals.GoalAdapter
 import by.konopelko.ourgoals.temporaryData.GoalCollection
 import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
 import kotlinx.android.synthetic.main.fragment_goals.*
+import java.util.ArrayList
 
 class FragmentGoals : Fragment() {
 
@@ -28,7 +29,7 @@ class FragmentGoals : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if(GoalCollection.instance.visible) {
-            val goalsList = GoalCollection.instance.goalsList
+            val goalsList = GoalCollection.instance.goalsInProgressList
             goalsRecyclerView.adapter = GoalAdapter(goalsList, this@FragmentGoals)
 
             Log.e("ADAPTER LIST SIZE: ", " ${goalsList.size}")
@@ -55,7 +56,7 @@ class FragmentGoals : Fragment() {
         GoalCollection.instance.visible = true
         SocialGoalCollection.instance.visible = false
 
-        val localGoals = GoalCollection.instance.goalsList
+        val localGoals = GoalCollection.instance.goalsInProgressList
         goalsRecyclerView.adapter = GoalAdapter(localGoals, this)
         (goalsRecyclerView.adapter as GoalAdapter).notifyDataSetChanged()
     }
@@ -71,5 +72,10 @@ class FragmentGoals : Fragment() {
 
     fun updateRecyclerItemProgress(goalPosition: Int) {
         (goalsRecyclerView.adapter as GoalAdapter).updateGoalProgress(goalPosition)
+    }
+
+    fun updateGoals(goals: ArrayList<Goal>) {
+        goalsRecyclerView.adapter = GoalAdapter(goals, this)
+        (goalsRecyclerView.adapter as GoalAdapter).notifyDataSetChanged()
     }
 }

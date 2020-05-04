@@ -5,14 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.Goal
-import by.konopelko.ourgoals.database.User
+import by.konopelko.ourgoals.database.entities.Goal
+import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.temporaryData.NotificationsCollection
 import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
 import com.google.firebase.auth.FirebaseAuth

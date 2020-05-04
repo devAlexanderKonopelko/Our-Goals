@@ -30,16 +30,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/itemGoalEditButton"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="10dp"
-            app:layout_constraintEnd_toStartOf="@+id/itemGoalDeleteButton"
-            app:layout_constraintTop_toTopOf="parent"
 
-            android:src="@drawable/icon_edit"
-            android:background="#00FFFFFF"/>
+<!--        Edit Button - in Future-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/itemGoalEditButton"-->
+<!--            android:layout_width="30dp"-->
+<!--            android:layout_height="30dp"-->
+<!--            android:layout_marginEnd="10dp"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/itemGoalDeleteButton"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+
+<!--            android:src="@drawable/icon_edit"-->
+<!--            android:background="#00FFFFFF"/>-->
 
         <ImageButton
             android:id="@+id/itemGoalDeleteButton"
@@ -48,7 +51,6 @@
             android:layout_marginEnd="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-
             android:src="@drawable/delete_icon"
             android:background="#00FFFFFF"/>
 
@@ -82,7 +84,8 @@
             android:id="@+id/itemGoalText"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="10dp"
             app:layout_constraintStart_toEndOf="@id/itemGoalProgressBarLayout"
             app:layout_constraintTop_toBottomOf="@+id/itemGoalCategory"
 
@@ -101,7 +104,7 @@
 
         <Button
             android:id="@+id/itemGoalCompleteButton"
-            android:layout_width="120dp"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginBottom="10dp"
             android:text="Завершить"
@@ -123,6 +126,15 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/itemGoalCompleteButton" />
+
+        <CheckBox
+            android:id="@+id/itemGoalSingleCheckBox"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:layout_constraintBottom_toBottomOf="@+id/itemGoalText"
+            app:layout_constraintEnd_toEndOf="@+id/itemGoalDeleteButton"
+            app:layout_constraintStart_toStartOf="@+id/itemGoalDeleteButton"
+            app:layout_constraintTop_toTopOf="@+id/itemGoalText" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

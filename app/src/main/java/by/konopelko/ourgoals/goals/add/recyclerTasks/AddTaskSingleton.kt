@@ -1,6 +1,6 @@
 package by.konopelko.ourgoals.goals.add.recyclerTasks
 
-import by.konopelko.ourgoals.database.Task
+import by.konopelko.ourgoals.database.entities.Task
 
 class AddTaskSingleton {
     val taskList = ArrayList<Task>()

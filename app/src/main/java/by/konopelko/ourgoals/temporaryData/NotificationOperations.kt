@@ -1,10 +1,9 @@
 package by.konopelko.ourgoals.temporaryData
 
 import android.util.Log
-import by.konopelko.ourgoals.ActivityMain
-import by.konopelko.ourgoals.database.Goal
-import by.konopelko.ourgoals.database.Task
-import by.konopelko.ourgoals.database.User
+import by.konopelko.ourgoals.database.entities.Goal
+import by.konopelko.ourgoals.database.entities.Task
+import by.konopelko.ourgoals.database.entities.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -73,7 +72,12 @@ class NotificationOperations {
                                         ) {
 
                                             // записываем пользователя, который прислал запрос на дружбу
-                                            val user = User(uid, name, ArrayList())
+                                            val user =
+                                                User(
+                                                    uid,
+                                                    name,
+                                                    ArrayList()
+                                                )
                                             NotificationsCollection.instance.friendsRequests.add(user)
                                             // и записываем ключ (тип) нотификации как "нотификация получения запроса на дружбу"
                                             when (request.child("request_type").value   ) {
@@ -98,7 +102,11 @@ class NotificationOperations {
                                                 )
                                             )
                                             NotificationsCollection.instance.goalsRequestsSenders.add(
-                                                User("", "", ArrayList())
+                                                User(
+                                                    "",
+                                                    "",
+                                                    ArrayList()
+                                                )
                                             )
                                             NotificationsCollection.instance.goalsRequestsGoalKeys.add("")
                                         }
@@ -144,11 +152,12 @@ class NotificationOperations {
                                         // записываем задачи для текущей цели
                                         val tasks = ArrayList<Task>()
                                         for (taskSnapshot in socialGoal.child("tasks").children) {
-                                            val task = Task(
-                                                taskSnapshot.child("text").value.toString(),
-                                                taskSnapshot.child("finishDate").value.toString(),
-                                                false
-                                            )
+                                            val task =
+                                                Task(
+                                                    taskSnapshot.child("text").value.toString(),
+                                                    taskSnapshot.child("finishDate").value.toString(),
+                                                    false
+                                                )
 
                                             tasks.add(task)
                                         }
@@ -177,11 +186,12 @@ class NotificationOperations {
                                             .addListenerForSingleValueEvent(object :
                                                 ValueEventListener {
                                                 override fun onDataChange(sender: DataSnapshot) {
-                                                    val user = User(
-                                                        sender.child("uid").value.toString(),
-                                                        sender.child("login").value.toString(),
-                                                        ArrayList()
-                                                    )
+                                                    val user =
+                                                        User(
+                                                            sender.child("uid").value.toString(),
+                                                            sender.child("login").value.toString(),
+                                                            ArrayList()
+                                                        )
                                                     NotificationsCollection.instance.goalsRequestsSenders.add(
                                                         user
                                                     )
@@ -209,7 +219,11 @@ class NotificationOperations {
                                                     // делаем заглушку по этому индексу для коллекции запросов дружбы.
                                                     // Это нужно для того, чтобы адаптер нотификаций брал корректные индексы.
                                                     NotificationsCollection.instance.friendsRequests.add(
-                                                        User("", "", ArrayList())
+                                                        User(
+                                                            "",
+                                                            "",
+                                                            ArrayList()
+                                                        )
                                                     )
 
                                                     Log.e(

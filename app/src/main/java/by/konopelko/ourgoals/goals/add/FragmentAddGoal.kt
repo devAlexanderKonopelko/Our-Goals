@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.temporaryData.CategoryCollection
+import by.konopelko.ourgoals.temporaryData.CurrentSession
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_add_goal_main.*
 import kotlinx.android.synthetic.main.fragment_add_goal_main.view.*
@@ -38,6 +39,13 @@ class FragmentAddGoal : DialogFragment() {
             view.addGoalFragmentGoalText.setText(savedInstanceState.getString("GOAL_TEXT"))
             view.addGoalFragmentCategoryList.setText(savedInstanceState.getString("GOAL_CATEGORY"))
         }
+
+        if (CurrentSession.instance.currentUser.id.equals("0")) {
+            addGoalFragmentSocialLayout.visibility = View.GONE
+        } else {
+            addGoalFragmentSocialLayout.visibility = View.VISIBLE
+        }
+
         // получать текущий список категорий из базы
         val items = ArrayList<String>()
         for(category in CategoryCollection.instance.categoryList) {

@@ -6,12 +6,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.Goal
-import by.konopelko.ourgoals.database.Task
-import by.konopelko.ourgoals.temporaryData.CurrentSession
-import by.konopelko.ourgoals.temporaryData.DatabaseOperations
-import by.konopelko.ourgoals.temporaryData.GoalCollection
-import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
+import by.konopelko.ourgoals.database.entities.Goal
+import by.konopelko.ourgoals.database.entities.Task
+import by.konopelko.ourgoals.temporaryData.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -133,19 +130,31 @@ class AdapterTasksList(
 
     private fun changeGoalProgress(goalPosition: Int, taskPosition: Int, isChecked: Boolean) {
         // изменяем прогресс задачи соответствующей цели в локальной коллекции
-        GoalCollection.instance.goalsList[goalPosition].tasks?.get(taskPosition)?.isComplete = isChecked
+        GoalCollection.instance.goalsInProgressList[goalPosition].tasks?.get(taskPosition)?.isComplete = isChecked
 
         // изменение прогресса всей соответствующей цели
-        GoalCollection.instance.goalsList[goalPosition].progress = calculateProgress()
+        GoalCollection.instance.goalsInProgressList[goalPosition].progress = calculateProgress()
 
-        val goal = GoalCollection.instance.goalsList[goalPosition]
+        val goal = GoalCollection.instance.goalsInProgressList[goalPosition]
 
         // изменяем прогресс задачи и цели в локальной бд
-        changeProgressInDatabase(goal)
+        changeProgressInDatabase(goal, isChecked)
     }
 
-    private fun changeProgressInDatabase(goal: Goal) {
-        fragmentGoals.context?.let { DatabaseOperations.getInstance(it).updateGoalInDatabase(goal) }
+    private fun changeProgressInDatabase(goal: Goal, isChecked: Boolean) {
+        fragmentGoals.context?.let {
+            DatabaseOperations.getInstance(it).updateGoalInDatabase(goal)
+
+            val analytics = AnalyticsSingleton.instance.analytics
+            if (isChecked) {
+                analytics.tasksCompleted++
+            } else {
+                analytics.tasksCompleted--
+            }
+
+            // возможно запаздывание именений в аналитике
+            DatabaseOperations.getInstance(it).updateAnalytics(analytics)
+        }
     }
 
     private fun calculateProgress(): Int {

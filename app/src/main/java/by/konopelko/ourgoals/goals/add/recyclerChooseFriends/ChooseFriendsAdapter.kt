@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.User
+import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.goals.add.NewGoal
 import by.konopelko.ourgoals.temporaryData.GoalReceiversCollection
 import kotlinx.android.synthetic.main.item_recycler_choose_friends.view.*

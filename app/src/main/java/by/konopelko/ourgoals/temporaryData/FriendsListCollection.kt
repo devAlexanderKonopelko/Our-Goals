@@ -1,8 +1,7 @@
 package by.konopelko.ourgoals.temporaryData
 
 import android.util.Log
-import by.konopelko.ourgoals.database.User
-import kotlinx.coroutines.*
+import by.konopelko.ourgoals.database.entities.User
 
 class FriendsListCollection {
     val friendsList = ArrayList<User>()

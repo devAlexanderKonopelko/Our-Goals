@@ -2,7 +2,6 @@ package by.konopelko.ourgoals.goals.add
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,14 +9,11 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.Goal
-import by.konopelko.ourgoals.database.Task
-import by.konopelko.ourgoals.temporaryData.GoalCollection
+import by.konopelko.ourgoals.database.entities.Goal
+import by.konopelko.ourgoals.database.entities.Task
 import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
 import by.konopelko.ourgoals.goals.add.recyclerTasks.TaskAdapter
 import by.konopelko.ourgoals.temporaryData.CurrentSession
-import by.konopelko.ourgoals.temporaryData.DatabaseOperations
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_add_goal_tasks.*
 
 class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
@@ -52,7 +48,13 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
 
         addTaskFragmentAddButton.setOnClickListener {
             if (AddTaskSingleton.instance.taskToComplete == 0) {
-                AddTaskSingleton.instance.taskList.add(Task("", "", false))
+                AddTaskSingleton.instance.taskList.add(
+                    Task(
+                        "",
+                        "",
+                        false
+                    )
+                )
 
                 (addTasksRecycler.adapter as TaskAdapter).notifyItemInserted(AddTaskSingleton.instance.taskList.size - 1)
                 addTasksRecycler.scrollToPosition(AddTaskSingleton.instance.taskList.size - 1)
@@ -73,8 +75,6 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
                 Toast.makeText(this.context, "Завершите редактирование задачи", Toast.LENGTH_SHORT).show()
             }
         }
-
-        // TODO: Проверять Общий свитч и надувать диалог FragmentChooseFriends
         if (NewGoal.instance.goal.isSocial) {
             addGoalFragmentFinishButton.text = "Далее"
             addGoalFragmentFinishButton.setOnClickListener {

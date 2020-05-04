@@ -8,10 +8,11 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.Goal
+import by.konopelko.ourgoals.database.entities.Goal
 import by.konopelko.ourgoals.goals.AdapterTasksList
 import by.konopelko.ourgoals.goals.FragmentFriendsProgress
 import by.konopelko.ourgoals.goals.FragmentGoals
+import by.konopelko.ourgoals.temporaryData.AnalyticsSingleton
 import by.konopelko.ourgoals.temporaryData.DatabaseOperations
 import by.konopelko.ourgoals.temporaryData.GoalCollection
 import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
@@ -58,57 +59,44 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
             goalView.itemGoalDetailsButton.text = "Подробнее"
         }
 
+        if (list[position].tasks == null) {
+            goalView.itemGoalDetailsButton.visibility = View.GONE
+        }
+        else {
+            goalView.itemGoalSingleCheckBox.visibility = View.GONE
+        }
+
         goalView.itemGoalTasksRecycler.adapter =
             AdapterTasksList(list[position].tasks, fragmentGoals, position)
         goalView.itemGoalTasksRecycler.layoutManager = LinearLayoutManager(fragmentGoals.context)
         goalView.itemGoalTasksRecycler.setHasFixedSize(true)
 
+        goalView.itemGoalSingleCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                GoalCollection.instance.goalsInProgressList[position].progress = 100
+                goalView.itemGoalProgressBarIndicator.progress = 100
+                goalView.itemGoalProgressBarValue.text = "100%"
+                goalView.itemGoalCompleteButton.visibility = View.VISIBLE
+                setCompleteClickListener(goalView, position)
+            }
+            else {
+                GoalCollection.instance.goalsInProgressList[position].progress = 0
+                goalView.itemGoalProgressBarIndicator.progress = 0
+                goalView.itemGoalProgressBarValue.text = "0%"
+                goalView.itemGoalCompleteButton.visibility = View.INVISIBLE
+            }
+        }
+
         if (list[position].progress == 100) {
             goalView.itemGoalCompleteButton.visibility = View.VISIBLE
-
-            goalView.itemGoalCompleteButton.setOnClickListener {
-                MaterialAlertDialogBuilder(fragmentGoals.context)
-                    .setTitle("Подтвердите действие")
-                    .setMessage("Вы уверены, что хотите завершить данную цель?")
-                    .setNegativeButton("Отмена") { dialog, which ->
-                        // Respond to negative button press
-                        dialog.dismiss()
-                    }
-                    .setPositiveButton("Завершить") { dialog, which ->
-                        // Respond to positive button press
-                        if (list[position].isSocial) {
-                            // completing social goal
-                            // удалить цель из локальной коллекции
-                            SocialGoalCollection.instance.goalList.removeAt(position)
-                            val goalKey = SocialGoalCollection.instance.keysList[position]
-                            SocialGoalCollection.instance.keysList.removeAt(position)
-                            notifyItemRemoved(position)
-                            // удалить цель из нашего аккаунта на сервере
-                            removeSocialGoalFromAccount(goalKey)
-
-                            // TODO
-                            // добавить в статистику инфу
-                        } else {
-                            //completing personal goal
-                            // удалить из локальной коллекции ( в локальной бд остаётся для аналитики)
-                            GoalCollection.instance.goalsList.removeAt(position)
-                            // обновить ресайклер
-                            notifyItemRemoved(position)
-
-                            // TODO
-                            // добавить в статистику инфу
-                        }
-
-                    }
-                    .show()
-            }
+            goalView.itemGoalSingleCheckBox.isChecked = true
+            setCompleteClickListener(goalView, position)
         }
         else goalView.itemGoalCompleteButton.visibility = View.GONE
 
         if (list[position].isSocial) {
             goalView.itemGoalSocialButton.visibility = View.VISIBLE
             // социальные цели редактировать нельзя (пока что)
-            goalView.itemGoalEditButton.visibility = View.INVISIBLE
 
             goalView.itemGoalSocialButton.setOnClickListener {
                 // надуваем фрагмент просмотра прогресса друзей
@@ -119,6 +107,7 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                 fragmentGoals.fragmentManager?.let { fm -> friendsProgressDialog.show(fm, "") }
             }
         } else goalView.itemGoalSocialButton.visibility = View.INVISIBLE
+
 
         // удалять в зависимости от цели (социальная или нет)
         goalView.itemGoalDeleteButton.setOnClickListener {
@@ -154,6 +143,56 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
 
                 goalView.itemGoalDetailsButton.text = "Подробнее"
             }
+        }
+    }
+
+    private fun setCompleteClickListener(goalView: View, position: Int) {
+        goalView.itemGoalCompleteButton.setOnClickListener {
+            MaterialAlertDialogBuilder(fragmentGoals.context)
+                .setTitle("Подтвердите действие")
+                .setMessage("Вы уверены, что хотите завершить данную цель?")
+                .setNegativeButton("Отмена") { dialog, which ->
+                    // Respond to negative button press
+                    dialog.dismiss()
+                }
+                .setPositiveButton("Завершить") { dialog, which ->
+                    // Respond to positive button press
+                    if (list[position].isSocial) {
+                        // completing social goal
+                        // удалить цель из локальной коллекции
+                        SocialGoalCollection.instance.goalList.removeAt(position)
+                        val goalKey = SocialGoalCollection.instance.keysList[position]
+                        SocialGoalCollection.instance.keysList.removeAt(position)
+                        notifyItemRemoved(position)
+                        // удалить цель из нашего аккаунта на сервере
+                        removeSocialGoalFromAccount(goalKey)
+
+                        // TODO
+                        // добавить в статистику инфу
+                    } else {
+                        //completing personal goal
+
+                        // поставить отметку "выполнена"
+                        list[position].isDone = true
+                        //обновить в бд цель и аналитику
+                        fragmentGoals.context?.let { ctx ->
+                            DatabaseOperations.getInstance(ctx).updateGoalInDatabase(list[position])
+
+                            val analytics = AnalyticsSingleton.instance.analytics
+                            analytics.goalsCompleted++
+                            DatabaseOperations.getInstance(ctx).updateAnalytics(analytics)
+                        }
+                        // удалить из локальной коллекции
+                        GoalCollection.instance.goalsInProgressList.removeAt(position)
+                        // обновить ресайклер
+                        notifyItemRemoved(position)
+
+                        // TODO
+                        // добавить в статистику инфу
+                    }
+
+                }
+                .show()
         }
     }
 
@@ -209,6 +248,11 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                     "GOAL DATABASE SIZE: ",
                     DatabaseOperations.getInstance(it).database.getGoalDao().getAllGoals().size.toString()
                 )
+
+                val analytics = AnalyticsSingleton.instance.analytics
+                analytics.goalsSet++
+                analytics.tasksSet += goal.tasks?.size ?: 0
+                DatabaseOperations.getInstance(it).updateAnalytics(analytics).await()
             }
             if (goal.id != null) {
                 GoalCollection.instance.addGoal(goal)

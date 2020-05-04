@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
@@ -13,17 +14,22 @@ import androidx.fragment.app.Fragment
 import by.konopelko.ourgoals.analytics.FragmentAnalytics
 import by.konopelko.ourgoals.categories.FragmentCategories
 import by.konopelko.ourgoals.categories.add.FragmentAddCategory
+import by.konopelko.ourgoals.categories.motivations.add.FragmentAddImage
+import by.konopelko.ourgoals.categories.motivations.add.FragmentAddLink
+import by.konopelko.ourgoals.categories.motivations.add.FragmentAddMotivation
 import by.konopelko.ourgoals.core.main.MainContract
 import by.konopelko.ourgoals.core.main.MainPresenter
-import by.konopelko.ourgoals.database.Category
-import by.konopelko.ourgoals.database.Goal
+import by.konopelko.ourgoals.database.entities.Category
+import by.konopelko.ourgoals.database.entities.Goal
+import by.konopelko.ourgoals.database.motivations.Image
+import by.konopelko.ourgoals.database.motivations.Link
 import by.konopelko.ourgoals.friends.add.FragmentAddFriends
 import by.konopelko.ourgoals.friends.FragmentFriends
 import by.konopelko.ourgoals.goals.FragmentGoals
 import by.konopelko.ourgoals.goals.add.FragmentAddGoal
 import by.konopelko.ourgoals.goals.add.FragmentAddTasks
 import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
-import by.konopelko.ourgoals.logIn.ActivityLogIn
+import by.konopelko.ourgoals.authentication.ActivityLogIn
 import by.konopelko.ourgoals.notifications.AdapterNotifications
 import by.konopelko.ourgoals.notifications.FragmentNotifications
 import by.konopelko.ourgoals.temporaryData.*
@@ -39,7 +45,7 @@ import kotlinx.coroutines.launch
 
 class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     FragmentAddTasks.RefreshGoalsListInterface, AdapterNotifications.NotificationActions,
-    MainContract.View, FragmentAddCategory.CategoryInterface {
+    MainContract.View, FragmentAddCategory.CategoryInterface, FragmentAddLink.AddMotivation, FragmentAddImage.AddMotivation {
 
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     val presenter = MainPresenter(this)
@@ -51,7 +57,60 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val categoriesList = ArrayList<String>()
+        categoriesList.add("Все категории")
+        for (category in CategoryCollection.instance.categoryList) {
+            categoriesList.add(category.title)
+        }
+
+        val arrayAdapter = ArrayAdapter<String>(this, R.layout.item_spinner_sort_collections, categoriesList)
+        toolbarSort.setAdapter(arrayAdapter)
+
         setSupportActionBar(toolbar)
+        toolbarSort.setOnItemClickListener { parent, view, position, id ->
+            val category = categoriesList[position]
+            if (category.equals("Все категории")) {
+                // коллекции хранят цели со всех категорий
+                if (GoalCollection.instance.visible) {
+                    fragmentGoals.showLocalGoals()
+                }
+                else {
+                    fragmentGoals.showSocialGoals()
+                }
+            }
+            else {
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (SocialGoalCollection.instance.visible) {
+                        val goals = ArrayList<Goal>()
+                        val keys = ArrayList<String>()
+
+                        //собираем подходящие цели
+                        for (i in 0 until SocialGoalCollection.instance.goalList.size) {
+                            if (SocialGoalCollection.instance.goalList[i].category.equals(category)) {
+                                goals.add(SocialGoalCollection.instance.goalList[i])
+                                keys.add(SocialGoalCollection.instance.keysList[i])
+                            }
+                        }
+                        fragmentGoals.updateGoals(goals)
+                    }
+                    else {
+                        val goals = ArrayList<Goal>()
+
+                        //собираем подходящие цели
+                        for (i in 0 until GoalCollection.instance.goalsInProgressList.size) {
+                            if (GoalCollection.instance.goalsInProgressList[i].category.equals(category)) {
+                                goals.add(GoalCollection.instance.goalsInProgressList[i])
+                            }
+                        }
+                        // обновляем адаптер
+                        fragmentGoals.updateGoals(goals)
+                    }
+                }
+            }
+        }
+
+
 
 
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, 0, 0)
@@ -115,16 +174,34 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //setting bottom navigation menu
         bottomNavigation.selectedItemId = R.id.nav_goals
         getFragment(fragmentGoals)
+        if (GoalCollection.instance.visible) {
+            toolbarSectionTitle.text = "Мои цели"
+        } else {
+            toolbarSectionTitle.text = "Общие цели"
+        }
         bottomNavigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_goals -> {
+                    if (GoalCollection.instance.visible) {
+                        toolbarSectionTitle.text = "Мои цели"
+                    } else {
+                        toolbarSectionTitle.text = "Общие цели"
+                    }
+                    goalsAddButton.visibility = View.VISIBLE
+                    toolbarSortContainer.visibility = View.VISIBLE
                     getFragment(fragmentGoals)
                 }
                 R.id.nav_categories -> {
+                    goalsAddButton.visibility = View.VISIBLE
+                    toolbarSortContainer.visibility = View.INVISIBLE
                     getFragment(fragmentCategories)
+                    toolbarSectionTitle.text = "Категории"
                 }
                 R.id.nav_analytics -> {
+                    goalsAddButton.visibility = View.INVISIBLE
+                    toolbarSortContainer.visibility = View.INVISIBLE
                     getFragment(fragmentAnalytics)
+                    toolbarSectionTitle.text = "Аналитика"
                 }
             }
             true
@@ -142,8 +219,16 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             if (fragmentCategories.isVisible) {
                 // show add category dialog
-                val addDialog = FragmentAddCategory()
-                supportFragmentManager.let { supportFM -> addDialog.show(supportFM, "") }
+
+                if(fragmentCategories.categoriesVisible) {
+                    val addDialog = FragmentAddCategory()
+                    supportFragmentManager.let { supportFM -> addDialog.show(supportFM, "") }
+                }
+                if(fragmentCategories.motivationsVisible) {
+                    //
+                    val addDialog = FragmentAddMotivation()
+                    supportFragmentManager.let { supportFM -> addDialog.show(supportFM, "") }
+                }
             }
             if (fragmentAnalytics.isVisible) {
                 // show add analytics dialog
@@ -160,11 +245,13 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     SocialGoalCollection.instance.visible = false
 
                     bottomNavigation.selectedItemId = R.id.nav_goals
+                    toolbarSortContainer.visibility = View.VISIBLE
                     getFragment(fragmentGoals)
                 }
                 else {
                     fragmentGoals.showLocalGoals()
                 }
+                toolbarSectionTitle.text = "Мои цели"
             }
             R.id.nav_side_social_goals -> {
                 if (!fragmentGoals.isVisible) {
@@ -172,11 +259,13 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     SocialGoalCollection.instance.visible = true
 
                     bottomNavigation.selectedItemId = R.id.nav_goals
+                    toolbarSortContainer.visibility = View.VISIBLE
                     getFragment(fragmentGoals)
                 }
                 else {
                     fragmentGoals.showSocialGoals()
                 }
+                toolbarSectionTitle.text = "Общие цели"
             }
 
             R.id.nav_side_notifications -> {
@@ -257,5 +346,13 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun updateCategory(category: Category, position: Int) {
         fragmentCategories.updateCategory(category, position)
+    }
+
+    override fun addLink(link: Link) {
+        fragmentCategories.addMotivationLink(link)
+    }
+
+    override fun addImage(image: Image) {
+        fragmentCategories.addMotivationImage(image)
     }
 }
