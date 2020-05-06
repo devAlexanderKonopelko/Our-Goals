@@ -72,6 +72,18 @@ class AdapterTasksList(
         SocialGoalCollection.instance.goalList[goalPosition].tasks?.get(taskPosition)?.isComplete =
             isChecked
 
+        fragmentGoals.context?.let {
+            val analytics = AnalyticsSingleton.instance.analytics
+            if (isChecked) {
+                analytics.tasksCompleted++
+            } else {
+                analytics.tasksCompleted--
+            }
+
+            // возможно запаздывание именений в аналитике
+            DatabaseOperations.getInstance(it).updateAnalytics(analytics)
+        }
+
         // изменение прогресса всей соответствующей цели
         SocialGoalCollection.instance.goalList[goalPosition].progress = calculateProgress()
 

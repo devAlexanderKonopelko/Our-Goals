@@ -2,6 +2,7 @@ package by.konopelko.ourgoals.goals
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,6 +61,8 @@ class FragmentFriendsProgress(val goalKey: String, val goalText: String) : Dialo
     }
 
     private fun setUsersAndProgress(goalKey: String) {
+        fragmentGoalFriendsProgressLoadBar.visibility = View.VISIBLE
+        Log.e("VIS", "${fragmentGoalFriendsProgressLoadBar.visibility}")
         val currentUserId = auth.currentUser!!.uid
         // загрузка пользователей и их прогресса в локальную коллекцию
         userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -68,7 +71,6 @@ class FragmentFriendsProgress(val goalKey: String, val goalText: String) : Dialo
                     .child("friends").addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(friends: DataSnapshot) {
                             for (user in friends.children) {
-
                                 userDatabase.child(user.key!!).addListenerForSingleValueEvent(object: ValueEventListener {
                                     override fun onDataChange(userSnapshot: DataSnapshot) {
                                         // загружаем данные с Сервера в локальные коллекции
@@ -87,9 +89,9 @@ class FragmentFriendsProgress(val goalKey: String, val goalText: String) : Dialo
                                         // обновляем ресайклер по ходу
                                         (fragmentGoalFriendsProgressRecyclerView.adapter as
                                                 AdapterFriendsProgress).notifyDataSetChanged()
+                                        fragmentGoalFriendsProgressLoadBar.visibility = View.INVISIBLE
                                     }
                                     override fun onCancelled(p0: DatabaseError) {
-                                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                                     }
                                 })
                             }
@@ -97,9 +99,9 @@ class FragmentFriendsProgress(val goalKey: String, val goalText: String) : Dialo
                         override fun onCancelled(p0: DatabaseError) {
                         }
                     })
+                fragmentGoalFriendsProgressLoadBar.visibility = View.INVISIBLE
             }
             override fun onCancelled(p0: DatabaseError) {
-
             }
         })
     }

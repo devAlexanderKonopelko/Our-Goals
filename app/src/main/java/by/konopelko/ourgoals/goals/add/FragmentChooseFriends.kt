@@ -10,11 +10,11 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
+import by.konopelko.ourgoals.database.entities.Task
 import by.konopelko.ourgoals.database.entities.User
+import by.konopelko.ourgoals.goals.FragmentGoals
 import by.konopelko.ourgoals.goals.add.recyclerChooseFriends.ChooseFriendsAdapter
-import by.konopelko.ourgoals.temporaryData.FriendsListCollection
-import by.konopelko.ourgoals.temporaryData.GoalReceiversCollection
-import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
+import by.konopelko.ourgoals.temporaryData.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -26,6 +26,10 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firebaseDatabase = FirebaseDatabase.getInstance().reference
     private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
+
+    interface SocialGoalAddition {
+        fun updateRecyclerWithSocialGoal()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,10 +76,27 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
                 // запись цели нам в аккаунт на сервере
                 sendSocialGoaltoAccount(goalKey)
                 addSocialGoalToCollection(goalKey)
+                updateAnalytics(NewGoal.instance.goal.tasks)
+
+                if (SocialGoalCollection.instance.visible) {
+                    activity?.run {
+                        val refresh = this as SocialGoalAddition
+                        refresh.updateRecyclerWithSocialGoal()
+                    }
+                }
 
                 Toast.makeText(this.context, "Цель добавлена в Общие Цели!", Toast.LENGTH_SHORT).show()
                 dismiss()
             }
+        }
+    }
+
+    private fun updateAnalytics(tasks: ArrayList<Task>?) {
+        activity?.run {
+            val analytics = AnalyticsSingleton.instance.analytics
+            analytics.goalsSet++
+            analytics.tasksSet += tasks?.size ?: 0
+            DatabaseOperations.getInstance(this).updateAnalytics(analytics)
         }
     }
 

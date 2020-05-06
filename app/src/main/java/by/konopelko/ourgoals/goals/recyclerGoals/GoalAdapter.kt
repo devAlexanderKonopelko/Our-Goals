@@ -12,10 +12,7 @@ import by.konopelko.ourgoals.database.entities.Goal
 import by.konopelko.ourgoals.goals.AdapterTasksList
 import by.konopelko.ourgoals.goals.FragmentFriendsProgress
 import by.konopelko.ourgoals.goals.FragmentGoals
-import by.konopelko.ourgoals.temporaryData.AnalyticsSingleton
-import by.konopelko.ourgoals.temporaryData.DatabaseOperations
-import by.konopelko.ourgoals.temporaryData.GoalCollection
-import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
+import by.konopelko.ourgoals.temporaryData.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -32,6 +29,7 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
     private var tasksVisible = false
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
+    private val goalRequestDatabase = FirebaseDatabase.getInstance().reference.child("GoalRequests")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GoalViewHolder {
         val itemView =
@@ -59,10 +57,10 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
             goalView.itemGoalDetailsButton.text = "Подробнее"
         }
 
-        if (list[position].tasks == null) {
+        Log.e("TASKS", "${list[position].tasks}")
+        if (list[position].tasks == null || list[position].tasks?.size ?: 1 == 0) {
             goalView.itemGoalDetailsButton.visibility = View.GONE
-        }
-        else {
+        } else {
             goalView.itemGoalSingleCheckBox.visibility = View.GONE
         }
 
@@ -73,14 +71,32 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
 
         goalView.itemGoalSingleCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                GoalCollection.instance.goalsInProgressList[position].progress = 100
+                if (GoalCollection.instance.visible) {
+                    GoalCollection.instance.goalsInProgressList[position].progress = 100
+                } else {
+                    SocialGoalCollection.instance.goalList[position].progress = 100
+                    changeSocialGoalProgress(
+                        100,
+                        true,
+                        SocialGoalCollection.instance.keysList[position]
+                    )
+                }
+
                 goalView.itemGoalProgressBarIndicator.progress = 100
                 goalView.itemGoalProgressBarValue.text = "100%"
                 goalView.itemGoalCompleteButton.visibility = View.VISIBLE
                 setCompleteClickListener(goalView, position)
-            }
-            else {
-                GoalCollection.instance.goalsInProgressList[position].progress = 0
+            } else {
+                if (GoalCollection.instance.visible) {
+                    GoalCollection.instance.goalsInProgressList[position].progress = 0
+                } else {
+                    SocialGoalCollection.instance.goalList[position].progress = 0
+                    changeSocialGoalProgress(
+                        0,
+                        false,
+                        SocialGoalCollection.instance.keysList[position]
+                    )
+                }
                 goalView.itemGoalProgressBarIndicator.progress = 0
                 goalView.itemGoalProgressBarValue.text = "0%"
                 goalView.itemGoalCompleteButton.visibility = View.INVISIBLE
@@ -91,12 +107,10 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
             goalView.itemGoalCompleteButton.visibility = View.VISIBLE
             goalView.itemGoalSingleCheckBox.isChecked = true
             setCompleteClickListener(goalView, position)
-        }
-        else goalView.itemGoalCompleteButton.visibility = View.GONE
+        } else goalView.itemGoalCompleteButton.visibility = View.GONE
 
         if (list[position].isSocial) {
             goalView.itemGoalSocialButton.visibility = View.VISIBLE
-            // социальные цели редактировать нельзя (пока что)
 
             goalView.itemGoalSocialButton.setOnClickListener {
                 // надуваем фрагмент просмотра прогресса друзей
@@ -146,6 +160,40 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
         }
     }
 
+    private fun changeSocialGoalProgress(progress: Int, isDone: Boolean, goalKey: String) {
+        val currentUserId = CurrentSession.instance.currentUser.id
+
+        // изменить прогресс цели, прогресс задачи у нас в аккаунте по ключу цели
+        userDatabase.child(currentUserId).child("socialGoals").child(goalKey).child("done")
+            .setValue(isDone).addOnSuccessListener {
+                userDatabase.child(currentUserId).child("socialGoals").child(goalKey)
+                    .child("progress").setValue(progress).addOnSuccessListener {
+                        Toast.makeText(
+                            fragmentGoals.context,
+                            "Наша Цель на сервере изменина",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+            }
+
+        // изменить наш прогресс цели в аккаунтах всех друзей, подключённых к этой цели по ключу цели
+        userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(userDatabaseSnapshot: DataSnapshot) {
+                for (user in userDatabaseSnapshot.children) {
+                    if (user.hasChild("socialGoals")) {
+                        if (user.child("socialGoals").hasChild(goalKey) && user.key != currentUserId) {
+                            userDatabase.child(user.key!!).child("socialGoals").child(goalKey)
+                                .child("friends").child(currentUserId).child("progress")
+                                .setValue(progress)
+                        }
+                    }
+                }
+            }
+            override fun onCancelled(p0: DatabaseError) {
+            }
+        })
+    }
+
     private fun setCompleteClickListener(goalView: View, position: Int) {
         goalView.itemGoalCompleteButton.setOnClickListener {
             MaterialAlertDialogBuilder(fragmentGoals.context)
@@ -159,6 +207,13 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                     // Respond to positive button press
                     if (list[position].isSocial) {
                         // completing social goal
+
+                        fragmentGoals.context?.let { ctx ->
+                            val analytics = AnalyticsSingleton.instance.analytics
+                            analytics.goalsCompleted++
+                            DatabaseOperations.getInstance(ctx).updateAnalytics(analytics)
+                        }
+
                         // удалить цель из локальной коллекции
                         SocialGoalCollection.instance.goalList.removeAt(position)
                         val goalKey = SocialGoalCollection.instance.keysList[position]
@@ -186,9 +241,6 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                         GoalCollection.instance.goalsInProgressList.removeAt(position)
                         // обновить ресайклер
                         notifyItemRemoved(position)
-
-                        // TODO
-                        // добавить в статистику инфу
                     }
 
                 }
@@ -199,10 +251,72 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
     private fun removeSocialGoalFromAccount(goalKey: String) {
         val currentUserId = auth.currentUser!!.uid
 
-        userDatabase.child(currentUserId).child("socialGoals")
-            .child(goalKey).removeValue().addOnSuccessListener {
-                Toast.makeText(fragmentGoals.context, "Цель завершена!", Toast.LENGTH_SHORT).show()
+        userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(userDatabaseSnapshot: DataSnapshot) {
+                for (user in userDatabaseSnapshot.children) {
+                    if (user.hasChild("socialGoals")) {
+                        // если друг уже принял цель и она есть у него в socialGoals
+                        if (user.child("socialGoals").hasChild(goalKey)) {
+                            // установить наш прогресс у него равным 100
+                            userDatabase.child(user.key!!).child("socialGoals").child(goalKey)
+                                .child("friends").child(currentUserId).child("progress")
+                                .setValue(100)
+                                .addOnSuccessListener {
+                                    // удаляем цель из нашего аккаунта
+                                    userDatabase.child(currentUserId).child("socialGoals")
+                                        .child(goalKey).removeValue().addOnSuccessListener {
+                                            Toast.makeText(
+                                                fragmentGoals.context,
+                                                "Цель завершена!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                }
+                        }
+                    }
+                    // если друг ещё не принял цель - ищем в запросах
+                    goalRequestDatabase.addListenerForSingleValueEvent(object :
+                        ValueEventListener {
+                        override fun onDataChange(requests: DataSnapshot) {
+                            if (requests.hasChild(user.key!!)) {
+                                //если у кого-то друга ещё висит запрос от нас
+                                if (requests.child(user.key!!).hasChild(currentUserId)) {
+                                    // если в запросе есть конкретная цель
+                                    if (requests.child(user.key!!).child(currentUserId).hasChild(
+                                            goalKey
+                                        )
+                                    ) {
+                                        // добавить поле нашим прогрессом к конкретной цели
+                                        goalRequestDatabase.child(user.key!!)
+                                            .child(currentUserId).child(goalKey)
+                                            .child(currentUserId + "_progress")
+                                            .setValue(100).addOnSuccessListener {
+                                                // удаляем цель из нашего аккаунта
+                                                userDatabase.child(currentUserId)
+                                                    .child("socialGoals")
+                                                    .child(goalKey).removeValue()
+                                                    .addOnSuccessListener {
+                                                        Toast.makeText(
+                                                            fragmentGoals.context,
+                                                            "Цель завершена!",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
+                                            }
+                                    }
+                                }
+                            }
+                        }
+
+                        override fun onCancelled(p0: DatabaseError) {
+                        }
+                    })
+                }
             }
+
+            override fun onCancelled(p0: DatabaseError) {
+            }
+        })
     }
 
     private fun deleteSocialGoal(position: Int) {
@@ -214,6 +328,7 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
             override fun onDataChange(userDatabaseSnapshot: DataSnapshot) {
                 for (user in userDatabaseSnapshot.children) {
                     if (user.hasChild("socialGoals")) {
+                        // если друг уже принял цель и она есть у него в socialGoals
                         if (user.child("socialGoals").hasChild(goalKey)) {
                             userDatabase.child(user.key!!).child("socialGoals").child(goalKey)
                                 .child("friends").child(currentUserId).removeValue()
@@ -221,9 +336,28 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                                     // удаляем цель из нашего аккаунта
                                     userDatabase.child(currentUserId).child("socialGoals")
                                         .child(goalKey).removeValue().addOnSuccessListener {
-                                            Toast.makeText(fragmentGoals.context, "Цель удалена!", Toast.LENGTH_SHORT).show()
-                                    }
+                                            Toast.makeText(
+                                                fragmentGoals.context,
+                                                "Цель удалена!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                 }
+                        }
+                        // если друг ещё не принял цель - ищем в запросах
+                        else {
+//                            goalRequestDatabase.addListenerForSingleValueEvent(object: ValueEventListener {
+//                                override fun onDataChange(requests: DataSnapshot) {
+//                                    if (requests.hasChild(user.key!!)) {
+//                                        //если у кого-то друга ещё висит запрос от нас
+//                                        if (requests.child(user.key!!).hasChild(currentUserId)) {
+//                                            // добавить поле
+//                                        }
+//                                    }
+//                                }
+//                                override fun onCancelled(p0: DatabaseError) {
+//                                }
+//                            })
                         }
                     }
                 }

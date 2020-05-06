@@ -30,6 +30,7 @@ import by.konopelko.ourgoals.goals.add.FragmentAddGoal
 import by.konopelko.ourgoals.goals.add.FragmentAddTasks
 import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
 import by.konopelko.ourgoals.authentication.ActivityLogIn
+import by.konopelko.ourgoals.goals.add.FragmentChooseFriends
 import by.konopelko.ourgoals.notifications.AdapterNotifications
 import by.konopelko.ourgoals.notifications.FragmentNotifications
 import by.konopelko.ourgoals.temporaryData.*
@@ -45,7 +46,8 @@ import kotlinx.coroutines.launch
 
 class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     FragmentAddTasks.RefreshGoalsListInterface, AdapterNotifications.NotificationActions,
-    MainContract.View, FragmentAddCategory.CategoryInterface, FragmentAddLink.AddMotivation, FragmentAddImage.AddMotivation {
+    MainContract.View, FragmentAddCategory.CategoryInterface, FragmentAddLink.AddMotivation,
+    FragmentAddImage.AddMotivation, FragmentChooseFriends.SocialGoalAddition {
 
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     val presenter = MainPresenter(this)
@@ -64,7 +66,8 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             categoriesList.add(category.title)
         }
 
-        val arrayAdapter = ArrayAdapter<String>(this, R.layout.item_spinner_sort_collections, categoriesList)
+        val arrayAdapter =
+            ArrayAdapter<String>(this, R.layout.item_spinner_sort_collections, categoriesList)
         toolbarSort.setAdapter(arrayAdapter)
 
         setSupportActionBar(toolbar)
@@ -74,12 +77,10 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 // коллекции хранят цели со всех категорий
                 if (GoalCollection.instance.visible) {
                     fragmentGoals.showLocalGoals()
-                }
-                else {
+                } else {
                     fragmentGoals.showSocialGoals()
                 }
-            }
-            else {
+            } else {
                 CoroutineScope(Dispatchers.IO).launch {
                     if (SocialGoalCollection.instance.visible) {
                         val goals = ArrayList<Goal>()
@@ -93,13 +94,15 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             }
                         }
                         fragmentGoals.updateGoals(goals)
-                    }
-                    else {
+                    } else {
                         val goals = ArrayList<Goal>()
 
                         //собираем подходящие цели
                         for (i in 0 until GoalCollection.instance.goalsInProgressList.size) {
-                            if (GoalCollection.instance.goalsInProgressList[i].category.equals(category)) {
+                            if (GoalCollection.instance.goalsInProgressList[i].category.equals(
+                                    category
+                                )
+                            ) {
                                 goals.add(GoalCollection.instance.goalsInProgressList[i])
                             }
                         }
@@ -109,8 +112,6 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
         }
-
-
 
 
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, 0, 0)
@@ -220,11 +221,11 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (fragmentCategories.isVisible) {
                 // show add category dialog
 
-                if(fragmentCategories.categoriesVisible) {
+                if (fragmentCategories.categoriesVisible) {
                     val addDialog = FragmentAddCategory()
                     supportFragmentManager.let { supportFM -> addDialog.show(supportFM, "") }
                 }
-                if(fragmentCategories.motivationsVisible) {
+                if (fragmentCategories.motivationsVisible) {
                     //
                     val addDialog = FragmentAddMotivation()
                     supportFragmentManager.let { supportFM -> addDialog.show(supportFM, "") }
@@ -247,8 +248,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     bottomNavigation.selectedItemId = R.id.nav_goals
                     toolbarSortContainer.visibility = View.VISIBLE
                     getFragment(fragmentGoals)
-                }
-                else {
+                } else {
                     fragmentGoals.showLocalGoals()
                 }
                 toolbarSectionTitle.text = "Мои цели"
@@ -261,8 +261,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     bottomNavigation.selectedItemId = R.id.nav_goals
                     toolbarSortContainer.visibility = View.VISIBLE
                     getFragment(fragmentGoals)
-                }
-                else {
+                } else {
                     fragmentGoals.showSocialGoals()
                 }
                 toolbarSectionTitle.text = "Общие цели"
@@ -354,5 +353,9 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun addImage(image: Image) {
         fragmentCategories.addMotivationImage(image)
+    }
+
+    override fun updateRecyclerWithSocialGoal() {
+        fragmentGoals.showSocialGoals()
     }
 }

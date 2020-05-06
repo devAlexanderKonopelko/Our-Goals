@@ -8,6 +8,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.entities.User
+import by.konopelko.ourgoals.temporaryData.CurrentSession
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -49,9 +50,8 @@ class FragmentAddFriends : DialogFragment() {
         addFriendsFragmentRecyclerView.layoutManager = LinearLayoutManager(this.context)
         addFriendsFragmentRecyclerView.setHasFixedSize(true)
 
-
-        // TODO: проверить, отправлен ли уже запрос к выбранному пользователю и менять ui соответственно
         searchFriendsButton.setOnClickListener {
+            addFriendsFragmentProgressBar.visibility = View.VISIBLE
             if (!logInEmailField.text.isNullOrEmpty()) {
                 // clearing last search results
                 AddFriendsCollection.instance.foundFriendsList.clear()
@@ -61,7 +61,9 @@ class FragmentAddFriends : DialogFragment() {
                 userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         for (user in dataSnapshot.children) {
-                            if (user.child("login").value.toString().equals(loginToFind)) {
+                            if (user.child("login").value.toString().equals(loginToFind) &&
+                                !user.child("login").value.toString().equals(CurrentSession.instance.currentUser.name)
+                            ) {
                                 val foundUserLogin = user.child("login").value.toString()
                                 val foundFriend =
                                     User(
@@ -72,12 +74,15 @@ class FragmentAddFriends : DialogFragment() {
 
                                 AddFriendsCollection.instance.foundFriendsList.add(foundFriend)
                                 (addFriendsFragmentRecyclerView.adapter as AddFriendsAdapter).notifyDataSetChanged()
+                                addFriendsFragmentProgressBar.visibility = View.INVISIBLE
                             }
                         }
                     }
+
                     override fun onCancelled(p0: DatabaseError) {
                     }
                 })
+                addFriendsFragmentProgressBar.visibility = View.INVISIBLE
             }
         }
 

@@ -13,12 +13,6 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_notifications.*
 
 class FragmentNotifications : DialogFragment() {
-    private val friendRequestDatabase =
-        FirebaseDatabase.getInstance().reference.child("FriendRequests")
-    private val goalRequestDatabase = FirebaseDatabase.getInstance().reference.child("GoalRequests")
-    private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.FullScreenDialogTheme)

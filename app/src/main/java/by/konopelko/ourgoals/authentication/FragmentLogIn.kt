@@ -141,10 +141,11 @@ class FragmentLogIn : Fragment(), LogInContract.View {
         return result
     }
 
-    private fun runMainActivity() {
+    private suspend fun runMainActivity() {
         Log.e("INSIDE", "runMainActivity()")
-        logInProgressBar.visibility = View.INVISIBLE
-
+        withContext(Dispatchers.Main) {
+            logInProgressBar.visibility = View.INVISIBLE
+        }
         activity?.run {
             if (CurrentSession.instance.firstTimeRun) {
                 startActivity(Intent(this, ActivityGuide::class.java))

@@ -34,16 +34,19 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:textSize="20sp"/>
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@id/toolbarSortContainer"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textAlignment="textStart"/>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/toolbarSortContainer"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                        android:layout_width="200dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginEnd="16dp"
                         app:boxBackgroundColor="@color/colorPrimary"
                         app:endIconTint="@color/white">
 
@@ -56,6 +59,7 @@
                             android:focusable="false"
                             android:inputType="none"
                             android:text="Все категории"
+                            android:textSize="14sp"
                             android:textColor="@color/white" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </RelativeLayout>

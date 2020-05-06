@@ -48,9 +48,9 @@ class NotificationOperations {
     }
 
     private suspend fun findFriendsNotifications(): Deferred<Boolean> {
-        // Находить все ВХОДЯЩИЕ ЗАПРОСЫ дружбы +
-        // Находить все ПРИНЯТЫЕ ЗАПРОСЫ дружбы +
-        // Находить все ОТКЛОНЁННЫЕ ЗАПРОСЫ дружбы +
+        // ищутся все ВХОДЯЩИЕ ЗАПРОСЫ дружбы
+        // ищутся все ПРИНЯТЫЕ ЗАПРОСЫ дружбы
+        // ищутся все ОТКЛОНЁННЫЕ ЗАПРОСЫ дружбы
 
         val currentUsedId = auth.currentUser!!.uid
         val result = CoroutineScope(Dispatchers.IO).async {
@@ -129,9 +129,9 @@ class NotificationOperations {
     }
 
     private suspend fun findGoalsNotifications(): Deferred<Boolean> {
-        // Находить все ВХОДЯЩИЕ ЗАПРОСЫ на общие цели +
-        // Находить все ПРИНЯТЫЕ ЗАПРОСЫ на общие цели +
-        // Находить все ОТКЛОНЁННЫЕ ЗАПРОСЫ на общие цели +
+        // ищутся все ВХОДЯЩИЕ ЗАПРОСЫ на общие цели
+        // ищутся все ПРИНЯТЫЕ ЗАПРОСЫ на общие цели
+        // ищутся все ОТКЛОНЁННЫЕ ЗАПРОСЫ на общие цели
 
         val currentUsedId = auth.currentUser!!.uid
 

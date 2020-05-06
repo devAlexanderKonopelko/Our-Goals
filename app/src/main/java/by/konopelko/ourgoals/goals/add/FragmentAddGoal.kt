@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.temporaryData.CategoryCollection
 import by.konopelko.ourgoals.temporaryData.CurrentSession
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_add_goal_main.*
 import kotlinx.android.synthetic.main.fragment_add_goal_main.view.*
@@ -36,8 +37,8 @@ class FragmentAddGoal : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if (savedInstanceState != null) {
-            view.addGoalFragmentGoalText.setText(savedInstanceState.getString("GOAL_TEXT"))
-            view.addGoalFragmentCategoryList.setText(savedInstanceState.getString("GOAL_CATEGORY"))
+            addGoalFragmentGoalText.setText(savedInstanceState.getString("GOAL_TEXT"))
+            addGoalFragmentCategoryList.setText(savedInstanceState.getString("GOAL_CATEGORY"))
         }
 
         if (CurrentSession.instance.currentUser.id.equals("0")) {
@@ -48,31 +49,48 @@ class FragmentAddGoal : DialogFragment() {
 
         // получать текущий список категорий из базы
         val items = ArrayList<String>()
-        for(category in CategoryCollection.instance.categoryList) {
+        for (category in CategoryCollection.instance.categoryList) {
             items.add(category.title)
         }
 
         val adapter = ArrayAdapter(view.context, R.layout.item_add_goal_category, items)
-        view.addGoalFragmentCategoryList.setAdapter(adapter)
+        addGoalFragmentCategoryList.setAdapter(adapter)
+
+        addGoalFragmentSocialInfo.setOnClickListener {
+            // TODO: доделать снекбар - увеличить число строчек
+            val snackbar = Snackbar.make(
+                view,
+                "При создании общей цели вы сможете подключать ваших друзей, чтобы выполнять цель вместе.",
+                Snackbar.LENGTH_INDEFINITE)
+
+            snackbar.show()
+            snackbar.setAction("OK", View.OnClickListener {
+                snackbar.dismiss()
+            })
+        }
 
         addGoalFragmentCancelButton.setOnClickListener {
             dismiss()
         }
         addGoalFragmentNextButton.setOnClickListener {
-            if (view.addGoalFragmentGoalText.text.toString().isNotEmpty() &&
-                view.addGoalFragmentCategoryList.text.toString().isNotEmpty()) {
+            if (addGoalFragmentGoalText.text.toString().isNotEmpty() &&
+                addGoalFragmentCategoryList.text.toString().isNotEmpty()
+            ) {
 
-                NewGoal.instance.goal.text = view.addGoalFragmentGoalText.text.toString()
-                NewGoal.instance.goal.category = view.addGoalFragmentCategoryList.text.toString()
+                NewGoal.instance.goal.text = addGoalFragmentGoalText.text.toString()
+                NewGoal.instance.goal.category = addGoalFragmentCategoryList.text.toString()
                 NewGoal.instance.goal.isSocial = addGoalFragmentSwitchSocial.isChecked
 
                 //взять значение свича фона
 //                addGoalFragmentSwitchBackground.isChecked
 
-                fragmentManager?.let { it -> addDialogTasks.show(it,"") }
+                fragmentManager?.let { it -> addDialogTasks.show(it, "") }
 
-                savedInstanceState?.putString("GOAL_TEXT", view.addGoalFragmentGoalText.text.toString())
-                savedInstanceState?.putString("GOAL_CATEGORY", view.addGoalFragmentCategoryList.text.toString())
+                savedInstanceState?.putString("GOAL_TEXT", addGoalFragmentGoalText.text.toString())
+                savedInstanceState?.putString(
+                    "GOAL_CATEGORY",
+                    addGoalFragmentCategoryList.text.toString()
+                )
                 // + настройки фона и т.д.
 
                 dismiss()
