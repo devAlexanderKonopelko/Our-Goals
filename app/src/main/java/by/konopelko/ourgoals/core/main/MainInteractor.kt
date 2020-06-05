@@ -27,8 +27,9 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
         friendRequestDatabase.child(uid)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(requests: DataSnapshot) {
+                    // если есть какие-либо запросы в друзья
                     if (requests.hasChildren()) {
-                        // проходимся по списку запросов в друзья
+                        // проходимся по списку запросов
                         for (request in requests.children) {
                             // записываем id пользователя, с которым есть запрос
                             val requestUid = request.key!!
@@ -166,6 +167,7 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
 
                                     for (collectionGoal in NotificationsCollection.instance.goalsRequests) {
                                         if (collectionGoal.equals(goal)) {
+                                            Log.e("NOTIFICATIONS:","Найдено повторение уведомления.")
                                             goalExists = true
                                             break
                                         }

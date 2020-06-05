@@ -27,7 +27,8 @@
         app:layout_constraintTop_toTopOf="parent"
 
         android:text="Уведомления"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:textColor="@color/black"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragmentNotifRecyclerView"

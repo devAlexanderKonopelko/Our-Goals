@@ -49,6 +49,7 @@ class AdapterTasksList(
 
             view.itemGoalTaskCheckBox.isChecked = list[position].isComplete
 
+
             view.itemGoalTaskCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 // изменяем прогресс задачи в локальном списке этого адаптера
                 list[position].isComplete = isChecked
@@ -145,9 +146,8 @@ class AdapterTasksList(
         GoalCollection.instance.goalsInProgressList[goalPosition].tasks?.get(taskPosition)?.isComplete = isChecked
 
         // изменение прогресса всей соответствующей цели
-        GoalCollection.instance.goalsInProgressList[goalPosition].progress = calculateProgress()
-
-        val goal = GoalCollection.instance.goalsInProgressList[goalPosition]
+        val progress = calculateProgress()
+        val goal = fragmentGoals.changeGoalProgress(goalPosition, progress)
 
         // изменяем прогресс задачи и цели в локальной бд
         changeProgressInDatabase(goal, isChecked)

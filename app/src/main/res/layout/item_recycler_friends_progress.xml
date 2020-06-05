@@ -13,7 +13,8 @@
         android:maxWidth="200dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:hint="asdf"/>
+        android:hint="asdf"
+        android:textColor="@color/black"/>
 
     <ImageView
         android:id="@+id/itemFriendsProgressImageStatus"

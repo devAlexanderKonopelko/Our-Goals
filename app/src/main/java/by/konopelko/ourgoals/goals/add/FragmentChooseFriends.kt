@@ -21,6 +21,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_add_goal_friends.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragment() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -69,24 +72,31 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
         val goalKey = FirebaseDatabase.getInstance().reference.push().key
         chooseFriendsFinishButton.setOnClickListener {
             if (goalKey != null) {
-                for (receiverId in GoalReceiversCollection.instance.receiversIds) {
-                    // отправка запроса на сервер
-                    sendGoalRequest(GoalReceiversCollection.instance.receiversIds, receiverId, goalKey)
-                }
-                // запись цели нам в аккаунт на сервере
-                sendSocialGoaltoAccount(goalKey)
-                addSocialGoalToCollection(goalKey)
-                updateAnalytics(NewGoal.instance.goal.tasks)
-
-                if (SocialGoalCollection.instance.visible) {
-                    activity?.run {
-                        val refresh = this as SocialGoalAddition
-                        refresh.updateRecyclerWithSocialGoal()
+                if (GoalReceiversCollection.instance.receiversIds.isNotEmpty())  {
+                    for (receiverId in GoalReceiversCollection.instance.receiversIds) {
+                        // отправка запроса на сервер
+                        sendGoalRequest(GoalReceiversCollection.instance.receiversIds, receiverId, goalKey)
                     }
-                }
+                    // запись цели нам в аккаунт на сервере
+                    sendSocialGoaltoAccount(goalKey)
+                    addSocialGoalToCollection(goalKey)
+                    updateAnalytics(NewGoal.instance.goal.tasks)
 
-                Toast.makeText(this.context, "Цель добавлена в Общие Цели!", Toast.LENGTH_SHORT).show()
-                dismiss()
+                    // очищаем временную коллекцию
+                    GoalReceiversCollection.instance.receiversIds.clear()
+
+                    if (SocialGoalCollection.instance.visible) {
+                        activity?.run {
+                            val refresh = this as SocialGoalAddition
+                            refresh.updateRecyclerWithSocialGoal()
+                        }
+                    }
+
+                    Toast.makeText(this.context, "Цель добавлена в Общие Цели!", Toast.LENGTH_SHORT).show()
+                    dismiss()
+                } else {
+                    Toast.makeText(this.context, "Выберите хотя бы одного друга", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
@@ -96,7 +106,10 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
             val analytics = AnalyticsSingleton.instance.analytics
             analytics.goalsSet++
             analytics.tasksSet += tasks?.size ?: 0
-            DatabaseOperations.getInstance(this).updateAnalytics(analytics)
+
+            CoroutineScope(Dispatchers.IO).launch {
+                DatabaseOperations.getInstance(this@run).updateAnalytics(analytics).await()
+            }
         }
     }
 

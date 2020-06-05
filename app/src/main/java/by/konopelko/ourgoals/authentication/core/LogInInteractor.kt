@@ -6,7 +6,11 @@ import by.konopelko.ourgoals.database.entities.Task
 import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.temporaryData.NotificationsCollection
 import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
+import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthEmailException
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -32,7 +36,14 @@ class LogInInteractor(val onOperationListener: LogInContract.OnOperationListener
                 onOperationListener.onLogIn(2, auth.currentUser?.uid.toString())
             }
         }.addOnFailureListener {
-            onOperationListener.onLogIn(1, auth.currentUser?.uid.toString())
+            when (it) {
+                is FirebaseAuthException -> {
+                    onOperationListener.onLogIn(1, auth.currentUser?.uid.toString())
+                }
+                is FirebaseNetworkException -> {
+                    onOperationListener.onLogIn(3, auth.currentUser?.uid.toString())
+                }
+            }
         }
     }
 

@@ -13,7 +13,8 @@
         android:text="@string/registration"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/black"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/emailFieldContainer"
@@ -73,6 +74,7 @@
         android:hint="@string/password"
         app:hintTextColor="@color/colorAccent"
         app:boxStrokeColor="@color/colorAccent"
+        app:endIconMode="password_toggle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logInFieldContainer">
 
@@ -80,7 +82,8 @@
             android:id="@+id/registerPasswordField"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:inputType="textPassword"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -96,6 +99,7 @@
         android:hint="@string/confirm_password"
         app:hintTextColor="@color/colorAccent"
         app:boxStrokeColor="@color/colorAccent"
+        app:endIconMode="password_toggle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passwordFieldContainer">
 
@@ -103,7 +107,8 @@
             android:id="@+id/registerConfirmPasswordField"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:inputType="textPassword"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 

@@ -34,7 +34,8 @@
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/itemMotivationsLinkDeleteButton" />
+            app:layout_constraintTop_toBottomOf="@+id/itemMotivationsLinkDeleteButton"
+            android:textColor="@color/black"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/itemMotivationsLinkShowButton"

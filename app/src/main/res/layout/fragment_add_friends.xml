@@ -27,7 +27,8 @@
         app:layout_constraintTop_toTopOf="parent"
 
         android:text="Поиск друзей"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:textColor="@color/black"/>
 
 
     <TextView
@@ -40,7 +41,8 @@
         app:layout_constraintTop_toBottomOf="@+id/addFriendsFragmentTitle"
 
         android:text="найти друзей по имени"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:textColor="@color/black"/>
 
     <LinearLayout
         android:id="@+id/findFriendsBarLayout"

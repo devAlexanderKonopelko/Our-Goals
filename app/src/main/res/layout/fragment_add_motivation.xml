@@ -38,7 +38,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="Ссылка" />
+                android:text="Ссылка"
+                android:textColor="@color/black"/>
         </LinearLayout>
 
         <LinearLayout
@@ -61,7 +62,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="Заметка" />
+                android:text="Заметка"
+                android:textColor="@color/black"/>
         </LinearLayout>
 
         <LinearLayout
@@ -84,7 +86,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="Изображение" />
+                android:text="Изображение"
+                android:textColor="@color/black"/>
         </LinearLayout>
 
 
@@ -98,7 +101,8 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/black"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

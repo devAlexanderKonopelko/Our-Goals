@@ -30,7 +30,8 @@
             android:hint="Title of the note which is very long so it takes 2 lines"
             android:maxLines="2"
             android:textAlignment="center"
-            android:textSize="24dp" />
+            android:textSize="24dp"
+            android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/itemMotivationsNoteText"
@@ -40,6 +41,7 @@
             android:layout_margin="16dp"
             android:hint="safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg safgdsf sdfgh dsf sdfgsldkfgj sdf g lsdkg "
             android:maxLines="5"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@color/black"/>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

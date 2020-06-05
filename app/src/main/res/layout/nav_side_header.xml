@@ -21,6 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
+        android:textSize="20sp"
         android:text="Android Studio"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -28,6 +29,7 @@
         android:id="@+id/currentUserEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="user@mail.ru" />
+        android:text="user@mail.ru"
+        android:textSize="16sp"/>
 
 </LinearLayout>

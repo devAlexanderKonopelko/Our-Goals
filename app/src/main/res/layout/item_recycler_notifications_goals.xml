@@ -12,7 +12,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/black"/>
 
     <LinearLayout
         android:id="@+id/itemNotificationGoalBodyLayout"
@@ -28,7 +29,8 @@
             android:id="@+id/itemNotificationGoalText"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/black"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/itemNotificationGoalTasksList"
@@ -83,6 +85,7 @@
         android:text="Принять \n запрос"
         android:textSize="12sp"
         android:textAlignment="center"
+        android:textColor="@color/black"
 
         tools:visibility="visible"/>
 
@@ -99,6 +102,7 @@
         android:text="Отклонить \n запрос"
         android:textSize="12sp"
         android:textAlignment="center"
+        android:textColor="@color/black"
 
         tools:visibility="visible"/>
 

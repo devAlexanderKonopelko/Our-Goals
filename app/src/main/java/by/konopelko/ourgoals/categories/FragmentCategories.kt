@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.categories.motivations.recycler.MotivationsAdapter
@@ -22,6 +23,7 @@ import by.konopelko.ourgoals.temporaryData.CategoryCollection
 import by.konopelko.ourgoals.temporaryData.CurrentSession
 import by.konopelko.ourgoals.temporaryData.DatabaseOperations
 import by.konopelko.ourgoals.temporaryData.MotivationsCollection
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.fragment_categories.*
 import kotlinx.coroutines.*
 
@@ -55,6 +57,24 @@ class FragmentCategories : Fragment() {
         }
         categoriesRecyclerView.layoutManager = LinearLayoutManager(this.context)
         categoriesRecyclerView.setHasFixedSize(false)
+
+        categoriesRecyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                activity?.run {
+                    if (dy != 0 && goalsAddButton.isShown) {
+                        goalsAddButton.hide()
+                    }
+                }
+            }
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    activity?.run {
+                        goalsAddButton.show()
+                    }
+                }
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        })
 
         categoriesVisible = true
         motivationsVisible = false

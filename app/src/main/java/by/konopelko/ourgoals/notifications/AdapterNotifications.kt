@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.entities.Goal
 import by.konopelko.ourgoals.database.entities.User
+import by.konopelko.ourgoals.temporaryData.AnalyticsSingleton
+import by.konopelko.ourgoals.temporaryData.DatabaseOperations
 import by.konopelko.ourgoals.temporaryData.NotificationsCollection
 import by.konopelko.ourgoals.temporaryData.SocialGoalCollection
 import com.google.firebase.auth.FirebaseAuth
@@ -22,6 +24,9 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.item_recycler_friends.view.*
 import kotlinx.android.synthetic.main.item_recycler_notifications_base.view.*
 import kotlinx.android.synthetic.main.item_recycler_notifications_goals.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class AdapterNotifications(
     val friendsRequests: ArrayList<User>,
@@ -299,6 +304,15 @@ class AdapterNotifications(
         // добавляем цель в локальную КОЛЛЕКЦИЮ общих целей
         SocialGoalCollection.instance.goalList.add(goal)
         SocialGoalCollection.instance.keysList.add(goalKey)
+
+        // добавляем информацию в аналитику
+        val analytics = AnalyticsSingleton.instance.analytics
+        analytics.goalsSet++
+        analytics.tasksSet += goal.tasks?.size ?: 0
+
+        CoroutineScope(Dispatchers.IO).launch {
+            DatabaseOperations.getInstance(context).updateAnalytics(analytics).await()
+        }
 
         // записываем принятую цель в НАШ список соц. целей
         userDatabase.child(currentUserId).child("socialGoals")

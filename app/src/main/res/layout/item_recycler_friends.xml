@@ -13,7 +13,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/itemFriendsWaitingButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/black"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/itemFriendsWaitingButton"
@@ -58,6 +59,7 @@
         android:text="Ожидание \n ответа"
         android:textSize="12sp"
         android:textAlignment="center"
+        android:textColor="@color/black"
 
         tools:visibility="visible"/>
 
@@ -74,6 +76,7 @@
         android:text="Отменить \n запрос"
         android:textSize="12sp"
         android:textAlignment="center"
+        android:textColor="@color/black"
 
         tools:visibility="visible"/>
 

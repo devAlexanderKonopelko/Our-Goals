@@ -1,6 +1,7 @@
 package by.konopelko.ourgoals.goals.add.recyclerTasks
 
 import android.app.DatePickerDialog
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.entities.Task
+import by.konopelko.ourgoals.temporaryData.GoalCollection
 import kotlinx.android.synthetic.main.item_recycler_add_task.view.*
 import kotlinx.android.synthetic.main.item_recycler_complete_task.view.*
 import java.util.*
@@ -81,6 +83,8 @@ class TaskAdapter(val list: List<Task>) : RecyclerView.Adapter<TaskAdapter.TaskV
                         date,
                         false
                     )
+
+                Log.e("GOALS IN PROGRESS", "${GoalCollection.instance.goalsInProgressList}")
 
                 taskView.itemAddTaskLayout.visibility = View.GONE
                 taskView.itemTaskCompleteLayout.visibility = View.VISIBLE

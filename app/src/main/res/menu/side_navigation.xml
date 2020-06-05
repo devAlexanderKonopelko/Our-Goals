@@ -7,7 +7,7 @@
         <item
             android:id="@+id/nav_side_my_goals"
             android:title="Мои цели"
-            android:icon="@drawable/icon_my_goals"/>
+            android:icon="@drawable/icon_my_goals" />
         <item android:id="@+id/nav_side_social_goals"
             android:title="Общие цели"
             android:icon="@drawable/icon_social_goals"/>

@@ -12,13 +12,15 @@
         android:layout_width="240dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/black"/>
 
     <TextView
         android:id="@+id/itemNotificationRecyclerTaskDate"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/itemNotificationRecyclerTaskText" />
+        app:layout_constraintTop_toTopOf="@+id/itemNotificationRecyclerTaskText"
+        android:textColor="@color/black"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@ package by.konopelko.ourgoals.goals.add
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import by.konopelko.ourgoals.database.entities.Task
 import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
 import by.konopelko.ourgoals.goals.add.recyclerTasks.TaskAdapter
 import by.konopelko.ourgoals.temporaryData.CurrentSession
+import by.konopelko.ourgoals.temporaryData.GoalCollection
 import kotlinx.android.synthetic.main.fragment_add_goal_tasks.*
 
 class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
@@ -39,6 +41,8 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // clear tasks list and temp goal for new goal
+        AddTaskSingleton.instance.taskList.clear()
 
         addTasksRecycler.adapter = TaskAdapter(AddTaskSingleton.instance.taskList)
         addTasksRecycler.layoutManager = LinearLayoutManager(view.context)
@@ -55,7 +59,6 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
                         false
                     )
                 )
-
                 (addTasksRecycler.adapter as TaskAdapter).notifyItemInserted(AddTaskSingleton.instance.taskList.size - 1)
                 addTasksRecycler.scrollToPosition(AddTaskSingleton.instance.taskList.size - 1)
 
@@ -68,7 +71,6 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
         addGoalFragmentBackButton.setOnClickListener {
             if (AddTaskSingleton.instance.taskToComplete == 0) {
                 dismiss()
-
                 fragmentManager?.let { fm -> previousDialog.show(fm, "") }
             }
             else {

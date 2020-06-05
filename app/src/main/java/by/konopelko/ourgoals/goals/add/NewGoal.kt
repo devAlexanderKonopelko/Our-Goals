@@ -3,8 +3,7 @@ package by.konopelko.ourgoals.goals.add
 import by.konopelko.ourgoals.database.entities.Goal
 
 class NewGoal {
-    // TODO: CHANGE OWNER ID
-    val goal = Goal(
+    var goal = Goal(
         "",
         "",
         "",

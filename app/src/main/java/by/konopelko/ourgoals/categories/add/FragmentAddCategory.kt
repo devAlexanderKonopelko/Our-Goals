@@ -23,8 +23,10 @@ class FragmentAddCategory() : DialogFragment() {
     constructor(category: Category?, position: Int) : this() {
         this.category = category
         if (category?.bgImageURI != null) {
-            if (category.bgImageURI!!.isNotEmpty()) {
-                imageURI = Uri.parse(category.bgImageURI)
+            category.bgImageURI?.let {
+                if (it.isNotEmpty()) {
+                    imageURI = Uri.parse(category.bgImageURI)
+                }
             }
         }
         this.position = position
@@ -38,6 +40,7 @@ class FragmentAddCategory() : DialogFragment() {
     interface CategoryInterface {
         fun addCategory(category: Category)
         fun updateCategory(category: Category, position: Int)
+        fun updateToolbarSort()
     }
 
     override fun onCreateView(
@@ -69,7 +72,10 @@ class FragmentAddCategory() : DialogFragment() {
 
                 fragmentAddCategorySwitchBackgroundColor.isChecked = true
                 fragmentAddCategoryButtonBackgroundColor.isEnabled = true
-                fragmentAddCategoryPreviewImage.setColorFilter(category!!.bgColor!!, PorterDuff.Mode.MULTIPLY)
+                fragmentAddCategoryPreviewImage.setColorFilter(
+                    category!!.bgColor!!,
+                    PorterDuff.Mode.MULTIPLY
+                )
             } else if (category!!.bgColor != 0 && category!!.bgImageURI == null) {
                 fragmentAddCategorySwitchBackgroundColor.isChecked = true
                 fragmentAddCategoryButtonBackgroundColor.isEnabled = true
@@ -90,6 +96,7 @@ class FragmentAddCategory() : DialogFragment() {
 
             if (!isChecked) {
                 imageURI = null
+                category?.bgImageURI = null
                 fragmentAddCategoryPreviewImage.setImageURI(imageURI)
 
                 if (bgColor != 0) {
@@ -102,6 +109,7 @@ class FragmentAddCategory() : DialogFragment() {
 
             if (!isChecked) {
                 bgColor = 0
+                category?.bgColor = 0
                 fragmentAddCategoryPreviewImage.colorFilter = null
 
                 if (imageURI == null) {
@@ -140,6 +148,11 @@ class FragmentAddCategory() : DialogFragment() {
                 val bgImageUri = imageURI.toString()
                 val bgColor = bgColor
 
+                Log.e(
+                    "IMAGE URI:",
+                    "$bgImageUri - ССЫЛКА НА КАРТИНКУ. \nEQUALS NULL - ${bgImageUri.equals(null)} \nIS NOT EMPTY ${bgImageUri.isNotEmpty()}"
+                )
+
                 val category = Category(
                     ownerId,
                     title,
@@ -147,15 +160,16 @@ class FragmentAddCategory() : DialogFragment() {
                     bgColor
                 )
                 activity?.run {
+                    // если категория была передана через конструктор, т.е. не равна null,
+                    // то это обновление существующей категории
                     if (this@FragmentAddCategory.category != null) {
                         if (title.isNotEmpty()) {
                             this@FragmentAddCategory.category!!.title = title
                         }
-                        if (bgImageUri.isNotEmpty()) {
+                        if (!bgImageUri.equals("null")) {
                             this@FragmentAddCategory.category!!.bgImageURI = bgImageUri
-//                            Log.e("CATEGORY SET URI:", bgImageUri)
                         }
-                        if(bgColor != 0) {
+                        if (bgColor != 0) {
                             this@FragmentAddCategory.category!!.bgColor = bgColor
                         }
 
@@ -164,7 +178,7 @@ class FragmentAddCategory() : DialogFragment() {
                         // обновление существующей категории
                         val updateCategory = this as CategoryInterface
                         updateCategory.updateCategory(this@FragmentAddCategory.category!!, position)
-                    } else {
+                    } else { // иначе, это создание новой категории
                         // добавление категории в локальную бд и в локальную коллекцию
 
                         val addCategory = this as CategoryInterface

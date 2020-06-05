@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="by.konopelko.ourgoals">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -14,13 +15,20 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ActivityMain"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".guide.ActivityGuide" />
-        <activity android:name=".authentication.ActivityLogIn" />
-        <activity android:name=".ActivityStart">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:ignore="LockedOrientationActivity" />
+        <activity android:name=".guide.ActivityGuide"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"/>
+        <activity android:name=".authentication.ActivityLogIn"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"/>
+        <activity android:name=".ActivityStart"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

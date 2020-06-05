@@ -31,6 +31,7 @@ import by.konopelko.ourgoals.goals.add.FragmentAddTasks
 import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
 import by.konopelko.ourgoals.authentication.ActivityLogIn
 import by.konopelko.ourgoals.goals.add.FragmentChooseFriends
+import by.konopelko.ourgoals.goals.add.NewGoal
 import by.konopelko.ourgoals.notifications.AdapterNotifications
 import by.konopelko.ourgoals.notifications.FragmentNotifications
 import by.konopelko.ourgoals.temporaryData.*
@@ -56,11 +57,14 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val fragmentCategories = FragmentCategories()
     val fragmentAnalytics = FragmentAnalytics()
 
+    private val categoriesList = ArrayList<String>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val categoriesList = ArrayList<String>()
+
+        // создаём список категорий для сортировки из верхнего тулбара
         categoriesList.add("Все категории")
         for (category in CategoryCollection.instance.categoryList) {
             categoriesList.add(category.title)
@@ -71,6 +75,8 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toolbarSort.setAdapter(arrayAdapter)
 
         setSupportActionBar(toolbar)
+
+        //Сортировка целей по категориям
         toolbarSort.setOnItemClickListener { parent, view, position, id ->
             val category = categoriesList[position]
             if (category.equals("Все категории")) {
@@ -208,13 +214,11 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             true
         }
 
-        // add goal button
+        // add goal button (ПЛЮСИК)
         goalsAddButton.setOnClickListener {
             if (fragmentGoals.isVisible) {
-                // clear tasks list for new goal
-                AddTaskSingleton.instance.taskList.clear()
-
                 // inflating dialog fragment
+
                 val addDialog = FragmentAddGoal()
                 supportFragmentManager.let { supportFM -> addDialog.show(supportFM, "") }
             }
@@ -341,10 +345,29 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun addCategory(category: Category) {
         fragmentCategories.addCategory(category)
+
+        categoriesList.add(category.title)
+        val arrayAdapter =
+            ArrayAdapter<String>(this, R.layout.item_spinner_sort_collections, categoriesList)
+        toolbarSort.setAdapter(arrayAdapter)
     }
 
     override fun updateCategory(category: Category, position: Int) {
         fragmentCategories.updateCategory(category, position)
+
+        categoriesList.clear()
+        categoriesList.add("Все категории")
+        for (category in CategoryCollection.instance.categoryList) {
+            categoriesList.add(category.title)
+        }
+    }
+
+    override fun updateToolbarSort() {
+        categoriesList.clear()
+        categoriesList.add("Все категории")
+        for (category in CategoryCollection.instance.categoryList) {
+            categoriesList.add(category.title)
+        }
     }
 
     override fun addLink(link: Link) {

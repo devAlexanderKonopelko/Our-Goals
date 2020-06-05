@@ -16,7 +16,8 @@
         app:layout_constraintTop_toTopOf="parent"
 
         android:text="Новая Цель"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:textColor="@color/black"/>
 
     <TextView
         android:id="@+id/textView3"
@@ -25,6 +26,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:text="Цель:"
+        android:textColor="@color/black"
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addGoalFragmentTitle" />
@@ -66,7 +68,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_gravity="center_vertical"
-            android:text="Категория: " />
+            android:text="Категория: "
+            android:textColor="@color/black"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
@@ -78,17 +81,15 @@
 
             app:boxStrokeColor="@color/colorAccent"
             app:hintTextColor="@color/colorAccent">
-            <AutoCompleteTextView
+            <by.konopelko.ourgoals.goals.add.MyAutoCompleteTextView
                 android:id="@+id/addGoalFragmentCategoryList"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:hint="Категория"
                 android:enabled="false"
-                android:focusable="false"
-                android:inputType="none"
                 android:textSize="14sp"
                 android:textColor="@color/black"
-                android:padding="0dp" />
+                android:padding="10dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
@@ -142,7 +143,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="20dp"
-            android:text="Общая:" />
+            android:text="Общая:"
+            android:textColor="@color/black"/>
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/addGoalFragmentSwitchSocial"

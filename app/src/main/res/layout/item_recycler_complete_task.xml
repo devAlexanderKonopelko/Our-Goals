@@ -45,6 +45,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:textColor="@color/black"
 
             android:hint="This is a text of the task that will be used here. This text will be so long that it even might not suit this container. But it did." />
 
@@ -58,6 +59,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/itemTaskCompleteText"
             app:layout_constraintTop_toBottomOf="@+id/itemTaskCompleteEditButton"
+            android:textColor="@color/black"
 
             android:hint="Дата"
             android:textAlignment="center"/>

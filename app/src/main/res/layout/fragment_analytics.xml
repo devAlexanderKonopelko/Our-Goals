@@ -28,7 +28,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="Целей достигнуто"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textColor="@color/black"/>
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -58,7 +59,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="Целей поставлено"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textColor="@color/black"/>
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -97,7 +99,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="Задач выполнено"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textColor="@color/black"/>
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -127,7 +130,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="Задач поставлено"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textColor="@color/black"/>
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -27,8 +27,7 @@ class CategoryAdapter(
     val list: List<Category>,
     val parentFragment: FragmentCategories,
     val context: Context
-) :
-    RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
+) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
 
     class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -44,10 +43,15 @@ class CategoryAdapter(
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val view = holder.itemView
-//        Log.e("CATEGORY:", list[position].toString())
+//        Log.e("CATEGORY TITLE:", list[position].title)
 
+//        -------------------SETTING UI------------------
+
+//        Log.e("IMAGE_URI: ", "${list[position].bgImageURI} \n " +
+//                "EQUALS NULL - ${list[position].bgImageURI.equals(null)} \n " +
+//                "IS NOT EMPTY ${list[position].bgImageURI?.isNotEmpty()}")
         view.itemCategoryTitle.text = list[position].title
-        if (list[position].bgImageURI != null) {
+        if (!list[position].bgImageURI.equals(null) && !list[position].bgImageURI.equals("null")) {
             view.itemCategoryBgImage.visibility = View.VISIBLE
             val uri = Uri.parse(list[position].bgImageURI)
             view.itemCategoryBgImage.setImageURI(uri)
@@ -55,7 +59,9 @@ class CategoryAdapter(
             view.itemCategoryBgImage.visibility = View.GONE
         }
         list[position].bgColor?.let {
-            if (!list[position].bgImageURI.equals("null")) {
+            if (!list[position].bgImageURI.equals(null) &&
+                !list[position].bgImageURI.equals("null") &&
+                list[position].bgColor != 0) {
                 view.itemCategoryBgImage.setColorFilter(it, PorterDuff.Mode.MULTIPLY)
             }
             (view as MaterialCardView).strokeColor = it
@@ -134,6 +140,11 @@ class CategoryAdapter(
 
         CategoryCollection.instance.removeCategory(category)
         notifyDataSetChanged()
+
+        parentFragment.activity?.run {
+            val updateToolbarSort = this as FragmentAddCategory.CategoryInterface
+            updateToolbarSort.updateToolbarSort()
+        }
     }
 
     fun addCategory(category: Category) {

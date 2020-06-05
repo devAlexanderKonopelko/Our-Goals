@@ -105,6 +105,9 @@ class ActivityLogIn : AppCompatActivity(), View.OnClickListener {
                 .await()
         }.await()
 
+        // отчищается коллекция для хранения списка из бд
+        GoalCollection.instance.goalsInProgressList.clear()
+
         if (goalsDatabase != null) {
             GoalCollection.instance.setGoalsInProgress(goalsDatabase)
             GoalCollection.instance.visible = true

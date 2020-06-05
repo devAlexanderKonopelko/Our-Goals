@@ -12,6 +12,7 @@ import by.konopelko.ourgoals.database.entities.Goal
 import by.konopelko.ourgoals.goals.AdapterTasksList
 import by.konopelko.ourgoals.goals.FragmentFriendsProgress
 import by.konopelko.ourgoals.goals.FragmentGoals
+import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
 import by.konopelko.ourgoals.temporaryData.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
@@ -51,13 +52,13 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
 
         if (tasksVisible) {
             goalView.itemGoalTasksRecycler.visibility = View.VISIBLE
-            goalView.itemGoalDetailsButton.text = "Свернуть"
+            goalView.itemGoalDetailsButton.setImageResource(R.drawable.arrow_top)
         } else {
             goalView.itemGoalTasksRecycler.visibility = View.GONE
-            goalView.itemGoalDetailsButton.text = "Подробнее"
+            goalView.itemGoalDetailsButton.setImageResource(R.drawable.arrow_down)
         }
 
-        Log.e("TASKS", "${list[position].tasks}")
+//        Log.e("TASKS", "${list[position].tasks}")
         if (list[position].tasks == null || list[position].tasks?.size ?: 1 == 0) {
             goalView.itemGoalDetailsButton.visibility = View.GONE
         } else {
@@ -69,10 +70,12 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
         goalView.itemGoalTasksRecycler.layoutManager = LinearLayoutManager(fragmentGoals.context)
         goalView.itemGoalTasksRecycler.setHasFixedSize(true)
 
+        // обработка нажатия на чекбокс для цели без задач
         goalView.itemGoalSingleCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 if (GoalCollection.instance.visible) {
-                    GoalCollection.instance.goalsInProgressList[position].progress = 100
+//                    GoalCollection.instance.goalsInProgressList[position].progress = 100
+                    list[position].progress = 100
                 } else {
                     SocialGoalCollection.instance.goalList[position].progress = 100
                     changeSocialGoalProgress(
@@ -88,7 +91,8 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                 setCompleteClickListener(goalView, position)
             } else {
                 if (GoalCollection.instance.visible) {
-                    GoalCollection.instance.goalsInProgressList[position].progress = 0
+//                    GoalCollection.instance.goalsInProgressList[position].progress = 0
+                    list[position].progress = 0
                 } else {
                     SocialGoalCollection.instance.goalList[position].progress = 0
                     changeSocialGoalProgress(
@@ -99,7 +103,13 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                 }
                 goalView.itemGoalProgressBarIndicator.progress = 0
                 goalView.itemGoalProgressBarValue.text = "0%"
-                goalView.itemGoalCompleteButton.visibility = View.INVISIBLE
+                goalView.itemGoalCompleteButton.visibility = View.GONE
+            }
+            if (GoalCollection.instance.visible) {
+                fragmentGoals.context?.let {
+                    DatabaseOperations.getInstance(it)
+                        .updateGoalInDatabase(list[position])
+                }
             }
         }
 
@@ -151,11 +161,11 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
             // развёртывание цели ("подробнее")
             if (goalView.itemGoalTasksRecycler.visibility == View.GONE) {
                 goalView.itemGoalTasksRecycler.visibility = View.VISIBLE
-                goalView.itemGoalDetailsButton.text = "Свернуть"
+                goalView.itemGoalDetailsButton.setImageResource(R.drawable.arrow_top)
             } else { // свёртывание цели ("свернуть")
                 goalView.itemGoalTasksRecycler.visibility = View.GONE
 
-                goalView.itemGoalDetailsButton.text = "Подробнее"
+                goalView.itemGoalDetailsButton.setImageResource(R.drawable.arrow_down)
             }
         }
     }
@@ -189,11 +199,13 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                     }
                 }
             }
+
             override fun onCancelled(p0: DatabaseError) {
             }
         })
     }
 
+    // обработка нажатия на кнопку "Завершить"
     private fun setCompleteClickListener(goalView: View, position: Int) {
         goalView.itemGoalCompleteButton.setOnClickListener {
             MaterialAlertDialogBuilder(fragmentGoals.context)
@@ -222,8 +234,6 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                         // удалить цель из нашего аккаунта на сервере
                         removeSocialGoalFromAccount(goalKey)
 
-                        // TODO
-                        // добавить в статистику инфу
                     } else {
                         //completing personal goal
 
@@ -374,7 +384,6 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
     }
 
     fun addGoalToRecycler(goal: Goal) {
-
         CoroutineScope(Dispatchers.IO).launch {
             fragmentGoals.context?.let {
                 goal.id = DatabaseOperations.getInstance(it).addGoaltoDatabase(goal).await().toInt()
@@ -390,12 +399,15 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
             }
             if (goal.id != null) {
                 GoalCollection.instance.addGoal(goal)
+                Log.e(
+                    "GOALS LIST: ",
+                    "${GoalCollection.instance.goalsInProgressList}"
+                )
 
                 withContext(Dispatchers.Main) {
                     notifyDataSetChanged()
                 }
             }
-
         }
     }
 
@@ -415,5 +427,10 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
     fun updateGoalProgress(goalPosition: Int) {
         tasksVisible = true
         notifyItemChanged(goalPosition)
+    }
+
+    fun changeGoalProgress(goalPosition: Int, progress: Int): Goal {
+        list[goalPosition].progress = progress
+        return list[goalPosition]
     }
 }

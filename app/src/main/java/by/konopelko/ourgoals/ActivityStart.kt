@@ -120,15 +120,11 @@ class ActivityStart : AppCompatActivity() {
         val analytics = DatabaseOperations.getInstance(this).loadAnalytics(currentUserId).await()
         AnalyticsSingleton.instance.analytics = analytics
 
-        // загружаем нотификации, если это НЕ гость
-        if (auth.currentUser != null) {
-            NotificationOperations.instance.loadNotifications().await()
-        }
-
         // вместо delay сделать нормально
         delay(2000)
 
         Log.e("GOAL DATABASE SIZE: ", goalsDatabase.size.toString())
+        GoalCollection.instance.goalsInProgressList.clear()
         GoalCollection.instance.setGoalsInProgress(goalsDatabase)
         GoalCollection.instance.visible = true
         Log.e("GOAL LOCAL SIZE:", GoalCollection.instance.goalsInProgressList.size.toString())
@@ -150,6 +146,8 @@ class ActivityStart : AppCompatActivity() {
     }
 
     private fun loadSocialGoals(currentUserId: String) {
+        SocialGoalCollection.instance.goalList.clear()
+
         userDatabase.child(currentUserId).child("socialGoals")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(socialGoals: DataSnapshot) {

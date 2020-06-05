@@ -57,6 +57,19 @@ class FragmentRegister : Fragment() {
                 } else {
                     createAccount()
                 }
+            } else {
+                if (registerEmailField.text.toString().isEmpty()) {
+                    registerEmailField.error = "Укажите эл. почту"
+                }
+                if (registerLoginField.text.toString().isEmpty()) {
+                    registerLoginField.error = "Укажите логин"
+                }
+                if (registerPasswordField.text.toString().isEmpty()) {
+                    registerPasswordField.error = "Укажите пароль"
+                }
+                if (registerConfirmPasswordField.text.toString().isEmpty()) {
+                    registerConfirmPasswordField.error = "Подтвердите введённый пароль"
+                }
             }
         }
     }
