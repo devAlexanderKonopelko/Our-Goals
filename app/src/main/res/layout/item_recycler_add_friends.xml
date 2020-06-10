@@ -1,85 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp">
-
-    <TextView
-        android:id="@+id/itemAddFriendsName"
-        android:layout_width="200dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="16dp"
+    app:cardElevation="3dp">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/itemAddFriendsSendReqButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/itemAddFriendsSendReqButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="20dp"
-        android:src="@drawable/icon_request_friendship"
-        app:backgroundTint="@color/white"
-        app:fabCustomSize="40dp"
+        <ImageView
+            android:id="@+id/itemAddFriendsIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/icon_guest"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/itemAddFriendsCancelReqButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/colorAccent" />
+        <TextView
+            android:id="@+id/itemAddFriendsName"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/itemAddFriendsSendReqButton"
+            app:layout_constraintStart_toEndOf="@+id/itemAddFriendsIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:hint="Alexander Konopelko" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/itemAddFriendsCancelReqButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/itemAddFriendsSendReqButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/icon_request_friendship"
+            app:backgroundTint="@color/white"
+            app:fabCustomSize="40dp"
 
-        android:visibility="invisible"
-        android:src="@drawable/icon_cancel_request"
-        app:backgroundTint="@color/white"
-        app:fabCustomSize="40dp"
-        app:tint="@color/red"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/itemAddFriendsCancelReqButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorAccent" />
 
-    <TextView
-        android:id="@+id/itemAddFriendsWaitingTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        app:layout_constraintEnd_toEndOf="@+id/itemAddFriendsSendReqButton"
-        app:layout_constraintStart_toStartOf="@+id/itemAddFriendsSendReqButton"
-        app:layout_constraintTop_toBottomOf="@+id/itemAddFriendsSendReqButton"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/itemAddFriendsCancelReqButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
 
-        android:visibility="invisible"
-        android:text="Ожидание \n ответа"
-        android:textSize="12sp"
-        android:textAlignment="center"
+            android:visibility="invisible"
+            android:src="@drawable/icon_cancel_request"
+            app:backgroundTint="@color/white"
+            app:fabCustomSize="40dp"
+            app:tint="@color/red"
+            tools:visibility="visible"/>
 
-        tools:visibility="visible"
-        android:textColor="@color/black"/>
+        <TextView
+            android:id="@+id/itemAddFriendsWaitingTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintEnd_toEndOf="@+id/itemAddFriendsSendReqButton"
+            app:layout_constraintStart_toStartOf="@+id/itemAddFriendsSendReqButton"
+            app:layout_constraintTop_toBottomOf="@+id/itemAddFriendsSendReqButton"
 
-    <TextView
-        android:id="@+id/itemAddFriendsCancelTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        app:layout_constraintEnd_toEndOf="@+id/itemAddFriendsCancelReqButton"
-        app:layout_constraintStart_toStartOf="@+id/itemAddFriendsCancelReqButton"
-        app:layout_constraintTop_toBottomOf="@+id/itemAddFriendsCancelReqButton"
+            android:visibility="invisible"
+            android:text="Ожидание \n ответа"
+            android:textSize="12sp"
+            android:textAlignment="center"
 
-        android:visibility="invisible"
-        android:text="Отменить \n запрос"
-        android:textSize="12sp"
-        android:textAlignment="center"
+            tools:visibility="visible"
+            android:textColor="@color/black"/>
 
-        tools:visibility="visible"
-        android:textColor="@color/black"/>
+        <TextView
+            android:id="@+id/itemAddFriendsCancelTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintEnd_toEndOf="@+id/itemAddFriendsCancelReqButton"
+            app:layout_constraintStart_toStartOf="@+id/itemAddFriendsCancelReqButton"
+            app:layout_constraintTop_toBottomOf="@+id/itemAddFriendsCancelReqButton"
+
+            android:visibility="invisible"
+            android:text="Отменить \n запрос"
+            android:textSize="12sp"
+            android:textAlignment="center"
+
+            tools:visibility="visible"
+            android:textColor="@color/black"/>
 
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

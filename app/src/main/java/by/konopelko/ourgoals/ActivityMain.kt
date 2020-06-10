@@ -28,12 +28,12 @@ import by.konopelko.ourgoals.friends.FragmentFriends
 import by.konopelko.ourgoals.goals.FragmentGoals
 import by.konopelko.ourgoals.goals.add.FragmentAddGoal
 import by.konopelko.ourgoals.goals.add.FragmentAddTasks
-import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
 import by.konopelko.ourgoals.authentication.ActivityLogIn
 import by.konopelko.ourgoals.goals.add.FragmentChooseFriends
-import by.konopelko.ourgoals.goals.add.NewGoal
+import by.konopelko.ourgoals.help.FragmentHelp
 import by.konopelko.ourgoals.notifications.AdapterNotifications
 import by.konopelko.ourgoals.notifications.FragmentNotifications
+import by.konopelko.ourgoals.supportDeveloper.FragmentSupportDev
 import by.konopelko.ourgoals.temporaryData.*
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -44,6 +44,7 @@ import kotlinx.android.synthetic.main.nav_side_header.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     FragmentAddTasks.RefreshGoalsListInterface, AdapterNotifications.NotificationActions,
@@ -73,60 +74,18 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val arrayAdapter =
             ArrayAdapter<String>(this, R.layout.item_spinner_sort_collections, categoriesList)
         toolbarSort.setAdapter(arrayAdapter)
-
         setSupportActionBar(toolbar)
 
         //Сортировка целей по категориям
-        toolbarSort.setOnItemClickListener { parent, view, position, id ->
-            val category = categoriesList[position]
-            if (category.equals("Все категории")) {
-                // коллекции хранят цели со всех категорий
-                if (GoalCollection.instance.visible) {
-                    fragmentGoals.showLocalGoals()
-                } else {
-                    fragmentGoals.showSocialGoals()
-                }
-            } else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    if (SocialGoalCollection.instance.visible) {
-                        val goals = ArrayList<Goal>()
-                        val keys = ArrayList<String>()
+        setToolbarSort()
 
-                        //собираем подходящие цели
-                        for (i in 0 until SocialGoalCollection.instance.goalList.size) {
-                            if (SocialGoalCollection.instance.goalList[i].category.equals(category)) {
-                                goals.add(SocialGoalCollection.instance.goalList[i])
-                                keys.add(SocialGoalCollection.instance.keysList[i])
-                            }
-                        }
-                        fragmentGoals.updateGoals(goals)
-                    } else {
-                        val goals = ArrayList<Goal>()
-
-                        //собираем подходящие цели
-                        for (i in 0 until GoalCollection.instance.goalsInProgressList.size) {
-                            if (GoalCollection.instance.goalsInProgressList[i].category.equals(
-                                    category
-                                )
-                            ) {
-                                goals.add(GoalCollection.instance.goalsInProgressList[i])
-                            }
-                        }
-                        // обновляем адаптер
-                        fragmentGoals.updateGoals(goals)
-                    }
-                }
-            }
-        }
-
-
+        // создание бокового меню
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, 0, 0)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
         nav_view.menu.findItem(R.id.nav_side_notifications)
             .setActionView(R.layout.badge_notifications)
-
 
         if (CurrentSession.instance.currentUser.name.equals("Гость")) {
             nav_view.menu.findItem(R.id.nav_side_friends).isEnabled = false
@@ -137,7 +96,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             nav_view.getHeaderView(0).currentUserLogin.text =
                 CurrentSession.instance.currentUser.name
-            nav_view.getHeaderView(0).currentUserImage.setImageResource(R.drawable.icon_guest)
+//            nav_view.getHeaderView(0).currentUserImage.setImageResource(R.drawable.icon_guest)
             nav_view.getHeaderView(0).currentUserEmail.visibility = View.INVISIBLE
 
             notificationBadge.visibility = View.INVISIBLE
@@ -149,15 +108,23 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             nav_view.getHeaderView(0).currentUserLogin.text =
                 CurrentSession.instance.currentUser.name
             // TODO: change user's icon
-            nav_view.getHeaderView(0).currentUserImage.setImageResource(R.drawable.icon_guest)
+//            nav_view.getHeaderView(0).currentUserImage.setImageResource(R.drawable.icon_guest)
             nav_view.getHeaderView(0).currentUserEmail.visibility = View.VISIBLE
             nav_view.getHeaderView(0).currentUserEmail.text = auth.currentUser!!.email
+
+            // ------ загружаем нотификации для текущего пользователя -----------
+
+            // постоянно следить за изменениями в уведомлениях:
+            // добавлять их в локальную коллекцию
+            // обновлять ui
+            Log.e("NOTIFICATIONS", "Отслеживание уведомлений")
+            presenter.observeNotifications(CurrentSession.instance.currentUser.id)
 
             Log.e(
                 "NOTIFICATIONS AMOUNT:",
                 NotificationsCollection.instance.requestsKeys.size.toString()
             )
-            // загружаем нотификации для текущего пользователя
+
             if (NotificationsCollection.instance.friendsRequests.size != 0 ||
                 NotificationsCollection.instance.goalsRequests.size != 0
             ) {
@@ -169,18 +136,15 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
                     View.INVISIBLE
             }
-
-            // постоянно следить за изменениями в уведомлениях:
-            // добавлять их в локальную коллекцию
-            // обновлять ui
-            Toast.makeText(this, "Отслеживание уведомлений", Toast.LENGTH_SHORT).show()
-            presenter.observeNotifications(CurrentSession.instance.currentUser.id)
         }
 
 
-        //setting bottom navigation menu
+//        --------- setting bottom navigation menu ------------
         bottomNavigation.selectedItemId = R.id.nav_goals
+        GoalCollection.instance.visible = true
+        SocialGoalCollection.instance.visible = false
         getFragment(fragmentGoals)
+
         if (GoalCollection.instance.visible) {
             toolbarSectionTitle.text = "Мои цели"
         } else {
@@ -241,7 +205,53 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    //processing side navigation clicks
+    private fun setToolbarSort() {
+        toolbarSort.setOnItemClickListener { parent, view, position, id ->
+            val category = categoriesList[position]
+            if (category.equals("Все категории")) {
+                // коллекции хранят цели со всех категорий
+                if (GoalCollection.instance.visible) {
+                    fragmentGoals.showLocalGoals()
+                } else {
+                    fragmentGoals.showSocialGoals()
+                }
+            } else {
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (SocialGoalCollection.instance.visible) {
+                        val goals = ArrayList<Goal>()
+                        val keys = ArrayList<String>()
+
+                        //собираем подходящие цели
+                        for (i in 0 until SocialGoalCollection.instance.goalList.size) {
+                            if (SocialGoalCollection.instance.goalList[i].category.equals(category)) {
+                                goals.add(SocialGoalCollection.instance.goalList[i])
+                                keys.add(SocialGoalCollection.instance.keysList[i])
+                            }
+                        }
+                        withContext(Dispatchers.Main) {
+                            fragmentGoals.updateGoals(goals)
+                        }
+                    } else {
+                        val goals = ArrayList<Goal>()
+
+                        //собираем подходящие цели
+                        for (i in 0 until GoalCollection.instance.goalsInProgressList.size) {
+                            if (GoalCollection.instance.goalsInProgressList[i].category.equals(
+                                    category
+                                )
+                            ) {
+                                goals.add(GoalCollection.instance.goalsInProgressList[i])
+                            }
+                        }
+                        // обновляем адаптер
+                        fragmentGoals.updateGoals(goals)
+                    }
+                }
+            }
+        }
+    }
+
+    //    -------- processing side navigation clicks ----------------
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_side_my_goals -> {
@@ -270,7 +280,6 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 toolbarSectionTitle.text = "Общие цели"
             }
-
             R.id.nav_side_notifications -> {
                 val notifDialog = FragmentNotifications()
                 notifDialog.show(supportFragmentManager, "")
@@ -300,11 +309,18 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         CurrentSession.instance.currentUser =
                             DatabaseOperations.getInstance(this@ActivityMain).getUserById("0")
                                 .await()
-                    }
 
-                    // переход на экран авторизации/регистрации
-                    startActivity(Intent(this, ActivityLogIn::class.java))
+                        presenter.removeNotificationsListeners()
+                    }
                 }
+            }
+            R.id.nav_side_help -> {
+                val helpDialog = FragmentHelp()
+                helpDialog.show(supportFragmentManager, "")
+            }
+            R.id.nav_side_support_dev -> {
+                val supportDialog = FragmentSupportDev()
+                supportDialog.show(supportFragmentManager, "")
             }
         }
         drawer_layout.closeDrawer(GravityCompat.START)
@@ -332,7 +348,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNotificationsChanged(listSize: Int) {
-        Toast.makeText(this, "Изменение уведомлений $listSize", Toast.LENGTH_SHORT).show()
+        Log.e("NOTIFICATIONS", "Изменение уведомлений")
         if (listSize != 0) {
             notificationBadge.visibility = View.VISIBLE
             nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility = View.VISIBLE
@@ -341,6 +357,11 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
                 View.INVISIBLE
         }
+    }
+
+    override fun onNotificationsListenersRemoved() {
+        // переход на экран авторизации/регистрации
+        startActivity(Intent(this@ActivityMain, ActivityLogIn::class.java))
     }
 
     override fun addCategory(category: Category) {

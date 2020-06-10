@@ -26,20 +26,21 @@
 
     <Button
         android:id="@+id/registerButton"
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:backgroundTint="@color/colorAccent"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="30dp"
+        app:backgroundTint="#FFFFFF"
+        android:textColor="@color/colorAccent"
         android:text="@string/registration"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logInFragmentLayout" />
 
     <Button
         android:id="@+id/guestButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#FFFFFF"
+        app:backgroundTint="#FFFFFF"
         android:text="@string/start_as_a_guest"
         android:textColor="#3ACF1B"
         android:textSize="14sp"

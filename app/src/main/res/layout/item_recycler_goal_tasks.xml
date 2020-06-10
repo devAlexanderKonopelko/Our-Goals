@@ -20,13 +20,14 @@
     <TextView
         android:id="@+id/itemGoalTaskFinishDate"
         android:layout_width="100dp"
-        android:maxWidth="100dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:maxWidth="100dp"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/itemGoalTaskText"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textColor="@color/black"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <CheckBox
         android:id="@+id/itemGoalTaskCheckBox"

@@ -7,7 +7,15 @@ class MainPresenter(private val view: MainContract.View) : MainContract.Presente
         interactor.performNotificationsObservation(uid)
     }
 
+    override fun removeNotificationsListeners() {
+        interactor.performNotificationsListenersRemoval()
+    }
+
     override fun onNotificationsChanged(listSize: Int) {
         view.onNotificationsChanged(listSize)
+    }
+
+    override fun onNotificationsListenersRemoved() {
+        view.onNotificationsListenersRemoved()
     }
 }

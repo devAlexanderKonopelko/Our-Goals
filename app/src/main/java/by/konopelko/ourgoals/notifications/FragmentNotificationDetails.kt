@@ -1,5 +1,6 @@
 package by.konopelko.ourgoals.notifications
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +24,6 @@ class FragmentNotificationDetails(val viewInfo: View): DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        itemNotificationGoalTitle.text = viewInfo.itemNotificationGoalTitle.text
         itemNotificationGoalText.text = viewInfo.itemNotificationGoalText.text
         itemNotificationGoalTasksList.adapter = viewInfo.itemNotificationGoalTasksList.adapter
         itemNotificationGoalTasksList.layoutManager = LinearLayoutManager(context)

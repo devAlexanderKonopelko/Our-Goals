@@ -1,6 +1,7 @@
 package by.konopelko.ourgoals.friends.add
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,44 +42,46 @@ class AddFriendsAdapter(val list: ArrayList<User>, val context: Context) :
     }
 
     override fun onBindViewHolder(holder: AddFriendsViewHolder, position: Int) {
-        val friendsView = holder.itemView
+        val view = holder.itemView
 
-        checkIfFriends(friendsView, position)
-        checkIfRequestSent(friendsView, position)
+        view.itemAddFriendsName.text = list[position].name
+        view.itemAddFriendsSendReqButton.setImageResource(R.drawable.icon_request_friendship)
+        view.itemAddFriendsCancelReqButton.visibility = View.GONE
+        view.itemAddFriendsWaitingTitle.visibility = View.GONE
+        view.itemAddFriendsCancelTitle.visibility = View.GONE
 
-        friendsView.itemAddFriendsName.text = list[position].name
-        friendsView.itemAddFriendsSendReqButton.setImageResource(R.drawable.icon_request_friendship)
-        friendsView.itemAddFriendsCancelReqButton.visibility = View.INVISIBLE
-        friendsView.itemAddFriendsWaitingTitle.visibility = View.INVISIBLE
-        friendsView.itemAddFriendsCancelTitle.visibility = View.INVISIBLE
+        checkIfFriends(view, position)
+        checkIfRequestSent(view, position)
 
         // sending request
-        friendsView.itemAddFriendsSendReqButton.setOnClickListener {
-            friendsView.itemAddFriendsSendReqButton.setImageResource(R.drawable.icon_waitnig_friend_response)
-            friendsView.itemAddFriendsSendReqButton.isEnabled = false
-            friendsView.itemAddFriendsCancelReqButton.visibility = View.VISIBLE
-            friendsView.itemAddFriendsWaitingTitle.visibility = View.VISIBLE
-            friendsView.itemAddFriendsCancelTitle.visibility = View.VISIBLE
-            friendsView.itemAddFriendsCancelTitle.text = "Отменить \n запрос"
+        view.itemAddFriendsSendReqButton.setOnClickListener {
+            view.itemAddFriendsSendReqButton.setImageResource(R.drawable.icon_waitnig_friend_response)
+            view.itemAddFriendsSendReqButton.isEnabled = false
+            view.itemAddFriendsCancelReqButton.visibility = View.VISIBLE
+            view.itemAddFriendsWaitingTitle.visibility = View.VISIBLE
+            view.itemAddFriendsWaitingTitle.text = "Ожидание \n ответа"
+            view.itemAddFriendsCancelTitle.visibility = View.VISIBLE
+            view.itemAddFriendsCancelTitle.text = "Отменить \n запрос"
 
             //firebase request
             sendRequest(position)
         }
 
         // cancelling request
-        friendsView.itemAddFriendsCancelReqButton.setOnClickListener {
-            friendsView.itemAddFriendsSendReqButton.setImageResource(R.drawable.icon_request_friendship)
-            friendsView.itemAddFriendsSendReqButton.isEnabled = true
-            friendsView.itemAddFriendsCancelReqButton.visibility = View.INVISIBLE
-            friendsView.itemAddFriendsWaitingTitle.visibility = View.INVISIBLE
-            friendsView.itemAddFriendsCancelTitle.visibility = View.INVISIBLE
+        view.itemAddFriendsCancelReqButton.setOnClickListener {
+            view.itemAddFriendsSendReqButton.setImageResource(R.drawable.icon_request_friendship)
+            view.itemAddFriendsSendReqButton.isEnabled = true
+            view.itemAddFriendsCancelReqButton.visibility = View.GONE
+            view.itemAddFriendsCancelTitle.visibility = View.GONE
+            view.itemAddFriendsWaitingTitle.visibility = View.VISIBLE
+            view.itemAddFriendsWaitingTitle.text = "Отправить \n запрос"
 
             //firebase cancelling request
             cancelRequest(position)
         }
     }
 
-    private fun checkIfRequestSent(friendsView: View, position: Int) {
+    private fun checkIfRequestSent(view: View, position: Int) {
         val currentUserId = auth.currentUser!!.uid
 
         friendRequestDatabase.addListenerForSingleValueEvent(object: ValueEventListener {
@@ -86,12 +89,14 @@ class AddFriendsAdapter(val list: ArrayList<User>, val context: Context) :
                 if (requests.hasChild(currentUserId)) {
                     // если мы уже отправили запрос на дружбу, то меняем UI
                     if (requests.child(currentUserId).hasChild(list[position].id)) {
-                        friendsView.itemAddFriendsSendReqButton.setImageResource(R.drawable.icon_waitnig_friend_response)
-                        friendsView.itemAddFriendsSendReqButton.isEnabled = false
-                        friendsView.itemAddFriendsCancelReqButton.visibility = View.VISIBLE
-                        friendsView.itemAddFriendsWaitingTitle.visibility = View.VISIBLE
-                        friendsView.itemAddFriendsCancelTitle.visibility = View.VISIBLE
-                        friendsView.itemAddFriendsCancelTitle.text = "Отменить \n запрос"
+                        Log.e("FRIENDS STATUS", ": REQUEST SENT")
+                        view.itemAddFriendsSendReqButton.setImageResource(R.drawable.icon_waitnig_friend_response)
+                        view.itemAddFriendsSendReqButton.isEnabled = false
+                        view.itemAddFriendsCancelReqButton.visibility = View.VISIBLE
+                        view.itemAddFriendsWaitingTitle.visibility = View.VISIBLE
+                        view.itemAddFriendsWaitingTitle.text = "Ожидание \n ответа"
+                        view.itemAddFriendsCancelTitle.visibility = View.VISIBLE
+                        view.itemAddFriendsCancelTitle.text = "Отменить \n запрос"
 
                         currentReqState = "request_sent"
                     }
@@ -102,16 +107,24 @@ class AddFriendsAdapter(val list: ArrayList<User>, val context: Context) :
         })
     }
 
-    private fun checkIfFriends(friendsView: View, position: Int) {
+    private fun checkIfFriends(view: View, position: Int) {
         val currentUserId = auth.currentUser!!.uid
         userDatabase.child(currentUserId).addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(currentUser: DataSnapshot) {
                 if (currentUser.child("friends").hasChild(list[position].id)) {
-                    friendsView.itemAddFriendsSendReqButton.visibility = View.INVISIBLE
-                    friendsView.itemAddFriendsWaitingTitle.visibility = View.INVISIBLE
+                    Log.e("FRIENDS STATUS", ": FRIENDS")
+                    view.itemAddFriendsSendReqButton.visibility = View.GONE
+                    view.itemAddFriendsWaitingTitle.visibility = View.GONE
 
-                    friendsView.itemAddFriendsCancelReqButton.visibility = View.INVISIBLE
-                    friendsView.itemAddFriendsCancelTitle.visibility = View.INVISIBLE
+                    view.itemAddFriendsCancelReqButton.visibility = View.GONE
+                    view.itemAddFriendsCancelTitle.visibility = View.GONE
+                }
+                else {
+                    Log.e("FRIENDS STATUS", ": NOT FRIENDS")
+                    view.itemAddFriendsSendReqButton.setImageResource(R.drawable.icon_request_friendship)
+                    view.itemAddFriendsSendReqButton.visibility = View.VISIBLE
+                    view.itemAddFriendsWaitingTitle.visibility = View.VISIBLE
+                    view.itemAddFriendsWaitingTitle.text = "Отправить \n запрос"
                 }
             }
             override fun onCancelled(p0: DatabaseError) {

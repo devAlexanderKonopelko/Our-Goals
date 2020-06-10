@@ -33,9 +33,7 @@ class FragmentFriendsProgress(val goalKey: String, val goalText: String) : Dialo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-        fragmentGoalFriendsProgressText.append(goalText)
+//        Log.e("GOAL KEY", goalKey)
 
         // загрузка пользователей и их прогресса в локальную коллекцию
         setUsersAndProgress(goalKey)

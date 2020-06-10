@@ -1,6 +1,7 @@
 package by.konopelko.ourgoals.authentication.core
 
 import by.konopelko.ourgoals.database.entities.User
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
 class LogInPresenter(private val view: LogInContract.View) :
     LogInContract.Presenter, LogInContract.OnOperationListener {
@@ -10,20 +11,16 @@ class LogInPresenter(private val view: LogInContract.View) :
         interactor.performLogIn(email, password)
     }
 
+    override fun logInWithGoogle(googleSignInAccount: GoogleSignInAccount) {
+        interactor.performLogInWithGoogle(googleSignInAccount)
+    }
+
     override fun loadUserFromServer(uid: String) {
         interactor.performUserDownLoad(uid)
     }
 
     override fun loadSocialGoalsFromServer(uid: String) {
         interactor.performSocialGoalsDownload(uid)
-    }
-
-    override fun loadFriendsNotifications(uid: String) {
-        interactor.performFriendsNotificationsDownload(uid)
-    }
-
-    override fun loadGoalsNotifications(uid: String) {
-        interactor.performGoalsNotificationsDownload(uid)
     }
 
     override fun onLogIn(result: Int, uid: String) {
@@ -36,13 +33,5 @@ class LogInPresenter(private val view: LogInContract.View) :
 
     override fun onSocialGoalsLoaded(result: Boolean) {
         view.onSocialGoalsLoaded(result)
-    }
-
-    override fun onFriendsNotificationsLoaded(result: Boolean) {
-        view.onFriendsNotificationsLoaded(result)
-    }
-
-    override fun onGoalsNotificationsLoaded(result: Boolean) {
-        view.onGoalsNotificationsLoaded(true)
     }
 }

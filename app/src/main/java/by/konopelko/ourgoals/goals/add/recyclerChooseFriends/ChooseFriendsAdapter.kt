@@ -38,6 +38,7 @@ class ChooseFriendsAdapter(
 
         Log.e("NEW GOAL:", "${NewGoal.instance.goal}")
 
+        // кнопка "Добавить" друга к списку получателей запроса на общую цель
         view.itemChooseFriendsAddButton.setOnClickListener {
             Toast.makeText(context, "Запрос отправлен", Toast.LENGTH_SHORT).show()
 
@@ -52,10 +53,29 @@ class ChooseFriendsAdapter(
             // добавляем в коллекцию id получателя
             addNewReceiverId(position)
         }
+
+        // кнопка "Отменить запрос"
+        view.itemChooseFriendsCancelReqButton.setOnClickListener {
+            // меняем вид кнопки на "Добавить" и прячем кнопку "Отменить запрос"
+            view.itemChooseFriendsAddButton.setImageResource(R.drawable.icon_request_friendship)
+            view.itemChooseFriendsAddButton.isEnabled = true
+            view.itemChooseFriendsWaitingTitle.visibility = View.INVISIBLE
+
+            view.itemChooseFriendsCancelReqButton.visibility = View.INVISIBLE
+            view.itemChooseFriendsCancelTitle.visibility = View.INVISIBLE
+
+            deleteReceiver(position)
+        }
+    }
+
+    private fun deleteReceiver(position: Int) {
+        GoalReceiversCollection.instance.receiversIds.removeAt(position)
+        Log.e("RECEIVERS:", "REMOVED: ${friendsList[position].id}")
     }
 
     private fun addNewReceiverId(position: Int) {
         GoalReceiversCollection.instance.receiversIds.add(friendsList[position].id)
+        Log.e("RECEIVERS:", "ADDED: ${friendsList[position].id}")
     }
 
 }

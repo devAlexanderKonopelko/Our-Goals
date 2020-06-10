@@ -43,14 +43,16 @@ class FriendsAdapter(
     }
 
     override fun onBindViewHolder(holder: FriendsViewHolder, position: Int) {
-        val friendsView = holder.itemView
+        val view = holder.itemView
+
+        view.deleteNotificationButtonFriends.visibility = View.GONE
 
         // засеттить элемент в зависимостри от состояния: друг, запрос входящий/исходящий
-        friendsView.itemFriendsName.text = list[position].name
+        view.itemFriendsName.text = list[position].name
 
         if (keysList[position] == "sent") {
-            friendsView.itemFriendsWaitingButton.isEnabled = false
-            friendsView.itemFriendsCancelReqButton.setOnClickListener {
+            view.itemFriendsWaitingButton.isEnabled = false
+            view.itemFriendsCancelReqButton.setOnClickListener {
                 Toast.makeText(context, "Запрос отменён", Toast.LENGTH_SHORT).show()
 
                 cancelRequest(position)
@@ -70,11 +72,11 @@ class FriendsAdapter(
 //            }
 //        }
         else if (keysList[position] == "friends") {
-            friendsView.itemFriendsWaitingButton.visibility = View.GONE
-            friendsView.itemFriendsWaitingTitle.visibility = View.GONE
-            friendsView.itemFriendsCancelTitle.text = "Удалить из\n друзей"
+            view.itemFriendsWaitingButton.visibility = View.GONE
+            view.itemFriendsWaitingTitle.visibility = View.GONE
+            view.itemFriendsCancelTitle.text = "Удалить из\n друзей"
 
-            friendsView.itemFriendsCancelReqButton.setOnClickListener {
+            view.itemFriendsCancelReqButton.setOnClickListener {
                 unfriendRequest(position)
             }
         }

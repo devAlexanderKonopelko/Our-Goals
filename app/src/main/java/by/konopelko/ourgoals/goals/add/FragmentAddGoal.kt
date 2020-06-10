@@ -10,6 +10,9 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.DialogFragment
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.entities.Task
@@ -60,17 +63,17 @@ class FragmentAddGoal : DialogFragment() {
         }
 
         addGoalFragmentSocialInfo.setOnClickListener {
-            // TODO: доделать снекбар - увеличить число строчек
             val snackbar = Snackbar.make(
                 view,
                 "При создании общей цели вы сможете подключать ваших друзей, чтобы выполнять цель вместе.",
                 Snackbar.LENGTH_INDEFINITE
             )
-
+            val snackbarTextView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+            snackbarTextView.maxLines = 3
             snackbar.show()
-            snackbar.setAction("OK", View.OnClickListener {
+            snackbar.setAction("OK") {
                 snackbar.dismiss()
-            })
+            }
         }
 
         addGoalFragmentCancelButton.setOnClickListener {
@@ -84,17 +87,18 @@ class FragmentAddGoal : DialogFragment() {
                 NewGoal.instance.goal.text = addGoalFragmentGoalText.text.toString()
                 NewGoal.instance.goal.category = addGoalFragmentCategoryList.text.toString()
                 NewGoal.instance.goal.isSocial = addGoalFragmentSwitchSocial.isChecked
-                AddTaskSingleton.instance.taskList = ArrayList()
-
+                if (!addDialogTasks.isBack) {
+                    AddTaskSingleton.instance.taskList = ArrayList()
+                }
                 //взять значение свича фона
 //                addGoalFragmentSwitchBackground.isChecked
-
-//                // очищаем выбранную категорию
-//                addGoalFragmentCategoryList.text.clear()
-
-                // + настройки фона и т.д.
+                addDialogTasks.isBack = true
                 fragmentManager?.let { fm -> addDialogTasks.show(fm, "") }
                 dismiss()
+            } else if (addGoalFragmentGoalText.text.toString().isEmpty()) {
+                Toast.makeText(context, "Введите название цели", Toast.LENGTH_LONG).show()
+            } else if (addGoalFragmentCategoryList.text.toString().isEmpty()) {
+                Toast.makeText(context, "Выберите категорию", Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -10,10 +10,11 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.konopelko.ourgoals.R
+import by.konopelko.ourgoals.database.entities.Goal
 import by.konopelko.ourgoals.database.entities.Task
 import by.konopelko.ourgoals.database.entities.User
-import by.konopelko.ourgoals.goals.FragmentGoals
 import by.konopelko.ourgoals.goals.add.recyclerChooseFriends.ChooseFriendsAdapter
+import by.konopelko.ourgoals.goals.add.recyclerTasks.AddTaskSingleton
 import by.konopelko.ourgoals.temporaryData.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -63,19 +64,21 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
         // inflating previous fragment
         chooseFriendsBackButton.setOnClickListener {
             dismiss()
-
             fragmentManager?.let { fm -> previousDialog.show(fm, "") }
         }
 
         // finishing creating new goal
         // генерируем уникальный ключ
         val goalKey = FirebaseDatabase.getInstance().reference.push().key
+
+        // обработчик кнопки Готово
         chooseFriendsFinishButton.setOnClickListener {
             if (goalKey != null) {
-                if (GoalReceiversCollection.instance.receiversIds.isNotEmpty())  {
+                // если мы выбрали хотя бы одного друга
+                if (GoalReceiversCollection.instance.receiversIds.isNotEmpty()) {
                     for (receiverId in GoalReceiversCollection.instance.receiversIds) {
                         // отправка запроса на сервер
-                        sendGoalRequest(GoalReceiversCollection.instance.receiversIds, receiverId, goalKey)
+                        sendGoalRequestUserFriend(receiverId, goalKey)
                     }
                     // запись цели нам в аккаунт на сервере
                     sendSocialGoaltoAccount(goalKey)
@@ -91,8 +94,7 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
                             refresh.updateRecyclerWithSocialGoal()
                         }
                     }
-
-                    Toast.makeText(this.context, "Цель добавлена в Общие Цели!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this.context, "Цель добавлена в Общие Цели!", Toast.LENGTH_LONG).show()
                     dismiss()
                 } else {
                     Toast.makeText(this.context, "Выберите хотя бы одного друга", Toast.LENGTH_LONG).show()
@@ -165,87 +167,99 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
         })
     }
 
-    private fun sendGoalRequest(receiversList: ArrayList<String>, receiverId: String, goalKey: String) {
+    private fun sendGoalRequestUserFriend(receiverId: String, goalKey: String) {
         val currentUserId = auth.currentUser!!.uid
 
+        Log.e("PARAMETERS", "UID: $currentUserId || sendGoalRequestUserFriend()")
         // Запись запроса (мы -> друг)
         firebaseDatabase.child("GoalRequests").child(currentUserId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(ourUser: DataSnapshot) {
-
                     // записываем цель
                     firebaseDatabase.child("GoalRequests").child(currentUserId)
                         .child(receiverId)
                         .child(goalKey)
-                        .child("text").setValue(NewGoal.instance.goal.text)
-
-                    firebaseDatabase.child("GoalRequests").child(currentUserId)
-                        .child(receiverId)
-                        .child(goalKey)
-                        .child("tasks").setValue(NewGoal.instance.goal.tasks)
-
-                    firebaseDatabase.child("GoalRequests").child(currentUserId)
-                        .child(receiverId)
-                        .child(goalKey)
-                        .child("request_status").setValue("sent")
-                }
-
-                override fun onCancelled(p0: DatabaseError) {
-                }
-            })
-
-        // Запись запроса (друг -> мы)
-        firebaseDatabase.child("GoalRequests").child(receiverId)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(receiver: DataSnapshot) {
-                    // записываем цель
-                    firebaseDatabase.child("GoalRequests").child(receiverId)
-                        .child(currentUserId)
-                        .child(goalKey)
-                        .child("text").setValue(NewGoal.instance.goal.text)
-
-                    firebaseDatabase.child("GoalRequests").child(receiverId)
-                        .child(currentUserId)
-                        .child(goalKey)
-                        .child("tasks").setValue(NewGoal.instance.goal.tasks)
-
-                    //записываем в запрос всех остальных пользователей, которые выполняют эту цель
-                    for (otherReceiverID in GoalReceiversCollection.instance.receiversIds) {
-                        // записываем всех других пользователей получателю (всех, кроме данного получателя, receiverId)
-                        if (otherReceiverID != receiverId) {
-                            firebaseDatabase.child("GoalRequests").child(receiverId)
-                                .child(currentUserId)
+                        .child("text").setValue(NewGoal.instance.goal.text).addOnSuccessListener {
+                            firebaseDatabase.child("GoalRequests").child(currentUserId)
+                                .child(receiverId)
                                 .child(goalKey)
-                                .child("friends")
-                                .child(otherReceiverID)
-                                .child("progress")
-                                .setValue(0)
+                                .child("tasks").setValue(NewGoal.instance.goal.tasks)
+                                .addOnSuccessListener {
+                                    firebaseDatabase.child("GoalRequests").child(currentUserId)
+                                        .child(receiverId)
+                                        .child(goalKey)
+                                        .child("request_status").setValue("sent")
+                                        .addOnSuccessListener {
+                                            sendGoalRequestFriendUser(receiverId, goalKey)
+                                        }
+                                }
                         }
-                    }
-                    // и записываем нас, как одного из тех, кто выполняет эту цель
-//                    firebaseDatabase.child("GoalRequests").child(receiverId)
-//                        .child(currentUserId)
-//                        .child(goalKey)
-//                        .child("friends")
-//                        .child(currentUserId)
-//                        .child("progress")
-//                        .setValue(0)
-
-                    firebaseDatabase.child("GoalRequests").child(receiverId)
-                        .child(currentUserId)
-                        .child(goalKey)
-                        .child("request_status").setValue("received")
                 }
 
                 override fun onCancelled(p0: DatabaseError) {
                 }
             })
+
+
+        // и записываем нас, как одного из тех, кто выполняет эту цель
+//        firebaseDatabase.child("GoalRequests").child(receiverId)
+//            .child(currentUserId)
+//            .child(goalKey)
+//            .child("friends")
+//            .child(currentUserId)
+//            .child("progress")
+//            .setValue(0)
+    }
+
+    private fun sendGoalRequestFriendUser(receiverId: String, goalKey: String) {
+        val currentUserId = auth.currentUser!!.uid
+
+        Log.e("PARAMETERS", "UID: $currentUserId || sendGoalRequestFriendUser()")
+        Log.e("PARAMETERS", "RECEIVER ID: $receiverId || sendGoalRequestFriendUser()")
+        // Запись запроса (друг -> мы)
+        firebaseDatabase.child("GoalRequests")
+            .child(receiverId)
+            .child(currentUserId)
+            .child(goalKey)
+            .child("text")
+            .setValue(NewGoal.instance.goal.text)
+            .addOnSuccessListener {
+                firebaseDatabase.child("GoalRequests")
+                    .child(receiverId)
+                    .child(currentUserId)
+                    .child(goalKey)
+                    .child("tasks")
+                    .setValue(NewGoal.instance.goal.tasks)
+                    .addOnSuccessListener {
+                        //записываем в запрос всех остальных пользователей, которые выполняют эту цель
+                        for (otherReceiverID in GoalReceiversCollection.instance.receiversIds) {
+                            // записываем всех других пользователей получателю (всех, кроме данного получателя, receiverId)
+                            if (otherReceiverID != receiverId) {
+                                firebaseDatabase.child("GoalRequests")
+                                    .child(receiverId)
+                                    .child(currentUserId)
+                                    .child(goalKey)
+                                    .child("friends")
+                                    .child(otherReceiverID)
+                                    .child("progress")
+                                    .setValue(0)
+                            }
+                        }
+                        firebaseDatabase.child("GoalRequests")
+                            .child(receiverId)
+                            .child(currentUserId)
+                            .child(goalKey)
+                            .child("request_status")
+                            .setValue("received")
+                    }
+            }
     }
 
     // добавляем текущему пользователю Социальную Цель в аккаунт на сервере
     private fun sendSocialGoaltoAccount(goalKey: String) {
         val currentUserId = auth.currentUser!!.uid
 
+        Log.e("PARAMETERS", "UID: $currentUserId || sendSocialGoaltoAccount()")
         userDatabase.child(currentUserId).child("socialGoals")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(ourSocialGoals: DataSnapshot) {
@@ -273,11 +287,34 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
     }
 
     private fun addSocialGoalToCollection(goalKey: String) {
-        SocialGoalCollection.instance.goalList.add(NewGoal.instance.goal)
+        val ownerId = CurrentSession.instance.currentUser.id
+        val category = NewGoal.instance.goal.category
+        val isDone = NewGoal.instance.goal.isDone
+        val isSocial = NewGoal.instance.goal.isSocial
+        val progress = NewGoal.instance.goal.progress
+        val tasks = AddTaskSingleton.instance.taskList
+        val text = NewGoal.instance.goal.text
+
+        Log.e(
+            "PARAMETERS",
+            "UID: ${CurrentSession.instance.currentUser.id} || addSocialGoalToCollection()"
+        )
+
+        val goal = Goal(
+            ownerId,
+            category,
+            text,
+            progress,
+            tasks,
+            isDone,
+            isSocial
+        )
+
+        SocialGoalCollection.instance.goalList.add(goal)
         SocialGoalCollection.instance.keysList.add(goalKey)
         Log.e(
             "NEW SOCIAL GOAL:",
-            "${SocialGoalCollection.instance.goalList[SocialGoalCollection.instance.goalList.size - 1]}"
+            "${SocialGoalCollection.instance.goalList[SocialGoalCollection.instance.goalList.size - 1]}, goalKey: $goalKey"
         )
     }
 

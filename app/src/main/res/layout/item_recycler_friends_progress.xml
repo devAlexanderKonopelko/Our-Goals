@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:padding="20dp">
 
     <TextView
@@ -13,8 +13,8 @@
         android:maxWidth="200dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:hint="asdf"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        tools:text="Alexander Konopelko"/>
 
     <ImageView
         android:id="@+id/itemFriendsProgressImageStatus"
@@ -22,7 +22,9 @@
         android:layout_height="25dp"
         android:layout_marginStart="10dp"
         app:layout_constraintStart_toEndOf="@+id/itemFriendsProgressName"
-        app:layout_constraintTop_toTopOf="@+id/itemFriendsProgressName" />
+        app:layout_constraintTop_toTopOf="@+id/itemFriendsProgressName"
+
+        tools:src="@drawable/icon_friend_done"/>
 
     <ProgressBar
         android:id="@+id/itemFriendsProgressValue"
@@ -32,7 +34,10 @@
         android:layout_marginTop="20dp"
         android:indeterminate="false"
         android:max="100"
+
         app:layout_constraintStart_toStartOf="@+id/itemFriendsProgressName"
-        app:layout_constraintTop_toBottomOf="@+id/itemFriendsProgressName" />
+        app:layout_constraintTop_toBottomOf="@+id/itemFriendsProgressName"
+
+        tools:progress="100"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

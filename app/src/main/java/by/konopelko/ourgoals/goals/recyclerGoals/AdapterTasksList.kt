@@ -1,4 +1,4 @@
-package by.konopelko.ourgoals.goals
+package by.konopelko.ourgoals.goals.recyclerGoals
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.entities.Goal
 import by.konopelko.ourgoals.database.entities.Task
+import by.konopelko.ourgoals.goals.FragmentGoals
 import by.konopelko.ourgoals.temporaryData.*
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -18,27 +18,25 @@ import kotlinx.android.synthetic.main.item_recycler_goal_tasks.view.*
 
 class AdapterTasksList(
     val list: ArrayList<Task>?,
-    val fragmentGoals: FragmentGoals,
-    val goalPosition: Int
+    private val fragmentGoals: FragmentGoals,
+    private val goalPosition: Int
 ) :
     RecyclerView.Adapter<AdapterTasksList.TasksListViewHolder>() {
     class TasksListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TasksListViewHolder {
         val itemView =
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_recycler_goal_tasks, parent, false)
-        return TasksListViewHolder(itemView)
+        return TasksListViewHolder(
+            itemView
+        )
     }
 
     override fun getItemCount(): Int {
-        if (list != null) {
-            return list.size
-        }
-        else return 0
+        return list?.size ?: 0
     }
 
     override fun onBindViewHolder(holder: TasksListViewHolder, position: Int) {
@@ -46,7 +44,6 @@ class AdapterTasksList(
         if (list != null) {
             view.itemGoalTaskText.text = list[position].text
             view.itemGoalTaskFinishDate.text = list[position].finishDate
-
             view.itemGoalTaskCheckBox.isChecked = list[position].isComplete
 
 

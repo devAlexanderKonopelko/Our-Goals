@@ -6,15 +6,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import by.konopelko.ourgoals.ActivityMain
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.entities.User
-import by.konopelko.ourgoals.guide.ActivityGuide
 import by.konopelko.ourgoals.temporaryData.*
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -28,6 +34,9 @@ import kotlinx.coroutines.launch
 class FragmentRegister : Fragment() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val usersDatabase = FirebaseDatabase.getInstance().reference.child("Users")
+    private lateinit var googleSignInOptions: GoogleSignInOptions
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private val SIGN_IN_CODE = 1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,6 +83,8 @@ class FragmentRegister : Fragment() {
         }
     }
 
+
+    // создаёт аккаунт пользователя в Firebase бд и авторизирует пользователя
     private fun createAccount() {
         registerFragmentProgressBar.visibility = View.VISIBLE
         var nameExists = false
@@ -159,12 +170,22 @@ class FragmentRegister : Fragment() {
 
                                             GoalCollection.instance.visible = true
 
-                                            Toast.makeText(
-                                                this,
-                                                "Пользователь Зарегистрирован! Проверьте почту для подтверждения аккаунта",
-                                                Toast.LENGTH_LONG
-                                            )
-                                                .show()
+                                            view?.let {
+                                                val snackbar = Snackbar.make(
+                                                    view!!,
+                                                    "Пользователь Зарегистрирован! Проверьте почту для подтверждения аккаунта",
+                                                    Snackbar.LENGTH_INDEFINITE
+                                                )
+                                                val snackbarTextView =
+                                                    snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+                                                snackbarTextView.maxLines = 3
+                                                snackbar.show()
+                                                snackbar.setAction("OK") {
+                                                    snackbar.dismiss()
+                                                }
+                                            }
+
+
 
                                             registerFragmentProgressBar.visibility = View.INVISIBLE
                                             val logInFragment = FragmentLogIn()

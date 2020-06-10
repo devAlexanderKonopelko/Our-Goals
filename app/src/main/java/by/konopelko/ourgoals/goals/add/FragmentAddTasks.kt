@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.fragment_add_goal_tasks.*
 
 class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
     private val chooseFriendsDialog = FragmentChooseFriends(this)
+    var isBack = false
 
     interface RefreshGoalsListInterface {
         fun refreshGoalsRecyclerView(goal: Goal)
@@ -35,14 +36,12 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         this.isCancelable = false
+
         return super.onCreateDialog(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // clear tasks list and temp goal for new goal
-        AddTaskSingleton.instance.taskList.clear()
 
         addTasksRecycler.adapter = TaskAdapter(AddTaskSingleton.instance.taskList)
         addTasksRecycler.layoutManager = LinearLayoutManager(view.context)

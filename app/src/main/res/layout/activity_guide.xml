@@ -6,73 +6,42 @@
     android:layout_height="match_parent"
     tools:context=".guide.ActivityGuide">
 
-    <FrameLayout
-        android:id="@+id/guideFragmentLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/finishButton"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="16dp">
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/firstRunViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="30dp"/>
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/firstRunTabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_alignParentBottom="true"
+            app:tabBackground="@drawable/tab_selector"
+            app:tabPadding="10dp"
+            app:tabIndicatorHeight="0dp"
+            app:tabMaxWidth="16dp"
+            app:tabGravity="center"/>
+    </RelativeLayout>
 
-    <Button
-        android:id="@+id/skipButton"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginBottom="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_gravity="center_horizontal"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/skipGuide"/>
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginBottom="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_gravity="center_horizontal"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/back"
-        android:visibility="gone"/>
-    <Button
-        android:id="@+id/startButton"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_gravity="center_horizontal"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/beginGuide"
-        app:icon="@drawable/arrow_right"
-        app:iconGravity="end" />
-    <Button
-        android:id="@+id/nextButton"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_gravity="center_horizontal"
-        android:visibility="gone"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/next"
-        app:icon="@drawable/arrow_right"
-        app:iconGravity="end" />
+
     <Button
         android:id="@+id/finishButton"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="15dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorAccent"
+        android:text="@string/finishGuide"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_gravity="center_horizontal"
-        android:visibility="gone"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/finishGuide" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 

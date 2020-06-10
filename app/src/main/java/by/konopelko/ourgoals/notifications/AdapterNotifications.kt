@@ -1,6 +1,7 @@
 package by.konopelko.ourgoals.notifications
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -69,14 +70,17 @@ class AdapterNotifications(
         // если это связанно с друзьями
         if (requestsKeys[position].contains("friend")) {
             view.notifFriendLayout.visibility = View.VISIBLE
+            view.itemFriendsNotificationText.visibility = View.VISIBLE
             when {
                 // если это входящий запрос в друзья
                 requestsKeys[position].contains("received") -> {
-                    view.itemFriendsName.append("Запрос в друзья: ${friendsRequests[position].name}")
+                    view.itemFriendsNotificationText.text = "Запрос в друзья"
+
+                    view.itemFriendsName.text = friendsRequests[position].name
                     view.itemFriendsWaitingButton.setImageResource(R.drawable.icon_accept_request)
                     view.itemFriendsWaitingTitle.text = "Принять \n запрос"
                     view.itemFriendsCancelTitle.text = "Отклонить \n запрос"
-                    view.deleteNotificationButton.visibility = View.GONE
+                    view.deleteNotificationButtonFriends.visibility = View.GONE
                     // обрабатывать нажатия на кнопки Принять/Отклонить запрос
                     view.itemFriendsWaitingButton.setOnClickListener {
                         // принятие запроса
@@ -94,16 +98,17 @@ class AdapterNotifications(
                 }
                 // если это уведомление о том, что пользователь подтвердил ваш запрос
                 requestsKeys[position].contains("accepted") -> {
-                    view.itemFriendsName.append("${friendsRequests[position].name} принял ваш запрос в друзья")
+                    view.itemFriendsNotificationText.text = "Запрос в друзья принят"
+                    view.itemFriendsName.text = friendsRequests[position].name
                     view.itemFriendsWaitingButton.setImageResource(R.drawable.icon_accept_request)
                     view.itemFriendsWaitingButton.isEnabled = false
 
-                    view.itemFriendsCancelReqButton.visibility = View.INVISIBLE
+                    view.itemFriendsCancelReqButton.visibility = View.GONE
                     view.itemFriendsWaitingTitle.visibility = View.INVISIBLE
-                    view.itemFriendsCancelTitle.visibility = View.INVISIBLE
+                    view.itemFriendsCancelTitle.visibility = View.GONE
 
                     // удаление нотификации и соответствующего запроса на сервере
-                    view.deleteNotificationButton.setOnClickListener {
+                    view.deleteNotificationButtonFriends.setOnClickListener {
                         deleteFriendRequest(friendsRequests[position].id)
                         // обновить ресайклер
                         updateRecycler(position)
@@ -111,16 +116,17 @@ class AdapterNotifications(
                 }
                 // если это уведомление о том, что пользователь отклонил ваш запрос
                 requestsKeys[position].contains("declined") -> {
-                    view.itemFriendsName.append("${friendsRequests[position].name} отклонил ваш запрос в друзья")
-                    view.itemFriendsWaitingButton.setImageResource(R.drawable.icon_cancel_request)
-                    view.itemFriendsWaitingButton.isEnabled = false
+                    view.itemFriendsNotificationText.text = "Запрос в друзья отклонён"
+                    view.itemFriendsName.text = friendsRequests[position].name
+                    view.itemFriendsCancelReqButton.setImageResource(R.drawable.icon_cancel_request)
+                    view.itemFriendsCancelReqButton.isEnabled = false
 
-                    view.itemFriendsCancelReqButton.visibility = View.INVISIBLE
+                    view.itemFriendsWaitingButton.visibility = View.GONE
                     view.itemFriendsWaitingTitle.visibility = View.INVISIBLE
-                    view.itemFriendsCancelTitle.visibility = View.INVISIBLE
+                    view.itemFriendsCancelTitle.visibility = View.GONE
 
                     // удаление нотификации и соответствующего запроса на сервере
-                    view.deleteNotificationButton.setOnClickListener {
+                    view.deleteNotificationButtonFriends.setOnClickListener {
                         deleteFriendRequest(friendsRequests[position].id)
                         // обновить ресайклер
                         updateRecycler(position)
@@ -147,6 +153,7 @@ class AdapterNotifications(
                     view.itemNotificationGoalTitle.append(" предалагает общую цель")
                     view.deleteNotificationButton.visibility = View.GONE
 
+                    // обработчик нажатия на кнопки принять/отклонить
                     // принять общую цель
                     view.itemNotificationGoalAcceptButton.setOnClickListener {
                         acceptSocialGoal(
@@ -188,7 +195,7 @@ class AdapterNotifications(
                 }
                 // если это уведомление об отклонении вашей общей цели
                 requestsKeys[position].contains("declined") -> {
-                    view.itemNotificationGoalTitle.append(" принял отклонил вашу цель")
+                    view.itemNotificationGoalTitle.append(" отклонил вашу цель")
                     view.itemNotificationGoalDeclineButton.isEnabled = false
                     view.itemNotificationGoalAcceptButton.visibility = View.INVISIBLE
                     view.itemNotificationGoalAcceptTitle.visibility = View.INVISIBLE
@@ -207,7 +214,7 @@ class AdapterNotifications(
                 }
             }
 
-            // развёрнутая цель по нажанию на item ресайклера
+            // развёрнутая цель по нажанию на кнопку Подробнее
             view.itemNotificationGoalDetailsButton.setOnClickListener {
                 val goalDetailsDialog = FragmentNotificationDetails(view)
                 goalDetailsDialog.show(fragmentManager, "")
@@ -274,10 +281,12 @@ class AdapterNotifications(
     private fun acceptSocialGoal(sender: User, goalKey: String, position: Int) {
 //        Log.e("GOAL KEY: ", goalKey)
         val currentUserId = auth.currentUser!!.uid
+        Log.e("PARAMETERS", "UID: $currentUserId || acceptSocialGoal()")
+        Log.e("PARAMETERS", "SENDER UID: ${sender.id} || acceptSocialGoal()")
         // у отправителя изменить цель на accepted
         goalRequestDatabase.child(sender.id).child(currentUserId).child(goalKey)
             .child("request_status").setValue("accepted").addOnSuccessListener {
-                // добавить цель в НАШ список с пометкой ПРОГРЕССА у отправителя
+                // добавить цель в НАШ список на сервере с пометкой ПРОГРЕССА у отправителя
                 sendSocialGoaltoAccount(currentUserId, sender, goalKey, position)
             }
 
@@ -290,6 +299,9 @@ class AdapterNotifications(
         goalKey: String,
         position: Int
     ) {
+        Log.e("PARAMETERS", "UID: $currentUserId || sendSocialGoaltoAccount()")
+        Log.e("PARAMETERS", "SENDER UID: ${sender.id} || sendSocialGoaltoAccount()")
+
         val goal = Goal(
             ownerId = currentUserId,
             category = "Совместные",
@@ -305,6 +317,8 @@ class AdapterNotifications(
         SocialGoalCollection.instance.goalList.add(goal)
         SocialGoalCollection.instance.keysList.add(goalKey)
 
+        Toast.makeText(this.context, "Цель добавлена в Общие Цели!", Toast.LENGTH_LONG).show()
+
         // добавляем информацию в аналитику
         val analytics = AnalyticsSingleton.instance.analytics
         analytics.goalsSet++
@@ -314,7 +328,7 @@ class AdapterNotifications(
             DatabaseOperations.getInstance(context).updateAnalytics(analytics).await()
         }
 
-        // записываем принятую цель в НАШ список соц. целей
+        // записываем принятую цель в НАШ список соц. целей на сервере
         userDatabase.child(currentUserId).child("socialGoals")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(ourSocialGoals: DataSnapshot) {
@@ -323,14 +337,12 @@ class AdapterNotifications(
                         .child(goalKey).setValue(goal)
 
                     // + добавить отправителя, который предложил эту цель
-                    markReceiversInSocialGoal(goalKey)
-
-                    // обновление ресайклера (удаление нотификации)
-                    updateRecycler(position)
+                    markReceiversInSocialGoal(goalKey, position)
                 }
 
                 // пометить всех пользователей, которые также выполняют эту цель
-                private fun markReceiversInSocialGoal(goalKey: String) {
+                private fun markReceiversInSocialGoal(goalKey: String, position: Int) {
+                    Log.e("MARK RECEIVERS","START")
                     //пометить отправителя как пользователя, выполняющего цель
                     goalRequestDatabase.child(currentUserId).child(sender.id).child(goalKey).addListenerForSingleValueEvent(object: ValueEventListener {
                         override fun onDataChange(acceptedGoal: DataSnapshot) {
@@ -354,7 +366,10 @@ class AdapterNotifications(
 
                             // удалить цель по КЛЮЧУ_ЦЕЛИ из НАШЕГО ЗАПРОСА
                             goalRequestDatabase.child(currentUserId).child(sender.id).child(goalKey)
-                                .removeValue()
+                                .removeValue().addOnSuccessListener {
+                                    // обновление ресайклера (удаление нотификации)
+                                    updateRecycler(position)
+                                }
                         }
                         override fun onCancelled(p0: DatabaseError) {
                         }

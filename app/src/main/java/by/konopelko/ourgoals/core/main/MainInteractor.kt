@@ -4,20 +4,26 @@ import android.util.Log
 import by.konopelko.ourgoals.database.entities.Goal
 import by.konopelko.ourgoals.database.entities.Task
 import by.konopelko.ourgoals.database.entities.User
+import by.konopelko.ourgoals.temporaryData.CurrentSession
 import by.konopelko.ourgoals.temporaryData.NotificationsCollection
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 
 class MainInteractor(val onOperationListener: MainContract.OnOperationListener) :
     MainContract.Interactor {
     private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
     private val friendRequestDatabase =
         FirebaseDatabase.getInstance().reference.child("FriendRequests")
-    private val goalRequestDatabase = FirebaseDatabase.getInstance().reference.child("GoalRequests")
+    private lateinit var goalRequestDatabase: DatabaseReference
+
+    // хранят список повешенных на данные слушателей изменений
+    private val goalsRequestListeners = ArrayList<ValueEventListener>()
+    private val friendsRequestListeners = ArrayList<ValueEventListener>()
 
     override fun performNotificationsObservation(uid: String) {
+        // очищаем коллекцию уведомлений
+        NotificationsCollection.instance.clearTempNotificationsList()
+
+        // подгружаем все существующие уведомления
         performFriendsNotificationsObservation(uid)
         performGoalsNotificationsObservation(uid)
     }
@@ -125,10 +131,13 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
     }
 
     override fun performGoalsNotificationsObservation(uid: String) {
-        // firebase work
-        goalRequestDatabase.child(uid)
+        // firebase goal notifications search
+        goalRequestDatabase = FirebaseDatabase.getInstance().reference.child("GoalRequests")
+
+        val valueEventListener = goalRequestDatabase.child(CurrentSession.instance.currentUser.id)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(ourUserGoalRequests: DataSnapshot) {
+                    Log.e("PARAMETERS","OBSERVED USER: ${ourUserGoalRequests.key} || performGoalsNotificationsObservation()")
                     if (ourUserGoalRequests.hasChildren()) { // Если у нас есть запросы общих целей с другими пользователями
                         for (otherUser in ourUserGoalRequests.children) { // перебираем каждого пользователя с запросами
                             for (socialGoal in otherUser.children) { // для каждого пользователя перебираем цели
@@ -137,6 +146,12 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
                                     socialGoal.child("request_status").value == "accepted" ||
                                     socialGoal.child("request_status").value == "declined"
                                 ) {
+                                    Log.e("NEW NOTIFICATION", "GOAL " +
+                                            "\nRECEIVER: ${ourUserGoalRequests.key} " +
+                                            "\nSENDER: ${otherUser.key} " +
+                                            "\nID: ${socialGoal.key} " +
+                                            "\nSTATUS: ${socialGoal.child("request_status").value}")
+
                                     val goalKey = socialGoal.key!!
 
                                     // записываем задачи для текущей цели
@@ -166,7 +181,7 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
                                     var goalExists = false
 
                                     for (collectionGoal in NotificationsCollection.instance.goalsRequests) {
-                                        if (collectionGoal.equals(goal)) {
+                                        if (collectionGoal == goal) {
                                             Log.e("NOTIFICATIONS:","Найдено повторение уведомления.")
                                             goalExists = true
                                             break
@@ -259,6 +274,19 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
                 override fun onCancelled(p0: DatabaseError) {
                 }
             })
+        goalsRequestListeners.add(valueEventListener)
+        Log.e("LISTENER","GOAL LISTENER ADDED: $valueEventListener \nARRAY: $goalsRequestListeners")
+    }
+
+    override fun performNotificationsListenersRemoval() {
+        // удаляем всех слушателей с данных. Это действие выполняется при нажатии на "Выйти из аккаунта"
+        goalsRequestListeners.forEach {valueEventListener ->
+            Log.e("LISTENER","GOAL LISTENER REMOVING: $valueEventListener")
+            goalRequestDatabase.child(CurrentSession.instance.currentUser.id).removeEventListener(valueEventListener)
+        }
+        goalsRequestListeners.clear()
+
+        onOperationListener.onNotificationsListenersRemoved()
     }
 
 }
