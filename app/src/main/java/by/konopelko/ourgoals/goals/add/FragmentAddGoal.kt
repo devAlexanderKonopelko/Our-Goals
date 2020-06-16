@@ -51,7 +51,6 @@ class FragmentAddGoal : DialogFragment() {
             items.add(category.title)
         }
 
-        // TODO: ИСПРАВИТЬ БАГ СО СПИСКОМ КАТЕГОРИЙ ПРИ ВОЗВРАТЕ ПО КНОПКЕ "НАЗАД"
         val adapter = ArrayAdapter(view.context, R.layout.item_add_goal_category, items)
         addGoalFragmentCategoryList.setAdapter(adapter)
 
@@ -65,7 +64,7 @@ class FragmentAddGoal : DialogFragment() {
         addGoalFragmentSocialInfo.setOnClickListener {
             val snackbar = Snackbar.make(
                 view,
-                "При создании общей цели вы сможете подключать ваших друзей, чтобы выполнять цель вместе.",
+                getString(R.string.add_goal_teamInfoSnackbar),
                 Snackbar.LENGTH_INDEFINITE
             )
             val snackbarTextView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
@@ -96,9 +95,9 @@ class FragmentAddGoal : DialogFragment() {
                 fragmentManager?.let { fm -> addDialogTasks.show(fm, "") }
                 dismiss()
             } else if (addGoalFragmentGoalText.text.toString().isEmpty()) {
-                Toast.makeText(context, "Введите название цели", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, getString(R.string.toast_enterGoalText), Toast.LENGTH_LONG).show()
             } else if (addGoalFragmentCategoryList.text.toString().isEmpty()) {
-                Toast.makeText(context, "Выберите категорию", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, getString(R.string.toast_chooseCategory), Toast.LENGTH_LONG).show()
             }
         }
     }

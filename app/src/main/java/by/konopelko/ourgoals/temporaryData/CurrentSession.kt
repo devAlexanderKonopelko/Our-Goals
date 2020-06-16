@@ -1,4 +1,5 @@
 package by.konopelko.ourgoals.temporaryData
+import android.content.Context
 import by.konopelko.ourgoals.database.entities.User
 
 class CurrentSession {

@@ -47,22 +47,23 @@
             app:layout_constraintTop_toTopOf="parent"
             android:textColor="@color/black"
 
-            android:hint="This is a text of the task that will be used here. This text will be so long that it even might not suit this container. But it did." />
+            tools:hint="This is a text of the task that will be used here. This text will be so long that it even might not suit this container. But it did." />
 
         <TextView
             android:id="@+id/itemTaskCompleteDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="30dp"
-            android:layout_marginStart="10dp"
+            android:hint="@string/item_task_date_hint"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/itemTaskCompleteText"
-            app:layout_constraintTop_toBottomOf="@+id/itemTaskCompleteEditButton"
-            android:textColor="@color/black"
-
-            android:hint="Дата"
-            android:textAlignment="center"/>
+            app:layout_constraintTop_toBottomOf="@+id/itemTaskCompleteEditButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

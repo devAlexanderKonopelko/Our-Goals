@@ -66,7 +66,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         // создаём список категорий для сортировки из верхнего тулбара
-        categoriesList.add("Все категории")
+        categoriesList.add(getString(R.string.all_categories))
         for (category in CategoryCollection.instance.categoryList) {
             categoriesList.add(category.title)
         }
@@ -87,12 +87,12 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.menu.findItem(R.id.nav_side_notifications)
             .setActionView(R.layout.badge_notifications)
 
-        if (CurrentSession.instance.currentUser.name.equals("Гость")) {
+        if (CurrentSession.instance.currentUser.name.equals(getString(R.string.username_guest))) {
             nav_view.menu.findItem(R.id.nav_side_friends).isEnabled = false
             nav_view.menu.findItem(R.id.nav_side_add_friends).isEnabled = false
             nav_view.menu.findItem(R.id.nav_side_social_goals).isEnabled = false
             nav_view.menu.findItem(R.id.nav_side_notifications).isEnabled = false
-            nav_view.menu.findItem(R.id.nav_side_log_out).title = "Войти в аккаунт"
+            nav_view.menu.findItem(R.id.nav_side_log_out).title = getString(R.string.side_nav_signIn)
 
             nav_view.getHeaderView(0).currentUserLogin.text =
                 CurrentSession.instance.currentUser.name
@@ -110,7 +110,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             // TODO: change user's icon
 //            nav_view.getHeaderView(0).currentUserImage.setImageResource(R.drawable.icon_guest)
             nav_view.getHeaderView(0).currentUserEmail.visibility = View.VISIBLE
-            nav_view.getHeaderView(0).currentUserEmail.text = auth.currentUser!!.email
+            nav_view.getHeaderView(0).currentUserEmail.text = auth.currentUser?.email
 
             // ------ загружаем нотификации для текущего пользователя -----------
 
@@ -146,17 +146,17 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         getFragment(fragmentGoals)
 
         if (GoalCollection.instance.visible) {
-            toolbarSectionTitle.text = "Мои цели"
+            toolbarSectionTitle.text = getString(R.string.section_title_myGoals)
         } else {
-            toolbarSectionTitle.text = "Общие цели"
+            toolbarSectionTitle.text = getString(R.string.section_title_teamGoals)
         }
         bottomNavigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_goals -> {
                     if (GoalCollection.instance.visible) {
-                        toolbarSectionTitle.text = "Мои цели"
+                        toolbarSectionTitle.text = getString(R.string.section_title_myGoals)
                     } else {
-                        toolbarSectionTitle.text = "Общие цели"
+                        toolbarSectionTitle.text = getString(R.string.section_title_teamGoals)
                     }
                     goalsAddButton.visibility = View.VISIBLE
                     toolbarSortContainer.visibility = View.VISIBLE
@@ -166,13 +166,13 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     goalsAddButton.visibility = View.VISIBLE
                     toolbarSortContainer.visibility = View.INVISIBLE
                     getFragment(fragmentCategories)
-                    toolbarSectionTitle.text = "Категории"
+                    toolbarSectionTitle.text = getString(R.string.section_title_categories)
                 }
                 R.id.nav_analytics -> {
                     goalsAddButton.visibility = View.INVISIBLE
                     toolbarSortContainer.visibility = View.INVISIBLE
                     getFragment(fragmentAnalytics)
-                    toolbarSectionTitle.text = "Аналитика"
+                    toolbarSectionTitle.text = getString(R.string.section_title_analytics)
                 }
             }
             true
@@ -208,7 +208,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun setToolbarSort() {
         toolbarSort.setOnItemClickListener { parent, view, position, id ->
             val category = categoriesList[position]
-            if (category.equals("Все категории")) {
+            if (category.equals(getString(R.string.all_categories))) {
                 // коллекции хранят цели со всех категорий
                 if (GoalCollection.instance.visible) {
                     fragmentGoals.showLocalGoals()
@@ -244,7 +244,9 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             }
                         }
                         // обновляем адаптер
-                        fragmentGoals.updateGoals(goals)
+                        withContext(Dispatchers.Main) {
+                            fragmentGoals.updateGoals(goals)
+                        }
                     }
                 }
             }
@@ -265,7 +267,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 } else {
                     fragmentGoals.showLocalGoals()
                 }
-                toolbarSectionTitle.text = "Мои цели"
+                toolbarSectionTitle.text = getString(R.string.section_title_myGoals)
             }
             R.id.nav_side_social_goals -> {
                 if (!fragmentGoals.isVisible) {
@@ -278,7 +280,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 } else {
                     fragmentGoals.showSocialGoals()
                 }
-                toolbarSectionTitle.text = "Общие цели"
+                toolbarSectionTitle.text = getString(R.string.section_title_teamGoals)
             }
             R.id.nav_side_notifications -> {
                 val notifDialog = FragmentNotifications()
@@ -303,7 +305,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     //очищаем локальную коллекцию соц. целей (они будут подгружаться заново для нового пользователя)
                     SocialGoalCollection.instance.goalList.clear()
 
-                    Toast.makeText(this, "Выход выполнен", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.toast_loggedOut), Toast.LENGTH_SHORT).show()
 
                     CoroutineScope(Dispatchers.IO).launch {
                         CurrentSession.instance.currentUser =
@@ -348,7 +350,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNotificationsChanged(listSize: Int) {
-        Log.e("NOTIFICATIONS", "Изменение уведомлений")
+//        Log.e("NOTIFICATIONS", "Изменение уведомлений")
         if (listSize != 0) {
             notificationBadge.visibility = View.VISIBLE
             nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility = View.VISIBLE
@@ -377,7 +379,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fragmentCategories.updateCategory(category, position)
 
         categoriesList.clear()
-        categoriesList.add("Все категории")
+        categoriesList.add(getString(R.string.all_categories))
         for (category in CategoryCollection.instance.categoryList) {
             categoriesList.add(category.title)
         }
@@ -385,7 +387,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun updateToolbarSort() {
         categoriesList.clear()
-        categoriesList.add("Все категории")
+        categoriesList.add(getString(R.string.all_categories))
         for (category in CategoryCollection.instance.categoryList) {
             categoriesList.add(category.title)
         }

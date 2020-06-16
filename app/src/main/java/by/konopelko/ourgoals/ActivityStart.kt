@@ -76,14 +76,19 @@ class ActivityStart : AppCompatActivity() {
         if (databaseSize == 0) {
             val guest = User(
                 "0",
-                "Гость",
+                getString(R.string.username_guest),
                 ArrayList()
             )
             DatabaseOperations.getInstance(this).addUsertoDatabase(guest).await()
 
+            val list = ArrayList<String>()
+            list.addAll(resources.getStringArray(R.array.default_categories_titles))
+
             // загружаем в бд стандартные категории (со всеми разделами) для гостя
-            DatabaseOperations.getInstance(this).setDefaultCategoriesList(guest.id).await()
-            CategoryCollection.instance.setDefaultCategories(guest.id)
+            DatabaseOperations.getInstance(this).setDefaultCategoriesList(guest.id, list).await()
+
+            CategoryCollection.instance.setDefaultCategories(guest.id, list)
+
             Log.e("DEFAULT CATEGORIES: ", " LOADED: ${CategoryCollection.instance.categoryList}")
 
             // задаём изначальную аналитику
@@ -106,6 +111,8 @@ class ActivityStart : AppCompatActivity() {
     private suspend fun waitAndTransitToMain() {
         val currentUserId = CurrentSession.instance.currentUser.id
 
+        CategoryCollection.instance.categoryList.clear()
+        // загружаем список категорий
         val categories =
             DatabaseOperations.getInstance(this).getCategoriesByUserId(currentUserId).await()
         CategoryCollection.instance.categoryList.addAll(categories)

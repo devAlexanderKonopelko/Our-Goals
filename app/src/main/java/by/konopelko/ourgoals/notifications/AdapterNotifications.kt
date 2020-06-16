@@ -78,8 +78,8 @@ class AdapterNotifications(
 
                     view.itemFriendsName.text = friendsRequests[position].name
                     view.itemFriendsWaitingButton.setImageResource(R.drawable.icon_accept_request)
-                    view.itemFriendsWaitingTitle.text = "Принять \n запрос"
-                    view.itemFriendsCancelTitle.text = "Отклонить \n запрос"
+                    view.itemFriendsWaitingTitle.text = context.getString(R.string.notification_acceptRequest)
+                    view.itemFriendsCancelTitle.text = context.getString(R.string.notification_declineRequest)
                     view.deleteNotificationButtonFriends.visibility = View.GONE
                     // обрабатывать нажатия на кнопки Принять/Отклонить запрос
                     view.itemFriendsWaitingButton.setOnClickListener {
@@ -98,7 +98,7 @@ class AdapterNotifications(
                 }
                 // если это уведомление о том, что пользователь подтвердил ваш запрос
                 requestsKeys[position].contains("accepted") -> {
-                    view.itemFriendsNotificationText.text = "Запрос в друзья принят"
+                    view.itemFriendsNotificationText.text = context.getString(R.string.notification_friendsReqAccepted)
                     view.itemFriendsName.text = friendsRequests[position].name
                     view.itemFriendsWaitingButton.setImageResource(R.drawable.icon_accept_request)
                     view.itemFriendsWaitingButton.isEnabled = false
@@ -116,7 +116,7 @@ class AdapterNotifications(
                 }
                 // если это уведомление о том, что пользователь отклонил ваш запрос
                 requestsKeys[position].contains("declined") -> {
-                    view.itemFriendsNotificationText.text = "Запрос в друзья отклонён"
+                    view.itemFriendsNotificationText.text = context.getString(R.string.notification_friendsReqDeclined)
                     view.itemFriendsName.text = friendsRequests[position].name
                     view.itemFriendsCancelReqButton.setImageResource(R.drawable.icon_cancel_request)
                     view.itemFriendsCancelReqButton.isEnabled = false
@@ -150,7 +150,7 @@ class AdapterNotifications(
             // если это запрос на создание общей цели
             when {
                 requestsKeys[position].contains("received") -> {
-                    view.itemNotificationGoalTitle.append(" предалагает общую цель")
+                    view.itemNotificationGoalTitle.append(context.getString(R.string.notification_goal_textPropose))
                     view.deleteNotificationButton.visibility = View.GONE
 
                     // обработчик нажатия на кнопки принять/отклонить
@@ -175,7 +175,7 @@ class AdapterNotifications(
                 }
                 // если это уведомление о принятии вашей общей цели
                 requestsKeys[position].contains("accepted") -> {
-                    view.itemNotificationGoalTitle.append(" принял вашу цель")
+                    view.itemNotificationGoalTitle.append(context.getString(R.string.notification_goal_accepted))
                     view.itemNotificationGoalDeclineButton.visibility = View.INVISIBLE
                     view.itemNotificationGoalDeclineTitle.visibility = View.INVISIBLE
                     view.itemNotificationGoalAcceptButton.isEnabled = false
@@ -195,7 +195,7 @@ class AdapterNotifications(
                 }
                 // если это уведомление об отклонении вашей общей цели
                 requestsKeys[position].contains("declined") -> {
-                    view.itemNotificationGoalTitle.append(" отклонил вашу цель")
+                    view.itemNotificationGoalTitle.append(context.getString(R.string.notification_goal_declined))
                     view.itemNotificationGoalDeclineButton.isEnabled = false
                     view.itemNotificationGoalAcceptButton.visibility = View.INVISIBLE
                     view.itemNotificationGoalAcceptTitle.visibility = View.INVISIBLE
@@ -241,7 +241,7 @@ class AdapterNotifications(
                                     .addOnSuccessListener {
                                         Toast.makeText(
                                             context,
-                                            "Теперь вы друзья!",
+                                            context.getString(R.string.toast_nowYouFriend),
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
@@ -261,7 +261,7 @@ class AdapterNotifications(
                     .addOnSuccessListener {
                         Toast.makeText(
                             context,
-                            "Запрос отклонён",
+                            context.getString(R.string.toast_reqDeclined),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -274,7 +274,7 @@ class AdapterNotifications(
         // удалить запрос у НАС
         friendRequestDatabase.child(currentUserId).child(senderId).removeValue()
             .addOnSuccessListener {
-                Toast.makeText(context, "Уведомление удалено", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.toast_notifDeleted), Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -304,7 +304,7 @@ class AdapterNotifications(
 
         val goal = Goal(
             ownerId = currentUserId,
-            category = "Совместные",
+            category = context.getString(R.string.category_name),
             text = goalsRequests[position].text,
             progress = 0,
             tasks = goalsRequests[position].tasks,
@@ -317,7 +317,7 @@ class AdapterNotifications(
         SocialGoalCollection.instance.goalList.add(goal)
         SocialGoalCollection.instance.keysList.add(goalKey)
 
-        Toast.makeText(this.context, "Цель добавлена в Общие Цели!", Toast.LENGTH_LONG).show()
+        Toast.makeText(this.context, context.getString(R.string.toast_teamGoalAdded), Toast.LENGTH_LONG).show()
 
         // добавляем информацию в аналитику
         val analytics = AnalyticsSingleton.instance.analytics
@@ -389,7 +389,7 @@ class AdapterNotifications(
                 // у отправителя изменить цель на declined
                 goalRequestDatabase.child(sender.id).child(currentUserId).child(goalKey)
                     .child("request_status").setValue("declined").addOnSuccessListener {
-                        Toast.makeText(context, "Запрос отклонён", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.toast_reqDeclined), Toast.LENGTH_SHORT).show()
                         // обновить ресайклер (удалить нотификацию)
                         updateRecycler(position)
                     }
@@ -403,7 +403,7 @@ class AdapterNotifications(
         // удалить запрос у НАС с конкретным пользователем по КЛЮЧУ_ЦЕЛИ
         goalRequestDatabase.child(currentUserId).child(sender.id).child(goalKey).removeValue()
             .addOnSuccessListener {
-                Toast.makeText(context, "Уведомление удалено", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.toast_notifDeleted), Toast.LENGTH_SHORT).show()
             }
     }
 

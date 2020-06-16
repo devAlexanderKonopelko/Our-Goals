@@ -27,7 +27,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Целей достигнуто"
+                    android:text="@string/analytics_goalsAchieved"
                     android:textSize="18sp"
                     android:textColor="@color/black"/>
                 <RelativeLayout
@@ -58,7 +58,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Целей поставлено"
+                    android:text="@string/analytics_goalsSet"
                     android:textSize="18sp"
                     android:textColor="@color/black"/>
                 <RelativeLayout
@@ -98,7 +98,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Задач выполнено"
+                    android:text="@string/analytics_tasksComplete"
                     android:textSize="18sp"
                     android:textColor="@color/black"/>
                 <RelativeLayout
@@ -129,7 +129,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Задач поставлено"
+                    android:text="@string/analytics_tasksSet"
                     android:textSize="18sp"
                     android:textColor="@color/black"/>
                 <RelativeLayout

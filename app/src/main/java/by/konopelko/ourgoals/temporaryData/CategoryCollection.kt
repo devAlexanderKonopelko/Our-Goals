@@ -9,12 +9,12 @@ class CategoryCollection {
         val instance = CategoryCollection()
     }
 
-    fun setDefaultCategories(ownerId: String) {
+    fun setDefaultCategories(ownerId: String, list: ArrayList<String>) {
         val defaultCategories = ArrayList<Category>()
         defaultCategories.add(
             Category(
                 ownerId,
-                "Здоровье",
+                list[0],
                 null,
                 -49862
             )
@@ -22,7 +22,7 @@ class CategoryCollection {
         defaultCategories.add(
             Category(
                 ownerId,
-                "Образование",
+                list[1],
                 null,
                 -12168193
             )
@@ -30,7 +30,7 @@ class CategoryCollection {
         defaultCategories.add(
             Category(
                 ownerId,
-                "Финансы",
+                list[2],
                 null,
                 -7591681
             )
@@ -38,7 +38,7 @@ class CategoryCollection {
         defaultCategories.add(
             Category(
                 ownerId,
-                "Хобби",
+                list[3],
                 null,
                 -11862145
             )

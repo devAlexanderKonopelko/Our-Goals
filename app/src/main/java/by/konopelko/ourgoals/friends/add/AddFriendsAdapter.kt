@@ -59,9 +59,9 @@ class AddFriendsAdapter(val list: ArrayList<User>, val context: Context) :
             view.itemAddFriendsSendReqButton.isEnabled = false
             view.itemAddFriendsCancelReqButton.visibility = View.VISIBLE
             view.itemAddFriendsWaitingTitle.visibility = View.VISIBLE
-            view.itemAddFriendsWaitingTitle.text = "Ожидание \n ответа"
+            view.itemAddFriendsWaitingTitle.text = context.getString(R.string.add_friends_waitingResponse)
             view.itemAddFriendsCancelTitle.visibility = View.VISIBLE
-            view.itemAddFriendsCancelTitle.text = "Отменить \n запрос"
+            view.itemAddFriendsCancelTitle.text = context.getString(R.string.add_friends_cancelRequest)
 
             //firebase request
             sendRequest(position)
@@ -74,7 +74,7 @@ class AddFriendsAdapter(val list: ArrayList<User>, val context: Context) :
             view.itemAddFriendsCancelReqButton.visibility = View.GONE
             view.itemAddFriendsCancelTitle.visibility = View.GONE
             view.itemAddFriendsWaitingTitle.visibility = View.VISIBLE
-            view.itemAddFriendsWaitingTitle.text = "Отправить \n запрос"
+            view.itemAddFriendsWaitingTitle.text = context.getString(R.string.add_friend_sendReq)
 
             //firebase cancelling request
             cancelRequest(position)
@@ -94,9 +94,9 @@ class AddFriendsAdapter(val list: ArrayList<User>, val context: Context) :
                         view.itemAddFriendsSendReqButton.isEnabled = false
                         view.itemAddFriendsCancelReqButton.visibility = View.VISIBLE
                         view.itemAddFriendsWaitingTitle.visibility = View.VISIBLE
-                        view.itemAddFriendsWaitingTitle.text = "Ожидание \n ответа"
+                        view.itemAddFriendsWaitingTitle.text = context.getString(R.string.add_friends_waitingResponse)
                         view.itemAddFriendsCancelTitle.visibility = View.VISIBLE
-                        view.itemAddFriendsCancelTitle.text = "Отменить \n запрос"
+                        view.itemAddFriendsCancelTitle.text = context.getString(R.string.add_friends_cancelRequest)
 
                         currentReqState = "request_sent"
                     }
@@ -124,7 +124,7 @@ class AddFriendsAdapter(val list: ArrayList<User>, val context: Context) :
                     view.itemAddFriendsSendReqButton.setImageResource(R.drawable.icon_request_friendship)
                     view.itemAddFriendsSendReqButton.visibility = View.VISIBLE
                     view.itemAddFriendsWaitingTitle.visibility = View.VISIBLE
-                    view.itemAddFriendsWaitingTitle.text = "Отправить \n запрос"
+                    view.itemAddFriendsWaitingTitle.text = context.getString(R.string.add_friend_sendReq)
                 }
             }
             override fun onCancelled(p0: DatabaseError) {
@@ -143,12 +143,12 @@ class AddFriendsAdapter(val list: ArrayList<User>, val context: Context) :
                     if (it.isSuccessful) {
                         friendRequestDatabase.child(receiverId).child(senderId)
                             .child("request_type").setValue("received").addOnSuccessListener {
-                                Toast.makeText(context, "Запрос отправлен", Toast.LENGTH_SHORT)
+                                Toast.makeText(context, context.getString(R.string.toast_requestSent), Toast.LENGTH_SHORT)
                                     .show()
                                 currentReqState = "request_sent"
                             }
                     } else {
-                        Toast.makeText(context, "Ошибка выполнения запроса", Toast.LENGTH_SHORT)
+                        Toast.makeText(context, context.getString(R.string.toast_reqError), Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
@@ -166,7 +166,7 @@ class AddFriendsAdapter(val list: ArrayList<User>, val context: Context) :
                 .addOnSuccessListener {
                     friendRequestDatabase.child(receiverId).child(senderId).removeValue()
                         .addOnSuccessListener {
-                            Toast.makeText(context, "Запрос отменён", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.toast_reqCanceled), Toast.LENGTH_SHORT).show()
                             currentReqState = "not_friends"
                         }
                 }

@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Друзья"
+        android:text="@string/add_goal_friends_title"
         android:textSize="16sp"
 
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Достигайте целей вместе"
+        android:text="@string/add_goal_friends_subtitle"
         android:textSize="16sp"
 
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="Назад"
+        android:text="@string/add_goal_friends_back"
         android:textColor="@color/colorAccent"
 
         app:backgroundTint="@color/white"
@@ -59,7 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
-        android:text="Готово"
+        android:text="@string/add_goal_friends_complete"
         android:textColor="@color/colorAccent"
 
         app:backgroundTint="@color/white"

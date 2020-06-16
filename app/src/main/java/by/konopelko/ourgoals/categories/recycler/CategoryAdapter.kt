@@ -96,13 +96,13 @@ class CategoryAdapter(
         view.itemCategoryDeleteButton.setOnClickListener {
             // inflating confirmation dialog
             MaterialAlertDialogBuilder(context)
-                .setTitle("Подтвердите действие")
-                .setMessage("Вы уверены, что хотите удалить данную категорию?")
-                .setNegativeButton("Отмена") { dialog, which ->
+                .setTitle(context.getString(R.string.dialog_confirmAction))
+                .setMessage(context.getString(R.string.dialog_deleteCategory))
+                .setNegativeButton(context.getString(R.string.dialog_cancel)) { dialog, which ->
                     // Respond to negative button press
                     dialog.dismiss()
                 }
-                .setPositiveButton("Удалить") { dialog, which ->
+                .setPositiveButton(context.getString(R.string.dialog_delete)) { dialog, which ->
                     // Respond to positive button press
                     deleteCategory(list[position])
                 }

@@ -90,7 +90,7 @@
             app:layout_constraintTop_toBottomOf="@+id/itemFriendsWaitingButton"
 
             android:visibility="visible"
-            android:text="Ожидание \n ответа"
+            android:text="@string/add_friends_waitingResponse"
             android:textSize="12sp"
             android:textAlignment="center"
             android:textColor="@color/black"
@@ -107,7 +107,7 @@
             app:layout_constraintTop_toBottomOf="@+id/itemFriendsCancelReqButton"
 
             android:visibility="visible"
-            android:text="Отменить \n запрос"
+            android:text="@string/add_friends_cancelRequest"
             android:textSize="12sp"
             android:textAlignment="center"
             android:textColor="@color/black"

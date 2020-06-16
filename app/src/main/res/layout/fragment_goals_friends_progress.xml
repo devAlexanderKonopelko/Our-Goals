@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
 
-        android:text="Прогресс Друзей"
+        android:text="@string/friends_progress"
         android:textSize="16sp"
         android:textAlignment="center"
         android:textColor="@color/black"/>

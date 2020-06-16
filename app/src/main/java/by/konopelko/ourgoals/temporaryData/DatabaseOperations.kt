@@ -110,12 +110,12 @@ class DatabaseOperations(context: Context) {
         return categoriesList
     }
 
-    suspend fun setDefaultCategoriesList(ownerId: String): Deferred<Unit> {
+    suspend fun setDefaultCategoriesList(ownerId: String, list: ArrayList<String>): Deferred<Unit> {
         val defaultCategories = ArrayList<Category>()
         defaultCategories.add(
             Category(
                 ownerId,
-                "Здоровье",
+                list[0],
                 null,
                 -49862
             )
@@ -123,7 +123,7 @@ class DatabaseOperations(context: Context) {
         defaultCategories.add(
             Category(
                 ownerId,
-                "Образование",
+                list[1],
                 null,
                 -12168193
             )
@@ -131,7 +131,7 @@ class DatabaseOperations(context: Context) {
         defaultCategories.add(
             Category(
                 ownerId,
-                "Финансы",
+                list[2],
                 null,
                 -7591681
             )
@@ -139,7 +139,7 @@ class DatabaseOperations(context: Context) {
         defaultCategories.add(
             Category(
                 ownerId,
-                "Хобби",
+                list[3],
                 null,
                 -11862145
             )

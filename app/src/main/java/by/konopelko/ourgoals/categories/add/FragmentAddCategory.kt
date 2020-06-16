@@ -60,7 +60,7 @@ class FragmentAddCategory() : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if (category != null) {
-            fragmentAddCategoryTitle.text = "Редактирование"
+            fragmentAddCategoryTitle.text = getString(R.string.add_category_edditing)
             fragmentAddCategoryNameInput.setText(category!!.title)
 
             if (category!!.bgImageURI != null && category!!.bgColor != 0) {
@@ -88,7 +88,7 @@ class FragmentAddCategory() : DialogFragment() {
                 fragmentAddCategoryPreviewImage.setImageURI(uri)
             }
         } else {
-            fragmentAddCategoryTitle.text = "Новая Категория"
+            fragmentAddCategoryTitle.text = getString(R.string.add_category_newCategory)
         }
 
         fragmentAddCategorySwitchBackgroundImage.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -124,7 +124,7 @@ class FragmentAddCategory() : DialogFragment() {
             intent.action = Intent.ACTION_OPEN_DOCUMENT
 
             startActivityForResult(
-                Intent.createChooser(intent, "Выбери изображение"),
+                Intent.createChooser(intent, getString(R.string.add_category_chooseImage)),
                 GET_IMAGE_CODE
             )
         }
@@ -188,7 +188,7 @@ class FragmentAddCategory() : DialogFragment() {
 
                 dismiss()
             } else {
-                Toast.makeText(this.context, "Введите название категории!", Toast.LENGTH_SHORT)
+                Toast.makeText(this.context, getString(R.string.toast_addCategoryTitle), Toast.LENGTH_SHORT)
                     .show()
             }
         }

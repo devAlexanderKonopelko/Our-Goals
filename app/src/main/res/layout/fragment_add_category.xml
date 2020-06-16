@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:maxWidth="200dp"
-        android:text="Новая Категория"
+        android:text="@string/new_category_title"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="20dp"
-            android:text="Название: "
+            android:text="@string/new_category_text"
             android:textColor="@color/black"/>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:hint="Новая категория"
+            android:hint="@string/new_category_hint"
             app:boxStrokeColor="@color/colorAccent"
             app:hintTextColor="@color/colorAccent">
 
@@ -74,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="Фон:"
+            android:text="@string/new_category_background"
             android:textColor="@color/black"/>
 
         <LinearLayout
@@ -156,7 +156,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
-        android:text="Отмена"
+        android:text="@string/new_category_cancel"
         android:textColor="@color/colorAccent"
         app:backgroundTint="@color/white"
 
@@ -170,7 +170,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:layout_marginTop="20dp"
-        android:text="Готово"
+        android:text="@string/new_category_finish"
         android:textColor="@color/colorAccent"
         app:backgroundTint="@color/white"
 

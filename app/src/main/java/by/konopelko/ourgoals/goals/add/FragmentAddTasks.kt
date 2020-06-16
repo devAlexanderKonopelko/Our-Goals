@@ -64,7 +64,7 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
                 AddTaskSingleton.instance.taskToComplete = 1
             }
             else {
-                Toast.makeText(this.context, "Завершите редактирование задачи", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.toast_finishTastEdit), Toast.LENGTH_SHORT).show()
             }
         }
         addGoalFragmentBackButton.setOnClickListener {
@@ -73,11 +73,11 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
                 fragmentManager?.let { fm -> previousDialog.show(fm, "") }
             }
             else {
-                Toast.makeText(this.context, "Завершите редактирование задачи", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this.context, getString(R.string.toast_finishTastEdit), Toast.LENGTH_SHORT).show()
             }
         }
         if (NewGoal.instance.goal.isSocial) {
-            addGoalFragmentFinishButton.text = "Далее"
+            addGoalFragmentFinishButton.text = getString(R.string.add_goal_main_next)
             addGoalFragmentFinishButton.setOnClickListener {
                 if (AddTaskSingleton.instance.taskToComplete == 0) {
 
@@ -91,11 +91,11 @@ class FragmentAddTasks(val previousDialog: FragmentAddGoal) : DialogFragment() {
                     dismiss()
                 }
                 else {
-                    Toast.makeText(this.context, "Завершите редактирование задачи", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this.context, getString(R.string.toast_finishTastEdit), Toast.LENGTH_SHORT).show()
                 }
             }
         } else {
-            addGoalFragmentFinishButton.text = "Готово"
+            addGoalFragmentFinishButton.text = getString(R.string.add_goal_friends_complete)
             addGoalFragmentFinishButton.setOnClickListener {
                 val ownerId = CurrentSession.instance.currentUser.id
                 val category = NewGoal.instance.goal.category

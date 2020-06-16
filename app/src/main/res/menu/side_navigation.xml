@@ -6,29 +6,29 @@
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_side_my_goals"
-            android:title="Мои цели"
+            android:title="@string/side_navigation_myGoals"
             android:icon="@drawable/icon_my_goals" />
         <item android:id="@+id/nav_side_social_goals"
-            android:title="Общие цели"
+            android:title="@string/side_nav_teamGoals"
             android:icon="@drawable/icon_social_goals"/>
         <item
             android:id="@+id/nav_side_friends"
-            android:title="Мои друзья"
+            android:title="@string/side_nav_myFriends"
             android:icon="@drawable/icon_my_friends"/>
         <item android:id="@+id/nav_side_add_friends"
-            android:title="Добавить друга"
+            android:title="@string/side_nav_addFriend"
             android:icon="@drawable/icon_nav_add_friend"/>
         <item android:id="@+id/nav_side_notifications"
-            android:title="Уведомления"
+            android:title="@string/side_nav_notif"
             android:icon="@drawable/icon_notifications"
             android:actionLayout="@layout/badge_notifications" />
         <item android:id="@+id/nav_side_help"
-            android:title="Помощь"
+            android:title="@string/side_nav_help"
             android:icon="@drawable/icon_info"/>
         <item android:id="@+id/nav_side_support_dev"
-            android:title="Поддержать разработчика"
+            android:title="@string/side_nav_supportDev"
             android:icon="@drawable/icon_support_developer"/>
         <item android:id="@+id/nav_side_log_out"
-            android:title="Выйти из аккаунта"/>
+            android:title="@string/side_nav_logOut"/>
     </group>
 </menu>

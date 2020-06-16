@@ -46,7 +46,7 @@ class LogInInteractor(val onOperationListener: LogInContract.OnOperationListener
     }
 
     override fun performLogInWithGoogle(googleSignInAccount: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(googleSignInAccount?.idToken, null)
+        val credential = GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
         auth.signInWithCredential(credential).addOnSuccessListener {
             googleSignInAccount.displayName?.let { it1 -> createAccountWithGoogle(it1) }
         }.addOnFailureListener {

@@ -1,10 +1,12 @@
 package by.konopelko.ourgoals.goals.recyclerGoals
 
+import android.annotation.SuppressLint
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.TranslateAnimation
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -74,13 +76,13 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
         view.itemGoalDeleteButton.setOnClickListener {
             // inflating confirmation dialog
             MaterialAlertDialogBuilder(fragmentGoals.context)
-                .setTitle("Подтвердите действие")
-                .setMessage("Вы уверены, что хотите удалить данную цель?")
-                .setNegativeButton("Отмена") { dialog, which ->
+                .setTitle(view.context.getString(R.string.dialog_confirmAction))
+                .setMessage(view.context.getString(R.string.dialog_deleteGoal))
+                .setNegativeButton(view.context.getString(R.string.dialog_cancel)) { dialog, which ->
                     // Respond to negative button press
                     dialog.dismiss()
                 }
-                .setPositiveButton("Удалить") { dialog, which ->
+                .setPositiveButton(view.context.getString(R.string.dialog_delete)) { dialog, which ->
                     // Respond to positive button press
                     if (list[position].isSocial) {
                         // deleting social goal
@@ -144,6 +146,8 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
         view.itemGoalProgressBarIndicator.progress = list[position].progress
         view.itemGoalProgressBarValue.text = "${list[position].progress}%"
 
+        setTextScrollListener(view.itemGoalText);
+
         if (list[position].tasks == null || list[position].tasks?.size ?: 1 == 0) {
             view.itemGoalDetailsButton.visibility = View.GONE
             view.itemGoalSingleCheckBox.visibility = View.VISIBLE
@@ -184,6 +188,15 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setTextScrollListener(itemGoalText: TextView?) {
+        itemGoalText?.setOnTouchListener { v, event ->
+            itemGoalText.parent.requestDisallowInterceptTouchEvent(true)
+            itemGoalText.movementMethod = ScrollingMovementMethod.getInstance()
+            false
+        }
+    }
+
     private fun setSocialButtonClickListener(view: View, position: Int) {
         view.itemGoalSocialButton.setOnClickListener {
             // надуваем фрагмент просмотра прогресса друзей
@@ -203,11 +216,11 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
             .setValue(isDone).addOnSuccessListener {
                 userDatabase.child(currentUserId).child("socialGoals").child(goalKey)
                     .child("progress").setValue(progress).addOnSuccessListener {
-                        Toast.makeText(
-                            fragmentGoals.context,
-                            "Наша Цель на сервере изменина",
-                            Toast.LENGTH_SHORT
-                        ).show()
+//                        Toast.makeText(
+//                            fragmentGoals.context,
+//                            "Наша Цель на сервере изменина",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
                     }
             }
 
@@ -231,16 +244,16 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
     }
 
     // обработка нажатия на кнопку "Завершить"
-    private fun setCompleteClickListener(goalView: View, position: Int) {
-        goalView.itemGoalCompleteButton.setOnClickListener {
+    private fun setCompleteClickListener(view: View, position: Int) {
+        view.itemGoalCompleteButton.setOnClickListener {
             MaterialAlertDialogBuilder(fragmentGoals.context)
-                .setTitle("Подтвердите действие")
-                .setMessage("Вы уверены, что хотите завершить данную цель?")
-                .setNegativeButton("Отмена") { dialog, which ->
+                .setTitle(view.context.getString(R.string.dialog_confirmAction))
+                .setMessage(view.context.getString(R.string.dialog_completeGoal))
+                .setNegativeButton(view.context.getString(R.string.dialog_cancel)) { dialog, which ->
                     // Respond to negative button press
                     dialog.dismiss()
                 }
-                .setPositiveButton("Завершить") { dialog, which ->
+                .setPositiveButton(view.context.getString(R.string.dialog_completeGoalButton)) { dialog, which ->
                     // Respond to positive button press
                     if (list[position].isSocial) {
                         // completing social goal
@@ -304,7 +317,7 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                                         .child(goalKey).removeValue().addOnSuccessListener {
                                             Toast.makeText(
                                                 fragmentGoals.context,
-                                                "Цель завершена!",
+                                                fragmentGoals.context?.getString(R.string.toast_goalCompleted),
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
@@ -335,7 +348,7 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                                                     .addOnSuccessListener {
                                                         Toast.makeText(
                                                             fragmentGoals.context,
-                                                            "Цель завершена!",
+                                                            fragmentGoals.context?.getString(R.string.toast_goalCompleted),
                                                             Toast.LENGTH_SHORT
                                                         ).show()
                                                     }
@@ -375,7 +388,7 @@ class GoalAdapter(val list: List<Goal>, val fragmentGoals: FragmentGoals) :
                                         .child(goalKey).removeValue().addOnSuccessListener {
                                             Toast.makeText(
                                                 fragmentGoals.context,
-                                                "Цель удалена!",
+                                                fragmentGoals.context?.getString(R.string.toast_goalDeleted),
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }

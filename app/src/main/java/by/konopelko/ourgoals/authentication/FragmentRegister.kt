@@ -60,7 +60,7 @@ class FragmentRegister : Fragment() {
                 if (!registerPasswordField.text.toString().equals(registerConfirmPasswordField.text.toString())) {
                     Toast.makeText(
                         this.context,
-                        "Пароли не совпадают! Подтвердите введённый пароль.",
+                        getString(R.string.toast_differPasswords),
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
@@ -68,16 +68,16 @@ class FragmentRegister : Fragment() {
                 }
             } else {
                 if (registerEmailField.text.toString().isEmpty()) {
-                    registerEmailField.error = "Укажите эл. почту"
+                    registerEmailField.error = getString(R.string.toast_enterEmail)
                 }
                 if (registerLoginField.text.toString().isEmpty()) {
-                    registerLoginField.error = "Укажите логин"
+                    registerLoginField.error = getString(R.string.toast_enterUsername)
                 }
                 if (registerPasswordField.text.toString().isEmpty()) {
-                    registerPasswordField.error = "Укажите пароль"
+                    registerPasswordField.error = getString(R.string.toast_enterPassword)
                 }
                 if (registerConfirmPasswordField.text.toString().isEmpty()) {
-                    registerConfirmPasswordField.error = "Подтвердите введённый пароль"
+                    registerConfirmPasswordField.error = getString(R.string.toast_confirmPassword)
                 }
             }
         }
@@ -99,7 +99,7 @@ class FragmentRegister : Fragment() {
                 if (nameExists) {
                     Toast.makeText(
                         this@FragmentRegister.context,
-                        "Данное имя занято. Выберите другое имя.",
+                        getString(R.string.toast_usernameExists),
                         Toast.LENGTH_LONG
                     ).show()
                     registerFragmentProgressBar.visibility = View.INVISIBLE
@@ -148,8 +148,11 @@ class FragmentRegister : Fragment() {
                                                     .addUsertoDatabase(user).await()
 
                                                 // добавление дефолтных категорий для пользователя в локальную бд
+                                                val list = ArrayList<String>()
+                                                list.addAll(resources.getStringArray(R.array.default_categories_titles))
+
                                                 DatabaseOperations.getInstance(this@run)
-                                                    .setDefaultCategoriesList(currentUid).await()
+                                                    .setDefaultCategoriesList(currentUid, list).await()
 
                                                 //создание изначальной статистики
                                                 DatabaseOperations.getInstance(this@run)
@@ -163,17 +166,17 @@ class FragmentRegister : Fragment() {
                                             // очищаем локальную коллекцию пользовательских категорий
                                             CategoryCollection.instance.categoryList.clear()
 
+                                            val list = ArrayList<String>()
+                                            list.addAll(resources.getStringArray(R.array.default_categories_titles))
                                             // загружаем дефолтные категории в локальную коллекцию
-                                            CategoryCollection.instance.setDefaultCategories(
-                                                currentUid
-                                            )
+                                            CategoryCollection.instance.setDefaultCategories(currentUid, list)
 
                                             GoalCollection.instance.visible = true
 
                                             view?.let {
                                                 val snackbar = Snackbar.make(
                                                     view!!,
-                                                    "Пользователь Зарегистрирован! Проверьте почту для подтверждения аккаунта",
+                                                    getString(R.string.toast_userRegestered),
                                                     Snackbar.LENGTH_INDEFINITE
                                                 )
                                                 val snackbarTextView =
@@ -206,7 +209,7 @@ class FragmentRegister : Fragment() {
                         } else {
                             registerFragmentProgressBar.visibility = View.INVISIBLE
                             activity?.run {
-                                Toast.makeText(this, "Ошибка регистрации!", Toast.LENGTH_SHORT)
+                                Toast.makeText(this, getString(R.string.toast_registrError), Toast.LENGTH_SHORT)
                                     .show()
                             }
                         }

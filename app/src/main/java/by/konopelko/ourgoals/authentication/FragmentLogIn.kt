@@ -76,9 +76,9 @@ class FragmentLogIn : Fragment(), LogInContract.View {
                     )
                 }
             } else if (logInEmailField.text.toString().isEmpty()) {
-                logInEmailField.error = "Введите Email"
+                logInEmailField.error = getString(R.string.toast_enterEmail)
             } else if (logInPasswordField.text.toString().isEmpty()) {
-                logInPasswordField.error = "Введите пароль"
+                logInPasswordField.error = getString(R.string.toast_enterPassword)
             }
         }
     }
@@ -213,14 +213,14 @@ class FragmentLogIn : Fragment(), LogInContract.View {
             }
         } else if (result == 1) {
             logInProgressBar.visibility = View.GONE
-            Toast.makeText(this.context, "Ошибка входа. Аккаунт не найден.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this.context, getString(R.string.Toast_accountNotFound), Toast.LENGTH_SHORT).show()
         } else if (result == 2) {
             logInProgressBar.visibility = View.GONE
-            Toast.makeText(this.context, "Ошибка входа. Аккаунт не подтверждён.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this.context, getString(R.string.toast_accountNotConfError), Toast.LENGTH_SHORT).show()
         }
         else if (result == 3) {
             logInProgressBar.visibility = View.GONE
-            Toast.makeText(this.context, "Ошибка подключения к интернету.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this.context, getString(R.string.toast_networkError), Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -260,10 +260,13 @@ class FragmentLogIn : Fragment(), LogInContract.View {
     private suspend fun setDefaultCategories(id: String): Boolean {
         Log.e("INSIDE", "setDefaultCategories()")
 
+        val list = ArrayList<String>()
+        list.addAll(resources.getStringArray(R.array.default_categories_titles))
+
         val result = CoroutineScope(Dispatchers.IO).async {
             activity?.run {
                 DatabaseOperations.getInstance(this)
-                    .setDefaultCategoriesList(id)
+                    .setDefaultCategoriesList(id, list)
                     .await()
                 Log.e("INSIDE", "addUserToDatabase(): FINISH")
             }

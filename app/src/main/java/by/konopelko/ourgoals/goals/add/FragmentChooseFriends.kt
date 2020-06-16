@@ -94,10 +94,10 @@ class FragmentChooseFriends(val previousDialog: FragmentAddTasks) : DialogFragme
                             refresh.updateRecyclerWithSocialGoal()
                         }
                     }
-                    Toast.makeText(this.context, "Цель добавлена в Общие Цели!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, getString(R.string.toast_teamGoalAdded), Toast.LENGTH_LONG).show()
                     dismiss()
                 } else {
-                    Toast.makeText(this.context, "Выберите хотя бы одного друга", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, getString(R.string.toast_chooseOneFriend), Toast.LENGTH_LONG).show()
                 }
             }
         }

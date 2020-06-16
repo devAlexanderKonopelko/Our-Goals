@@ -40,7 +40,7 @@ class ChooseFriendsAdapter(
 
         // кнопка "Добавить" друга к списку получателей запроса на общую цель
         view.itemChooseFriendsAddButton.setOnClickListener {
-            Toast.makeText(context, "Запрос отправлен", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.toast_requestSent), Toast.LENGTH_SHORT).show()
 
             // меняем вид кнопки на "Ожидание" и показываем кнопку "отменить запрос"
             view.itemChooseFriendsAddButton.setImageResource(R.drawable.icon_waitnig_friend_response)

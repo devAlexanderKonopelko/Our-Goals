@@ -13,8 +13,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.item_recycler_friends.view.*
 
-// TODO: убрать логику для received запросов (перенесена в нотификации)
-
 class FriendsAdapter(
     val list: ArrayList<User>,
     val keysList: ArrayList<String>,
@@ -53,7 +51,7 @@ class FriendsAdapter(
         if (keysList[position] == "sent") {
             view.itemFriendsWaitingButton.isEnabled = false
             view.itemFriendsCancelReqButton.setOnClickListener {
-                Toast.makeText(context, "Запрос отменён", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.toast_reqCanceled), Toast.LENGTH_SHORT).show()
 
                 cancelRequest(position)
             }
@@ -74,7 +72,7 @@ class FriendsAdapter(
         else if (keysList[position] == "friends") {
             view.itemFriendsWaitingButton.visibility = View.GONE
             view.itemFriendsWaitingTitle.visibility = View.GONE
-            view.itemFriendsCancelTitle.text = "Удалить из\n друзей"
+            view.itemFriendsCancelTitle.text = context.getString(R.string.friends_removeFromFriends)
 
             view.itemFriendsCancelReqButton.setOnClickListener {
                 unfriendRequest(position)
@@ -88,56 +86,11 @@ class FriendsAdapter(
 
         userDatabase.child(ourId).child("friends").child(senderId).removeValue().addOnSuccessListener {
             userDatabase.child(senderId).child("friends").child(ourId).removeValue().addOnSuccessListener {
-                Toast.makeText(context, "Удаление успешно!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.toast_friendDeleted), Toast.LENGTH_SHORT).show()
                 removeItem(position)
             }
         }
     }
-
-//    private fun declineRequest(position: Int) {
-//        val ourId = auth.currentUser!!.uid
-//        val senderId = list[position].id
-//        deleteRequest(position)
-//    }
-//
-//    private fun acceptRequest(position: Int) {
-//        val ourId = auth.currentUser!!.uid
-//        val senderId = list[position].id
-//
-//        userDatabase.child(ourId).child("friends").child(senderId).setValue("friend").addOnSuccessListener {
-//            userDatabase.child(senderId).child("friends").child(ourId).setValue("friend").addOnSuccessListener {
-//                Toast.makeText(context, "Теперь вы друзья!", Toast.LENGTH_SHORT).show()
-//                deleteRequest("friends", position)
-//            }
-//        }
-//    }
-
-//    private fun deleteRequest(state: String, position: Int) {
-//        val ourId = auth.currentUser!!.uid
-//        val senderId = list[position].id
-//
-//        friendRequestDatabase.child(ourId).child(senderId).removeValue().addOnSuccessListener {
-//            friendRequestDatabase.child(senderId).child(ourId).removeValue().addOnSuccessListener {
-//                changeItem(state, position)
-//            }
-//        }
-//    }
-//
-//    private fun deleteRequest(position: Int) {
-//        val ourId = auth.currentUser!!.uid
-//        val senderId = list[position].id
-//
-//        friendRequestDatabase.child(ourId).child(senderId).removeValue().addOnSuccessListener {
-//            friendRequestDatabase.child(senderId).child(ourId).removeValue().addOnSuccessListener {
-//                removeItem(position)
-//            }
-//        }
-//    }
-
-//    private fun changeItem(state: String, position: Int) {
-//        FriendsListCollection.instance.keysList[position] = state
-//        notifyDataSetChanged()
-//    }
 
     private fun cancelRequest(position: Int) {
         val senderId = auth.currentUser!!.uid
@@ -145,7 +98,7 @@ class FriendsAdapter(
 
         friendRequestDatabase.child(senderId).child(receiverId).removeValue().addOnSuccessListener {
                 friendRequestDatabase.child(receiverId).child(senderId).removeValue().addOnSuccessListener {
-                        Toast.makeText(context, "Запрос отменён", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.toast_reqCanceled), Toast.LENGTH_SHORT).show()
                         removeItem(position)
                     }
             }

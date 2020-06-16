@@ -77,7 +77,7 @@
             app:layout_constraintTop_toBottomOf="@+id/itemAddFriendsSendReqButton"
 
             android:visibility="invisible"
-            android:text="Ожидание \n ответа"
+            android:text="@string/add_friends_waitingResponse"
             android:textSize="12sp"
             android:textAlignment="center"
 
@@ -94,7 +94,7 @@
             app:layout_constraintTop_toBottomOf="@+id/itemAddFriendsCancelReqButton"
 
             android:visibility="invisible"
-            android:text="Отменить \n запрос"
+            android:text="@string/add_friends_cancelRequest"
             android:textSize="12sp"
             android:textAlignment="center"
 

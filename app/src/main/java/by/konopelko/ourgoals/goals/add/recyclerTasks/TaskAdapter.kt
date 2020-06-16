@@ -31,37 +31,37 @@ class TaskAdapter(val list: List<Task>) : RecyclerView.Adapter<TaskAdapter.TaskV
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        val taskView = holder.itemView
+        val view = holder.itemView
 
-        taskView.itemTaskCompleteText.text =
+        view.itemTaskCompleteText.text =
             AddTaskSingleton.instance.taskList[position].text
 
-        taskView.itemTaskCompleteDate.text =
+        view.itemTaskCompleteDate.text =
             AddTaskSingleton.instance.taskList[position].finishDate
 
-        if (taskView.itemTaskCompleteText.text.isNotEmpty()) {
-            taskView.itemAddTaskLayout.visibility = View.GONE
-            taskView.itemTaskCompleteLayout.visibility = View.VISIBLE
+        if (view.itemTaskCompleteText.text.isNotEmpty()) {
+            view.itemAddTaskLayout.visibility = View.GONE
+            view.itemTaskCompleteLayout.visibility = View.VISIBLE
         }
         else {
-            taskView.itemAddTaskLayout.visibility = View.VISIBLE
-            taskView.itemTaskCompleteLayout.visibility = View.GONE
+            view.itemAddTaskLayout.visibility = View.VISIBLE
+            view.itemTaskCompleteLayout.visibility = View.GONE
         }
 
-        taskView.itemAddTaskText.text?.clear()
-        taskView.itemAddTaskDate.text = ""
+        view.itemAddTaskText.text?.clear()
+        view.itemAddTaskDate.text = ""
 
         var text: String
         var date: String
 
-        taskView.itemAddTaskDatePickButton.setOnClickListener {
+        view.itemAddTaskDatePickButton.setOnClickListener {
             val calendar= Calendar.getInstance()
             val yearCurrent = calendar.get(Calendar.YEAR)
             val monthCurrent = calendar.get(Calendar.MONTH)
             val dayCurrent = calendar.get(Calendar.DAY_OF_MONTH)
 
-            val datePickerDialog = DatePickerDialog(taskView.context, DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                taskView.itemAddTaskDate.text =
+            val datePickerDialog = DatePickerDialog(view.context, DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                view.itemAddTaskDate.text =
                     "" + dayOfMonth + " - " + (monthOfYear + 1) + " - " + year
 
             }, yearCurrent, monthCurrent, dayCurrent)
@@ -70,12 +70,12 @@ class TaskAdapter(val list: List<Task>) : RecyclerView.Adapter<TaskAdapter.TaskV
 
         }
 
-        taskView.itemAddTaskAddButton.setOnClickListener {
-            if (taskView.itemAddTaskText.text.toString().isNotEmpty() &&
-                taskView.itemAddTaskDate.text.toString().isNotEmpty()
+        view.itemAddTaskAddButton.setOnClickListener {
+            if (view.itemAddTaskText.text.toString().isNotEmpty() &&
+                view.itemAddTaskDate.text.toString().isNotEmpty()
             ) {
-                text = taskView.itemAddTaskText.text.toString()
-                date = taskView.itemAddTaskDate.text.toString()
+                text = view.itemAddTaskText.text.toString()
+                date = view.itemAddTaskDate.text.toString()
 
                 AddTaskSingleton.instance.taskList[AddTaskSingleton.instance.taskList.size - 1] =
                     Task(
@@ -86,42 +86,42 @@ class TaskAdapter(val list: List<Task>) : RecyclerView.Adapter<TaskAdapter.TaskV
 
                 Log.e("GOALS IN PROGRESS", "${GoalCollection.instance.goalsInProgressList}")
 
-                taskView.itemAddTaskLayout.visibility = View.GONE
-                taskView.itemTaskCompleteLayout.visibility = View.VISIBLE
-                taskView.itemTaskCompleteText.text =
+                view.itemAddTaskLayout.visibility = View.GONE
+                view.itemTaskCompleteLayout.visibility = View.VISIBLE
+                view.itemTaskCompleteText.text =
                     AddTaskSingleton.instance.taskList[AddTaskSingleton.instance.taskList.size - 1].text
-                taskView.itemTaskCompleteDate.text =
+                view.itemTaskCompleteDate.text =
                     AddTaskSingleton.instance.taskList[AddTaskSingleton.instance.taskList.size - 1].finishDate
 
                 AddTaskSingleton.instance.taskToComplete = 0
             }
         }
-        taskView.itemAddTaskDeleteButton.setOnClickListener {
+        view.itemAddTaskDeleteButton.setOnClickListener {
             // deleting new task
-            taskView.itemAddTaskText.text?.clear()
+            view.itemAddTaskText.text?.clear()
 
             (list as ArrayList<Task>).removeAt(holder.adapterPosition)
             notifyItemRemoved(holder.adapterPosition)
 
             AddTaskSingleton.instance.taskToComplete = 0
         }
-        taskView.itemTaskCompleteDeleteButton.setOnClickListener {
+        view.itemTaskCompleteDeleteButton.setOnClickListener {
             // deleting completed task
 
             (list as ArrayList<Task>).removeAt(holder.adapterPosition)
             notifyItemRemoved(holder.adapterPosition)
         }
-        taskView.itemTaskCompleteEditButton.setOnClickListener {
+        view.itemTaskCompleteEditButton.setOnClickListener {
             // editing completed task
             if (AddTaskSingleton.instance.taskToComplete == 1) {
-                Toast.makeText(taskView.context, "Завершите редактирование задачи", Toast.LENGTH_SHORT).show()
+                Toast.makeText(view.context, view.context.getString(R.string.toast_finishTastEdit), Toast.LENGTH_SHORT).show()
             }
             else {
-                taskView.itemAddTaskLayout.visibility = View.VISIBLE
-                taskView.itemTaskCompleteLayout.visibility = View.GONE
+                view.itemAddTaskLayout.visibility = View.VISIBLE
+                view.itemTaskCompleteLayout.visibility = View.GONE
 
-                taskView.itemAddTaskText.setText(taskView.itemTaskCompleteText.text)
-                taskView.itemAddTaskDate.text = taskView.itemTaskCompleteDate.text
+                view.itemAddTaskText.setText(view.itemTaskCompleteText.text)
+                view.itemAddTaskDate.text = view.itemTaskCompleteDate.text
 
                 AddTaskSingleton.instance.taskToComplete = 1
             }

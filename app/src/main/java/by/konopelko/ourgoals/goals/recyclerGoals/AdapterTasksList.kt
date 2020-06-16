@@ -110,11 +110,11 @@ class AdapterTasksList(
                         userDatabase.child(currentUserId).child("socialGoals").child(goalKey)
                             .child("tasks").child(taskPosition.toString()).child("complete")
                             .setValue(checked).addOnSuccessListener {
-                                Toast.makeText(
-                                    fragmentGoals.context,
-                                    "Наша Цель на сервере изменина",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+//                                Toast.makeText(
+//                                    fragmentGoals.context,
+//                                    "Наша Цель на сервере изменина",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
                             }
                     }
             }

@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Новая Задача"
+        android:text="@string/add_goal_tasks_newTask"
         app:layout_constraintEnd_toEndOf="parent"
 
         app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +49,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addTaskFragmentAddButton"
 
-        android:text="Назад"
+        android:text="@string/add_goal_tasks_back"
         android:textColor="@color/colorAccent"
         app:backgroundTint="@color/white"/>
 
@@ -63,7 +63,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addTaskFragmentAddButton"
 
-        android:text="Готово"
+        android:text="@string/add_goal_tasks_complete"
         android:textColor="@color/colorAccent"
         app:backgroundTint="@color/white"/>
 

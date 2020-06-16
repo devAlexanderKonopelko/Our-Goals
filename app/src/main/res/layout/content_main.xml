@@ -44,6 +44,7 @@
                         android:id="@+id/toolbarSortContainer"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                         android:layout_width="wrap_content"
+                        android:minWidth="150dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
@@ -58,7 +59,7 @@
                             android:enabled="false"
                             android:focusable="false"
                             android:inputType="none"
-                            android:text="Все категории"
+                            android:text="@string/all_categories"
                             android:textSize="14sp"
                             android:textColor="@color/white" />
                     </com.google.android.material.textfield.TextInputLayout>

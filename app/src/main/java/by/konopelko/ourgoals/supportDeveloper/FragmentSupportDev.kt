@@ -42,7 +42,7 @@ class FragmentSupportDev: DialogFragment() {
             override fun onAdFailedToLoad(errorCode: Int) {
                 Toast.makeText(
                     this@FragmentSupportDev.context,
-                    "Ошибка загрузки рекламы",
+                    getString(R.string.toast_ad_downloadError),
                     Toast.LENGTH_SHORT)
                     .show()
             }

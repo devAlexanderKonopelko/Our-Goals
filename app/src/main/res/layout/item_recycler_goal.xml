@@ -25,7 +25,7 @@
             android:textSize="14sp"
             android:textColor="@color/black"
 
-            android:hint="Категория"/>
+            tools:hint="Категория"/>
 
         <Button
             android:id="@+id/itemGoalSocialButton"
@@ -92,7 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:hint="50%"
+                    tools:hint="50%"
                     android:textColor="@color/colorAccent" />
             </FrameLayout>
 
@@ -103,7 +103,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
                 android:layout_gravity="center_vertical" />
-
             <TextView
                 android:id="@+id/itemGoalText"
                 android:layout_width="0dp"
@@ -114,7 +113,8 @@
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:layout_gravity="center_vertical"
-                tools:text="Сделать андроид-приложение OurGoals до конца 2020 года и залить его в Play Market с рекламой чтобы зарабатывать на нём." />
+                tools:text="Сделать андроид-приложение OurGoals до конца 2020 года и залить его в Play Market с рекламой чтобы зарабатывать на нём."
+                android:scrollbars="vertical" />
         </LinearLayout>
 
 
@@ -134,7 +134,7 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
-            android:text="Завершить"
+            android:text="@string/item_goal_complete"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -149,7 +149,7 @@
             android:background="#00FFFFFF"
             android:layout_marginStart="10dp"
             android:padding="0dp"
-            android:text="Подробнее"
+            tools:text="Подробнее"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

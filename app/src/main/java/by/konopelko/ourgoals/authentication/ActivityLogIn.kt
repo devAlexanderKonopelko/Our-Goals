@@ -51,7 +51,7 @@ class ActivityLogIn : AppCompatActivity(), View.OnClickListener {
             guestButton.id -> {
                 // if user enters as a guest
                 auth.signInAnonymously()
-                CurrentSession.instance.currentUser = User("0", "Гость", ArrayList())
+                CurrentSession.instance.currentUser = User("0", getString(R.string.username_guest), ArrayList())
 
                 CoroutineScope(Dispatchers.IO).launch {
                     loadUsersCategories("0")

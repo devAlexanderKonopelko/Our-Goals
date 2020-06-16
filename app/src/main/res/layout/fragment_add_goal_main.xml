@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
 
-        android:text="Новая Цель"
+        android:text="@string/add_goal_main_title"
         android:textSize="16sp"
         android:textColor="@color/black"/>
 
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        android:text="Цель:"
+        android:text="@string/add_goal_main_text"
         android:textColor="@color/black"
 
         app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +43,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
 
-        android:hint="Я хочу"
+        android:hint="@string/add_goal_main_text_hint"
         app:boxStrokeColor="@color/colorAccent"
         app:hintTextColor="@color/colorAccent">
 
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_gravity="center_vertical"
-            android:text="Категория: "
+            android:text="@string/add_goal_main_category"
             android:textColor="@color/black"/>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -85,7 +85,7 @@
                 android:id="@+id/addGoalFragmentCategoryList"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:hint="Категория"
+                android:hint="@string/add_goal_main_category_hint"
                 android:enabled="false"
                 android:textSize="14sp"
                 android:textColor="@color/black"
@@ -143,7 +143,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="20dp"
-            android:text="Общая:"
+            android:text="@string/add_goal_main_social"
             android:textColor="@color/black"/>
 
         <com.google.android.material.switchmaterial.SwitchMaterial
@@ -175,7 +175,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addGoalFragmentSocialLayout"
 
-        android:text="Отмена"
+        android:text="@string/add_goal_main_cancel"
         android:textColor="@color/colorAccent"
         app:backgroundTint="@color/white" />
 
@@ -189,7 +189,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addGoalFragmentSocialLayout"
 
-        android:text="Далее"
+        android:text="@string/add_goal_main_next"
         android:textColor="@color/colorAccent"
         app:backgroundTint="@color/white"/>
 
