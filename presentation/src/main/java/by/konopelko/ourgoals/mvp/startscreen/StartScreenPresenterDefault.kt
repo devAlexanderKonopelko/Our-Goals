@@ -23,27 +23,34 @@ class StartScreenPresenterDefault(val view: StartScreenView, context: Context): 
         return interactor.createDefaultCategories(uid, titles, context)
     }
 
-    override fun onDefaultAnalyticsCreated(): Boolean {
-        return true
+    override suspend fun onDefaultAnalyticsCreated(uid: String, context: Context): Boolean {
+        return interactor.createDefaultAnalytics(uid, context)
     }
 
-    override fun onCurrentUserDataLoaded(): Boolean {
-        return true
+    override suspend fun onCurrentUserDataLoaded(uid: String, context: Context): Boolean {
+        val result: Boolean = interactor.setCurrentUser(uid, context)
+        if (result) {
+            onUsersCategoriesLoaded(uid, context)
+            onUsersPersonalGoalsLoaded(uid, context)
+            onUsersSocialGoalsLoaded(uid, context)
+            onUsersAnalyticsLoaded(uid, context)
+        }
+        return result
     }
 
-    override fun onUsersCategoriesLoaded(): Boolean {
-        return true
+    override suspend fun onUsersCategoriesLoaded(uid: String, context: Context): Boolean {
+        return interactor.loadUsersCategories(uid, context)
     }
 
-    override fun onUsersPersonalGoalsLoaded(): Boolean {
-        return true
+    override suspend fun onUsersPersonalGoalsLoaded(uid: String, context: Context): Boolean {
+        return interactor.loadUsersPersonalGoals(uid, context)
     }
 
-    override fun onUsersSocialGoalsLoaded(): Boolean {
-        return true
+    override suspend fun onUsersSocialGoalsLoaded(uid: String, context: Context): Boolean {
+        return interactor.loadUsersSocialGoals(uid, context)
     }
 
-    override fun onUsersAnalyticsLoaded(): Boolean {
-        return true
+    override suspend fun onUsersAnalyticsLoaded(uid: String, context: Context): Boolean {
+        return interactor.loadUsersAnalytics(uid, context)
     }
 }

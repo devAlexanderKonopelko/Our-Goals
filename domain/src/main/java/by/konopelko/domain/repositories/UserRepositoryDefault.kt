@@ -18,5 +18,10 @@ class UserRepositoryDefault: UserRepository {
         return userRepositoryImpl.createUser(uid, name, context)
     }
 
+    override suspend fun setCurrentUser(uid: String, context: Context): Boolean {
+        userRepositoryImpl = UserRepositoryImpl()
+        return userRepositoryImpl.setCurrentUser(uid, context)
+    }
+
 
 }

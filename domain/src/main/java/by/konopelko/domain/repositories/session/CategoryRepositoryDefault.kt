@@ -3,9 +3,11 @@ package by.konopelko.domain.repositories.session
 import android.content.Context
 import by.konopelko.data.database.entities.Category
 import by.konopelko.data.repositories.DatabaseRepositoryImpl
+import by.konopelko.data.repositories.session.CategoryRepositoryImpl
 
 class CategoryRepositoryDefault: CategoryRepository {
     lateinit var databaseRepositoryImpl: DatabaseRepositoryImpl
+    lateinit var categoryRepositoryImpl: CategoryRepositoryImpl
     override suspend fun createDefaultCategories(ownerId: String, titles: ArrayList<String>, context: Context): Boolean {
         databaseRepositoryImpl = DatabaseRepositoryImpl()
 
@@ -22,5 +24,10 @@ class CategoryRepositoryDefault: CategoryRepository {
         defaultbgColors.add(-11862145)
 
         return databaseRepositoryImpl.addCategories(ownerId, titles, defaultBgUrls, defaultbgColors, context)
+    }
+
+    override suspend fun loadUsersCategoris(uid: String, context: Context): Boolean {
+        categoryRepositoryImpl = CategoryRepositoryImpl()
+        return categoryRepositoryImpl.loadUsersCategoris(uid, context)
     }
 }

@@ -1,19 +1,20 @@
 package by.konopelko.data.repositories.session
 
+import android.content.Context
 import by.konopelko.data.database.entities.Category
+import by.konopelko.data.repositories.DatabaseRepositoryImpl
 import by.konopelko.data.session.CategoriesData
 
 class CategoryRepositoryImpl {
-    suspend fun loadCategories(list: ArrayList<Category>): Boolean {
-        CategoriesData.instance.categoryList = list
-        return true
-    }
-    suspend fun addCategory(category: Category): Boolean {
-        CategoriesData.instance.categoryList.add(category)
-        return true
-    }
-    suspend fun removeCategory(category: Category): Boolean {
-        CategoriesData.instance.categoryList.remove(category)
-        return true
+    lateinit var databaseRepositoryImpl: DatabaseRepositoryImpl
+
+    suspend fun loadUsersCategoris(uid: String, context: Context): Boolean {
+        databaseRepositoryImpl = DatabaseRepositoryImpl()
+        val categories = databaseRepositoryImpl.loadUsersCategoris(uid, context)
+        if (categories.isNotEmpty()) {
+            CategoriesData.instance.categoryList = categories
+            return true
+        }
+        return false
     }
 }

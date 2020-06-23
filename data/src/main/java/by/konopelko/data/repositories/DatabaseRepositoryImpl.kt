@@ -2,7 +2,9 @@ package by.konopelko.data.repositories
 
 import android.content.Context
 import by.konopelko.data.database.DatabaseInstance
+import by.konopelko.data.database.entities.Analytics
 import by.konopelko.data.database.entities.Category
+import by.konopelko.data.database.entities.Goal
 import by.konopelko.data.database.entities.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +23,13 @@ class DatabaseRepositoryImpl {
         }.await()
 
         return user == 1
+    }
+
+    suspend fun getUserById(uid: String, context: Context): User {
+        val user = CoroutineScope(Dispatchers.IO).async {
+            DatabaseInstance.getInstance(context).database.getUserDao().getUserById(uid)
+        }.await()
+        return user
     }
 
     suspend fun addUser(uid: String, name: String, context: Context): Boolean {
@@ -47,5 +56,32 @@ class DatabaseRepositoryImpl {
         }.await()
 
         return true
+    }
+
+    suspend fun addAnalytics(ownerId: String, context: Context): Boolean {
+        val analytics = Analytics(ownerId, 0, 0, 0, 0)
+        CoroutineScope(Dispatchers.IO).async {
+            DatabaseInstance.getInstance(context).database.getAnalyticsDao().addAnalytics(analytics)
+        }.await()
+
+        return true
+    }
+
+    suspend fun loadUsersAnalytics(uid: String, context: Context): Analytics {
+        return CoroutineScope(Dispatchers.IO).async {
+            DatabaseInstance.getInstance(context).database.getAnalyticsDao().getAnalyticsByUid(uid)
+        }.await()
+    }
+
+    suspend fun loadUsersPersonalGoals(uid: String, context: Context): ArrayList<Goal> {
+        return CoroutineScope(Dispatchers.IO).async {
+            DatabaseInstance.getInstance(context).database.getGoalDao().getGoalsByUsersId(uid) as ArrayList<Goal>
+        }.await()
+    }
+
+    suspend fun loadUsersCategoris(uid: String, context: Context): ArrayList<Category> {
+        return CoroutineScope(Dispatchers.IO).async {
+            DatabaseInstance.getInstance(context).database.getCategoryDao().getCategoriesByUsersId(uid) as ArrayList<Category>
+        }.await()
     }
 }

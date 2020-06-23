@@ -5,13 +5,15 @@ import by.konopelko.domain.repositories.DatabaseRepository
 import by.konopelko.domain.repositories.DatabaseRepositoryDefault
 import by.konopelko.domain.repositories.UserRepository
 import by.konopelko.domain.repositories.UserRepositoryDefault
-import by.konopelko.domain.repositories.session.CategoryRepository
-import by.konopelko.domain.repositories.session.CategoryRepositoryDefault
+import by.konopelko.domain.repositories.session.*
 
 class StartScreenInteractor {
     lateinit var userRepository: UserRepository
     lateinit var databaseRepository: DatabaseRepository
     lateinit var categoryRepository: CategoryRepository
+    lateinit var analyticsRepository: AnalyticsRepository
+    lateinit var personalGoalRepository: PersonalGoalRepository
+    lateinit var teamGoalsRepository: TeamGoalsRepository
 
     suspend fun checkGuestUserExistence(uid: String, context: Context): Boolean {
         userRepository = UserRepositoryDefault()
@@ -31,5 +33,35 @@ class StartScreenInteractor {
     suspend fun createDefaultCategories(uid: String, titles: ArrayList<String>, context: Context): Boolean {
         categoryRepository = CategoryRepositoryDefault()
         return categoryRepository.createDefaultCategories(uid, titles, context)
+    }
+
+    suspend fun createDefaultAnalytics(uid: String, context: Context): Boolean {
+        analyticsRepository = AnalyticsRepositoryDefault()
+        return analyticsRepository.createDefaultAnalytics(uid, context)
+    }
+
+    suspend fun setCurrentUser(uid: String, context: Context): Boolean {
+        userRepository = UserRepositoryDefault()
+        return userRepository.setCurrentUser(uid, context)
+    }
+
+    suspend fun loadUsersCategories(uid: String, context: Context): Boolean {
+        categoryRepository = CategoryRepositoryDefault()
+        return categoryRepository.loadUsersCategoris(uid, context)
+    }
+
+    suspend fun loadUsersPersonalGoals(uid: String, context: Context): Boolean {
+        personalGoalRepository = PersonalGoalRepositoryDefault()
+        return personalGoalRepository.loadUsersPersonalGoals(uid, context)
+    }
+
+    suspend fun loadUsersSocialGoals(uid: String, context: Context): Boolean {
+        teamGoalsRepository = TeamGoalsRepositoryDefault()
+        return teamGoalsRepository.loadUsersTeamGoals(uid, context)
+    }
+
+    suspend fun loadUsersAnalytics(uid: String, context: Context): Boolean {
+        analyticsRepository = AnalyticsRepositoryDefault()
+        return analyticsRepository.loadUsersAnalytics(uid, context)
     }
 }
