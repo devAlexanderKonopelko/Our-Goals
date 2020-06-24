@@ -9,6 +9,7 @@ import by.konopelko.data.session.TeamGoalsData
 class GoalRepositoryImpl {
     lateinit var databaseRepositoryImpl: DatabaseRepositoryImpl
     lateinit var teamGoalRepositoryImpl: TeamGoalRepositoryImpl
+
     suspend fun loadUsersPersonalGoals(uid: String, context: Context): Boolean {
         databaseRepositoryImpl = DatabaseRepositoryImpl()
         GoalsData.instance.goalsInProgressList = databaseRepositoryImpl.loadUsersPersonalGoals(uid, context)

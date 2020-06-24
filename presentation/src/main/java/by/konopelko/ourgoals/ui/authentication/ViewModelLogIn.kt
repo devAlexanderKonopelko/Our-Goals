@@ -1,4 +1,4 @@
-package by.konopelko.ourgoals.authentication
+package by.konopelko.ourgoals.ui.authentication
 
 import androidx.lifecycle.ViewModel
 

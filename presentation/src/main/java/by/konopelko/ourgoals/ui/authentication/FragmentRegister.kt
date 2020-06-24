@@ -1,6 +1,5 @@
-package by.konopelko.ourgoals.authentication
+package by.konopelko.ourgoals.ui.authentication
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,14 +12,10 @@ import androidx.lifecycle.ViewModelProvider
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.temporaryData.*
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -191,7 +186,8 @@ class FragmentRegister : Fragment() {
 
 
                                             registerFragmentProgressBar.visibility = View.INVISIBLE
-                                            val logInFragment = FragmentLogIn()
+                                            val logInFragment =
+                                                FragmentLogIn()
                                             activity?.run {
                                                 val model =
                                                     ViewModelProvider(this).get(ViewModelLogIn::class.java)

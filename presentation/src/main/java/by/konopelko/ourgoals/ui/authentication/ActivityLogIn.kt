@@ -1,4 +1,4 @@
-package by.konopelko.ourgoals.authentication
+package by.konopelko.ourgoals.ui.authentication
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -10,17 +10,19 @@ import by.konopelko.ourgoals.ActivityMain
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.guide.ActivityGuide
+import by.konopelko.ourgoals.mvp.authentication.LogInPresenterDefault
+import by.konopelko.ourgoals.mvp.authentication.LogInView
 import by.konopelko.ourgoals.temporaryData.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_log_in.*
 import kotlinx.coroutines.*
 
-class ActivityLogIn : AppCompatActivity(), View.OnClickListener {
+class ActivityLogIn : AppCompatActivity(), LogInView, View.OnClickListener {
     private val logInFragment = FragmentLogIn()
     private val registerFragment = FragmentRegister()
+    private val presenter = LogInPresenterDefault(this)
 
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val model = ViewModelProvider(this).get(ViewModelLogIn::class.java)
@@ -28,6 +30,7 @@ class ActivityLogIn : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_log_in)
 
+        // when activity created user first sees logInFragment
         supportFragmentManager.beginTransaction().replace(logInFragmentLayout.id, logInFragment)
             .commit()
         model.activeFragment = model.LOG_IN_FRAGMENT
@@ -39,25 +42,32 @@ class ActivityLogIn : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         val model = ViewModelProvider(this).get(ViewModelLogIn::class.java)
         when (v?.id) {
-            registerButton.id -> {
-                // if user wants to register
+            registerButton.id -> { // if user wants to register
+                // inflating registerFragment
                 supportFragmentManager.beginTransaction()
                     .replace(logInFragmentLayout.id, registerFragment).commit()
 
+                // changing buttons visibility
                 registerButton.visibility = View.GONE
                 guestButton.visibility = View.GONE
                 model.activeFragment = model.REGISTER_FRAGMENT
             }
-            guestButton.id -> {
-                // if user enters as a guest
+            guestButton.id -> { // if user enters as a guest
                 auth.signInAnonymously()
-                CurrentSession.instance.currentUser = User("0", getString(R.string.username_guest), ArrayList())
+//                CurrentSession.instance.currentUser = User("0", getString(R.string.username_guest), ArrayList()) // OLD
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    loadUsersCategories("0")
-                    loadUsersPersonalGoals("0")
-                    loadUsersAnalytics("0")
+                    loadCurrentUserData() // NEW устанавливает текущего пользователя Гость,
+                    // загружает категории, личные цели и аналитику Гостя
 
+                    loadUsersCategories("0") // OLD
+                    loadUsersPersonalGoals("0") // OLD
+                    loadUsersAnalytics("0") // OLD
+
+
+                    checkAndRunActivity() // NEW проверяет, первый ли это запуск и запускает нужную Activity
+
+                    // OLD
                     withContext(Dispatchers.Main) {
                         if (CurrentSession.instance.firstTimeRun) {
                             startActivity(Intent(this@ActivityLogIn, ActivityGuide::class.java))
@@ -69,6 +79,14 @@ class ActivityLogIn : AppCompatActivity(), View.OnClickListener {
                 }
             }
         }
+    }
+
+    private fun checkAndRunActivity(): Boolean {
+        return true
+    }
+
+    private fun loadCurrentUserData(): Boolean {
+        return true
     }
 
     private suspend fun loadUsersAnalytics(id: String) {
@@ -130,5 +148,17 @@ class ActivityLogIn : AppCompatActivity(), View.OnClickListener {
         } else {
             finishAffinity()
         }
+    }
+
+    override fun onLogIn(result: Int, uid: String) {
+
+    }
+
+    override fun onUserLoadedFromServer(user: User) {
+
+    }
+
+    override fun onSocialGoalsLoaded(result: Boolean) {
+
     }
 }

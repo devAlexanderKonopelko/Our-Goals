@@ -28,7 +28,7 @@ import by.konopelko.ourgoals.friends.FragmentFriends
 import by.konopelko.ourgoals.goals.FragmentGoals
 import by.konopelko.ourgoals.goals.add.FragmentAddGoal
 import by.konopelko.ourgoals.goals.add.FragmentAddTasks
-import by.konopelko.ourgoals.authentication.ActivityLogIn
+import by.konopelko.ourgoals.ui.authentication.ActivityLogIn
 import by.konopelko.ourgoals.goals.add.FragmentChooseFriends
 import by.konopelko.ourgoals.help.FragmentHelp
 import by.konopelko.ourgoals.notifications.AdapterNotifications

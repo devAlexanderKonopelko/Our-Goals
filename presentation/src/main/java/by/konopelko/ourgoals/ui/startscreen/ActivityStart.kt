@@ -11,7 +11,7 @@ import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.entities.Goal
 import by.konopelko.ourgoals.database.entities.Task
 import by.konopelko.ourgoals.database.entities.User
-import by.konopelko.ourgoals.authentication.ActivityLogIn
+import by.konopelko.ourgoals.ui.authentication.ActivityLogIn
 import by.konopelko.ourgoals.mvp.startscreen.StartScreenPresenterDefault
 import by.konopelko.ourgoals.mvp.startscreen.StartScreenView
 import by.konopelko.ourgoals.temporaryData.*
@@ -41,12 +41,10 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val savedVersionCode = prefs.getInt(
             PREFS_VERSION_CODE_KEY,
-            PREFS_CODE_DOESNT_EXIST
-        )
+            PREFS_CODE_DOESNT_EXIST)
 
         CoroutineScope(Dispatchers.IO).launch {
             loadDatabaseInstance() // загрузка ссылки на БД NEW
-
 //            createGuest() // OLD
 //            setCurrentUser() // OLD
 
@@ -57,22 +55,28 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
                     if (auth.currentUser != null) {
                         if (auth.currentUser!!.isEmailVerified) {
                             loadCurrentUserData() // NEW загрузка данных текущего пользователя
-                            transitToMainScreen() // NEW переход к MainActivity
+                            transitToMainScreen() // NEW переход к ActivityMain
+//                            waitAndTransitToMain() // OLD
 
-                            waitAndTransitToMain() // OLD
-
-                        } else waitAndTransitToLogIn()
+                        } else {
+                            transitToSignInScreen() // NEW переход к ActivityLogIn
+//                            waitAndTransitToLogIn() // OLD
+                        }
                     } else {
-                        waitAndTransitToMain()
+                        loadCurrentUserData() // NEW загрузка данных текущего пользователя
+                        transitToMainScreen() // NEW переход к MainActivity
+//                        waitAndTransitToMain() // OLD
                     }
                 }
                 // Первый запуск/очищены prefs
                 savedVersionCode == PREFS_CODE_DOESNT_EXIST -> {
-                    loadUserGuestData() // загрузка данных Гостя NEW
-                    loadCurrentUserData() // загрузка данных текущего пользователя NEW
+                    loadUserGuestData() // NEW загрузка данных Гостя
+                    loadCurrentUserData() // NEW загрузка данных текущего пользователя
 
                     CurrentSession.instance.firstTimeRun = true
-                    waitAndTransitToLogIn()
+
+                    transitToSignInScreen() // NEW переход к ActivityLogIn
+//                    waitAndTransitToLogIn() // OLD
                 }
                 currentVersionCode > savedVersionCode -> {
                     // TODO Обновление приложения
@@ -116,6 +120,19 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
             // создание аналитики Гостя в БД
             if (guestCreated) guestCreated = presenter.onDefaultAnalyticsCreated(guestId, this)
             guestCreated
+        }
+    }
+
+    override suspend fun transitToMainScreen() {
+        withContext(Dispatchers.Main) {
+            startActivity(Intent(this@ActivityStart, ActivityMain::class.java))
+        }
+    }
+
+    override suspend fun transitToSignInScreen() {
+        // start ActivityLogIn
+        withContext(Dispatchers.Main) {
+            startActivity(Intent(this@ActivityStart, ActivityLogIn::class.java))
         }
     }
 
@@ -272,14 +289,6 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
                 override fun onCancelled(p0: DatabaseError) {
                 }
             })
-    }
-
-    override fun transitToMainScreen() {
-        // start activity Main
-    }
-
-    override fun transitToSignInScreen() {
-        // start activity LogIn
     }
 
 }

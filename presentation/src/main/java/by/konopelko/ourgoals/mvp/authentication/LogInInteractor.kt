@@ -1,6 +1,5 @@
-package by.konopelko.ourgoals.authentication.core
+package by.konopelko.ourgoals.mvp.authentication
 
-import android.util.Log
 import by.konopelko.ourgoals.database.entities.Goal
 import by.konopelko.ourgoals.database.entities.Task
 import by.konopelko.ourgoals.database.entities.User
@@ -14,9 +13,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class LogInInteractor(val onOperationListener: LogInContract.OnOperationListener) :
     LogInContract.Interactor {

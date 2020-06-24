@@ -1,11 +1,16 @@
-package by.konopelko.ourgoals.authentication.core
+package by.konopelko.ourgoals.mvp.authentication
 
+import by.konopelko.domain.interactors.authentication.AuthenticationInteractor
 import by.konopelko.ourgoals.database.entities.User
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
-class LogInPresenter(private val view: LogInContract.View) :
-    LogInContract.Presenter, LogInContract.OnOperationListener {
-    private val interactor: LogInContract.Interactor = LogInInteractor(this)
+class LogInPresenterDefault(private val view: LogInView) :
+    LogInContract.Presenter,
+    LogInContract.OnOperationListener, LogInPresenter {
+    private val interactor: LogInContract.Interactor =
+        LogInInteractor(this)
+
+    private val interactor2 = AuthenticationInteractor()
 
     override fun logIn(email: String, password: String) {
         interactor.performLogIn(email, password)

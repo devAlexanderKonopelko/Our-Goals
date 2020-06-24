@@ -1,4 +1,4 @@
-package by.konopelko.ourgoals.authentication
+package by.konopelko.ourgoals.ui.authentication
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,33 +6,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import by.konopelko.ourgoals.ActivityMain
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.guide.ActivityGuide
-import by.konopelko.ourgoals.authentication.core.LogInContract
-import by.konopelko.ourgoals.authentication.core.LogInPresenter
+import by.konopelko.ourgoals.mvp.authentication.LogInContract
+import by.konopelko.ourgoals.mvp.authentication.LogInPresenterDefault
 import by.konopelko.ourgoals.temporaryData.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import kotlinx.android.synthetic.main.activity_log_in.*
 import kotlinx.android.synthetic.main.fragment_log_in.*
-import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.coroutines.*
 
 class FragmentLogIn : Fragment(), LogInContract.View {
@@ -43,7 +30,8 @@ class FragmentLogIn : Fragment(), LogInContract.View {
     private lateinit var googleSignInOptions: GoogleSignInOptions
     private lateinit var googleSignInClient: GoogleSignInClient
     private val SIGN_IN_CODE = 1
-    private val presenter = LogInPresenter(this)
+    private val presenter =
+        LogInPresenterDefault(this)
 
     override fun onCreateView(
         inflater: LayoutInflater,

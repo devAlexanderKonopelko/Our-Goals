@@ -1,4 +1,4 @@
-package by.konopelko.ourgoals.authentication.core
+package by.konopelko.ourgoals.mvp.authentication
 
 import by.konopelko.ourgoals.database.entities.User
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount

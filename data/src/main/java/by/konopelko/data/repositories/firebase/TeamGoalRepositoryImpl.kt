@@ -45,15 +45,20 @@ class TeamGoalRepositoryImpl {
                         list.add(newGoal)
                         keyList.add(goal.key.toString())
                     }
+                    setUsersTeamGoals(list, keyList)
                     return
                 }
 
                 override fun onCancelled(p0: DatabaseError) {
                 }
-            })
-        return true
+            }).also {
+                return true
+            }
     }
-    private fun setUsersTeamGoals(list: ArrayList<Goal>) {
+    private fun setUsersTeamGoals(list: ArrayList<Goal>, keys: ArrayList<String>) {
         TeamGoalsData.instance.goalList.clear()
+        TeamGoalsData.instance.keysList.clear()
+        TeamGoalsData.instance.goalList.addAll(list)
+        TeamGoalsData.instance.keysList.addAll(keys)
     }
 }

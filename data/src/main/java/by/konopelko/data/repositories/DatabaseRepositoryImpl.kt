@@ -79,7 +79,7 @@ class DatabaseRepositoryImpl {
         }.await()
     }
 
-    suspend fun loadUsersCategoris(uid: String, context: Context): ArrayList<Category> {
+    suspend fun loadUsersCategories(uid: String, context: Context): ArrayList<Category> {
         return CoroutineScope(Dispatchers.IO).async {
             DatabaseInstance.getInstance(context).database.getCategoryDao().getCategoriesByUsersId(uid) as ArrayList<Category>
         }.await()
