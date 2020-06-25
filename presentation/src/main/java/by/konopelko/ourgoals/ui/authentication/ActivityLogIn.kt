@@ -8,16 +8,15 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import by.konopelko.ourgoals.ActivityMain
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.guide.ActivityGuide
 import by.konopelko.ourgoals.mvp.authentication.LogInPresenterDefault
-import by.konopelko.ourgoals.mvp.authentication.LogInView
+import by.konopelko.ourgoals.mvp.authentication.LogInGeneralView
 import by.konopelko.ourgoals.temporaryData.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_log_in.*
 import kotlinx.coroutines.*
 
-class ActivityLogIn : AppCompatActivity(), LogInView, View.OnClickListener {
+class ActivityLogIn : AppCompatActivity(), LogInGeneralView, View.OnClickListener {
     private val logInFragment = FragmentLogIn()
     private val registerFragment = FragmentRegister()
     private val presenter = LogInPresenterDefault(this)
@@ -57,44 +56,46 @@ class ActivityLogIn : AppCompatActivity(), LogInView, View.OnClickListener {
 //                CurrentSession.instance.currentUser = User("0", getString(R.string.username_guest), ArrayList()) // OLD
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    loadCurrentUserData() // NEW устанавливает текущего пользователя Гость,
+                    loadCurrentUserData("0") // NEW устанавливает текущего пользователя Гость,
                     // загружает категории, личные цели и аналитику Гостя
 
-                    loadUsersCategories("0") // OLD
-                    loadUsersPersonalGoals("0") // OLD
-                    loadUsersAnalytics("0") // OLD
+//                    loadUsersCategories("0") // OLD
+//                    loadUsersPersonalGoals("0") // OLD
+//                    loadUsersAnalytics("0") // OLD
 
 
                     checkAndRunActivity() // NEW проверяет, первый ли это запуск и запускает нужную Activity
 
                     // OLD
-                    withContext(Dispatchers.Main) {
-                        if (CurrentSession.instance.firstTimeRun) {
-                            startActivity(Intent(this@ActivityLogIn, ActivityGuide::class.java))
-                            CurrentSession.instance.firstTimeRun = false
-                        } else {
-                            startActivity(Intent(this@ActivityLogIn, ActivityMain::class.java))
-                        }
-                    }
+//                    withContext(Dispatchers.Main) {
+//                        if (CurrentSession.instance.firstTimeRun) {
+//                            startActivity(Intent(this@ActivityLogIn, ActivityGuide::class.java))
+//                            CurrentSession.instance.firstTimeRun = false // OLD
+//                        } else {
+//                            startActivity(Intent(this@ActivityLogIn, ActivityMain::class.java))
+//                        }
+//                    }
                 }
             }
         }
     }
 
-    private fun checkAndRunActivity(): Boolean {
-        return true
+    private suspend fun checkAndRunActivity() {
+        presenter.onCurrentSessionRunChecked()
     }
 
-    private fun loadCurrentUserData(): Boolean {
-        return true
+    private suspend fun loadCurrentUserData(uid: String): Boolean {
+        return presenter.onCurrentUserDataLoaded(uid, this)
     }
 
+    // OLD
     private suspend fun loadUsersAnalytics(id: String) {
         AnalyticsSingleton.instance.analytics = CoroutineScope(Dispatchers.IO).async {
             DatabaseOperations.getInstance(this@ActivityLogIn).loadAnalytics(id).await()
         }.await()
     }
 
+    // OLD
     private suspend fun loadUsersCategories(id: String): Boolean {
         // очищаем локальную коллекцию пользовательских категорий
         CategoryCollection.instance.categoryList.clear()
@@ -113,6 +114,7 @@ class ActivityLogIn : AppCompatActivity(), LogInView, View.OnClickListener {
         } else return false
     }
 
+    // OLD
     private suspend fun loadUsersPersonalGoals(uid: String): Boolean {
         Log.e("INSIDE", "loadUsersPersonalGoals()")
 
@@ -150,15 +152,15 @@ class ActivityLogIn : AppCompatActivity(), LogInView, View.OnClickListener {
         }
     }
 
-    override fun onLogIn(result: Int, uid: String) {
-
+    override suspend fun startGuideActivity() {
+        withContext(Dispatchers.Main) {
+            startActivity(Intent(this@ActivityLogIn, ActivityGuide::class.java))
+        }
     }
 
-    override fun onUserLoadedFromServer(user: User) {
-
-    }
-
-    override fun onSocialGoalsLoaded(result: Boolean) {
-
+    override suspend fun startMainActivity() {
+        withContext(Dispatchers.Main) {
+            startActivity(Intent(this@ActivityLogIn, ActivityMain::class.java))
+        }
     }
 }

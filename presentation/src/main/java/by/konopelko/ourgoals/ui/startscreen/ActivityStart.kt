@@ -51,7 +51,9 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
             when {
                 // Не первый запуск
                 savedVersionCode == currentVersionCode -> {
-                    CurrentSession.instance.firstTimeRun = false
+                    setCurrentSessionRun(false) // NEW
+//                    CurrentSession.instance.firstTimeRun = false // OLD
+
                     if (auth.currentUser != null) {
                         if (auth.currentUser!!.isEmailVerified) {
                             loadCurrentUserData() // NEW загрузка данных текущего пользователя
@@ -73,7 +75,8 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
                     loadUserGuestData() // NEW загрузка данных Гостя
                     loadCurrentUserData() // NEW загрузка данных текущего пользователя
 
-                    CurrentSession.instance.firstTimeRun = true
+                    setCurrentSessionRun(true) // NEW
+//                    CurrentSession.instance.firstTimeRun = true // OLD
 
                     transitToSignInScreen() // NEW переход к ActivityLogIn
 //                    waitAndTransitToLogIn() // OLD
@@ -87,6 +90,10 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
 //        Иначе постоянно будет первый запуск.
             prefs.edit().putInt(PREFS_VERSION_CODE_KEY, currentVersionCode).apply()
         }
+    }
+
+    private fun setCurrentSessionRun(state: Boolean) {
+        presenter.onCurrentSessionRunSet(state)
     }
 
     private fun loadDatabaseInstance(): Boolean {
@@ -136,6 +143,7 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
         }
     }
 
+    // OLD
     private suspend fun waitAndTransitToMain() {
         val currentUserId = CurrentSession.instance.currentUser.id
 
@@ -159,6 +167,7 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
         }
     }
 
+    // OLD
     private suspend fun waitAndTransitToLogIn() {
         val currentUserId = CurrentSession.instance.currentUser.id
         Log.e("CURRENT SESSION UID: ", currentUserId)
@@ -171,6 +180,7 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
         }
     }
 
+    // OLD
     private suspend fun createGuest() {
         if (!checkGuestExistence()) {
             val guest = User(
@@ -185,11 +195,13 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
         }
     }
 
+    // OLD
     private suspend fun setDefaultAnalytics(guestId: String) {
         // задаём изначальную аналитику
         DatabaseOperations.getInstance(this).setDefaultAnalytics(guestId).await()
     }
 
+    // OLD
     private suspend fun setDefaultCategories(guestId: String) {
         val list = ArrayList<String>()
         list.addAll(resources.getStringArray(R.array.default_categories_titles))
@@ -203,12 +215,14 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
         Log.e("DEFAULT CATEGORIES: ", " LOADED: ${CategoryCollection.instance.categoryList}")
     }
 
+    // OLD
     private suspend fun checkGuestExistence(): Boolean {
         val databaseSize = DatabaseOperations.getInstance(this).getUsersDatabaseSize().await()
         Log.e("USER_DATABASE_SIZE: ", databaseSize.toString())
         return databaseSize != 0
     }
 
+    // OLD
     // setting current session user
     private suspend fun setCurrentUser() {
         if (auth.currentUser != null) {
@@ -222,11 +236,13 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
         }
     }
 
+    // OLD
     private suspend fun loadAnalytics(uid: String) {
         val analytics = DatabaseOperations.getInstance(this).loadAnalytics(uid).await()
         AnalyticsSingleton.instance.analytics = analytics
     }
 
+    // OLD
     private suspend fun loadPersonalGoals(uid: String) {
         // загружаем список личных целей из локальной бд
         val goalsDatabase =
@@ -241,6 +257,7 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
         Log.e("GOAL LOCAL SIZE:", GoalCollection.instance.goalsInProgressList.size.toString())
     }
 
+    // OLD
     private suspend fun loadUsersCategories(uid: String) {
         CategoryCollection.instance.categoryList.clear()
         // загружаем список категорий
@@ -250,6 +267,7 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
         Log.e("----CATEGORIES----", " LOADED: ${CategoryCollection.instance.categoryList}")
     }
 
+    // OLD
     private fun loadSocialGoals(currentUserId: String) {
         SocialGoalCollection.instance.goalList.clear()
 

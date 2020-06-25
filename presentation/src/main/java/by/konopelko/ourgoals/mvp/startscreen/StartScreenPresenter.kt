@@ -13,4 +13,5 @@ interface StartScreenPresenter {
     suspend fun onUsersPersonalGoalsLoaded(uid: String, context: Context): Boolean
     suspend fun onUsersSocialGoalsLoaded(uid: String, context: Context): Boolean
     suspend fun onUsersAnalyticsLoaded(uid: String, context: Context): Boolean
+    fun onCurrentSessionRunSet(state: Boolean)
 }

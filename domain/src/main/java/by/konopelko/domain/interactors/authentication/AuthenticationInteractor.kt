@@ -1,6 +1,15 @@
 package by.konopelko.domain.interactors.authentication
 
+import android.content.Context
+import androidx.fragment.app.FragmentActivity
+import by.konopelko.domain.repositories.session.*
+
 class AuthenticationInteractor {
+    lateinit var categoryRepository: CategoryRepository
+    lateinit var personalGoalRepository: PersonalGoalRepository
+    lateinit var analyticsRepository: AnalyticsRepository
+    lateinit var sessionGeneralRepository: SessionGeneralRepository
+
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
 
@@ -134,5 +143,38 @@ class AuthenticationInteractor {
                 override fun onCancelled(p0: DatabaseError) {
                 }
             })
+    }
+
+    suspend fun setCurrentUser(uid: String, context: Context): Boolean {
+        return true
+    }
+
+    suspend fun loadUsersCategories(uid: String, context: Context): Boolean {
+        categoryRepository = CategoryRepositoryDefault()
+        return categoryRepository.loadUsersCategoris(uid, context)
+    }
+
+    suspend fun loadUsersPersonalGoals(uid: String, context: Context): Boolean {
+        personalGoalRepository = PersonalGoalRepositoryDefault()
+        return personalGoalRepository.loadUsersPersonalGoals(uid, context)
+    }
+
+    suspend fun loadUsersAnalytics(uid: String, context: Context): Boolean {
+        analyticsRepository = AnalyticsRepositoryDefault()
+        return analyticsRepository.loadUsersAnalytics(uid, context)
+    }
+
+    fun checkCurrentSessionRun(): Int {
+        sessionGeneralRepository = SessionGeneralRepositoryDefault()
+        return sessionGeneralRepository.checkCurrentSessionRun()
+    }
+
+    fun setCurrentSessionRun(state: Boolean) {
+        sessionGeneralRepository = SessionGeneralRepositoryDefault()
+        sessionGeneralRepository.setCurrentSessionRun(state)
+    }
+
+    fun createGoogleRequest(activity: FragmentActivity) {
+        //googleAuthRepository
     }
 }

@@ -53,4 +53,8 @@ class StartScreenPresenterDefault(val view: StartScreenView, context: Context): 
     override suspend fun onUsersAnalyticsLoaded(uid: String, context: Context): Boolean {
         return interactor.loadUsersAnalytics(uid, context)
     }
+
+    override fun onCurrentSessionRunSet(state: Boolean) {
+        interactor.setCurrentSessionRun(state)
+    }
 }

@@ -14,6 +14,7 @@ class StartScreenInteractor {
     lateinit var analyticsRepository: AnalyticsRepository
     lateinit var personalGoalRepository: PersonalGoalRepository
     lateinit var teamGoalsRepository: TeamGoalsRepository
+    lateinit var sessionGeneralRepository: SessionGeneralRepository
 
     suspend fun checkGuestUserExistence(uid: String, context: Context): Boolean {
         userRepository = UserRepositoryDefault()
@@ -63,5 +64,10 @@ class StartScreenInteractor {
     suspend fun loadUsersAnalytics(uid: String, context: Context): Boolean {
         analyticsRepository = AnalyticsRepositoryDefault()
         return analyticsRepository.loadUsersAnalytics(uid, context)
+    }
+
+    fun setCurrentSessionRun(state: Boolean) {
+        sessionGeneralRepository = SessionGeneralRepositoryDefault()
+        sessionGeneralRepository.setCurrentSessionRun(state)
     }
 }

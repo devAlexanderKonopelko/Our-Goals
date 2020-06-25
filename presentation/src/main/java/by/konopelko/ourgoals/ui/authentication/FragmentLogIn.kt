@@ -12,8 +12,9 @@ import by.konopelko.ourgoals.ActivityMain
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.guide.ActivityGuide
-import by.konopelko.ourgoals.mvp.authentication.LogInContract
+import by.konopelko.ourgoals.mvp.authentication.LogInFragmentView
 import by.konopelko.ourgoals.mvp.authentication.LogInPresenterDefault
+import by.konopelko.ourgoals.mvp.authentication.LogInGeneralView
 import by.konopelko.ourgoals.temporaryData.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -22,16 +23,16 @@ import com.google.android.gms.common.api.ApiException
 import kotlinx.android.synthetic.main.fragment_log_in.*
 import kotlinx.coroutines.*
 
-class FragmentLogIn : Fragment(), LogInContract.View {
+class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
     private val USER_GOALS_LOADED = "USER_GOALS_LOADED"
     private val USER_PROFILE_LOADED = "USER_PROFILE_LOADED"
+
+    private val presenter = LogInPresenterDefault(this)
 
     private var currentUser: User? = null
     private lateinit var googleSignInOptions: GoogleSignInOptions
     private lateinit var googleSignInClient: GoogleSignInClient
     private val SIGN_IN_CODE = 1
-    private val presenter =
-        LogInPresenterDefault(this)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +45,7 @@ class FragmentLogIn : Fragment(), LogInContract.View {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        createGoogleRequest()
+        createGoogleRequest() // UPDATED
         signInButton.setOnClickListener {
             registerWithGoogle()
         }
@@ -77,10 +78,16 @@ class FragmentLogIn : Fragment(), LogInContract.View {
     }
 
     private fun createGoogleRequest() {
+        activity?.let { activity ->
+            presenter.onGoogleRequestCreated(activity)
+        }
+
         googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
+
+        // getClient(activity)
         activity?.let {
             googleSignInClient = GoogleSignIn.getClient(it, googleSignInOptions)
         }
@@ -213,23 +220,23 @@ class FragmentLogIn : Fragment(), LogInContract.View {
 
     }
 
-    override fun onUserLoadedFromServer(user: User) {
-        Log.e("USER LOADED:", "$user")
-        currentUser = user
-
-        CoroutineScope(Dispatchers.IO).launch {
-            // add user to database
-            addUserToDatabase(currentUser)
-
-            // setting default categories to users local database
-            setDefaultCategories(currentUser!!.id)
-
-            // setting default analytics to user
-            setDefaultAnalytcs(currentUser!!.id)
-
-            proceedLoadingUsersData(USER_PROFILE_LOADED)
-        }
-    }
+//    override fun onUserLoadedFromServer(user: User) {
+//        Log.e("USER LOADED:", "$user")
+//        currentUser = user
+//
+//        CoroutineScope(Dispatchers.IO).launch {
+//            // add user to database
+//            addUserToDatabase(currentUser)
+//
+//            // setting default categories to users local database
+//            setDefaultCategories(currentUser!!.id)
+//
+//            // setting default analytics to user
+//            setDefaultAnalytcs(currentUser!!.id)
+//
+//            proceedLoadingUsersData(USER_PROFILE_LOADED)
+//        }
+//    }
 
     private suspend fun setDefaultAnalytcs(id: String): Boolean {
         Log.e("INSIDE", "setDefaultAnalytcs()")
@@ -321,6 +328,18 @@ class FragmentLogIn : Fragment(), LogInContract.View {
 
             return true
         } else return false
+    }
+
+    override suspend fun startGuideActivity() {
+        withContext(Dispatchers.Main) {
+            startActivity(Intent(activity, ActivityGuide::class.java))
+        }
+    }
+
+    override suspend fun startMainActivity() {
+        withContext(Dispatchers.Main) {
+            startActivity(Intent(activity, ActivityMain::class.java))
+        }
     }
 
 }
