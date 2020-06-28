@@ -53,6 +53,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:19.3.0'
     implementation 'com.google.firebase:firebase-auth:19.3.0'
 
+    // Kotlin Coroutines for Firebase
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.2.1'
+
     // Google Auth
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
 }

@@ -17,8 +17,6 @@ import by.konopelko.ourgoals.mvp.authentication.LogInPresenterDefault
 import by.konopelko.ourgoals.mvp.authentication.LogInGeneralView
 import by.konopelko.ourgoals.temporaryData.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import kotlinx.android.synthetic.main.fragment_log_in.*
 import kotlinx.coroutines.*
@@ -27,11 +25,9 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
     private val USER_GOALS_LOADED = "USER_GOALS_LOADED"
     private val USER_PROFILE_LOADED = "USER_PROFILE_LOADED"
 
-    private val presenter = LogInPresenterDefault(this)
+    private val presenter = LogInPresenterDefault(this, this)
 
-    private var currentUser: User? = null
-    private lateinit var googleSignInOptions: GoogleSignInOptions
-    private lateinit var googleSignInClient: GoogleSignInClient
+//    private var currentUser: User? = null
     private val SIGN_IN_CODE = 1
 
     override fun onCreateView(
@@ -46,23 +42,23 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
         super.onActivityCreated(savedInstanceState)
 
         createGoogleRequest() // UPDATED
-        signInButton.setOnClickListener {
+        signInButton.setOnClickListener { // Нажатие на кнопку Вход через гугл
             registerWithGoogle()
         }
 
-        logInButton.setOnClickListener {
-            //fields check and auth check
+        logInButton.setOnClickListener { // Нажатие на кнопку Вход (по email и паролю)
             if (logInEmailField.text.toString().isNotEmpty()
                 && logInPasswordField.text.toString().isNotEmpty()
             ) {
-
                 logInProgressBar.visibility = View.VISIBLE
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    presenter.logIn(
-                        logInEmailField.text.toString(),
-                        logInPasswordField.text.toString()
-                    )
+                    context?.let { ctx ->
+                        presenter.logIn(
+                            logInEmailField.text.toString(),
+                            logInPasswordField.text.toString(),
+                            ctx)
+                    }
                 }
             } else if (logInEmailField.text.toString().isEmpty()) {
                 logInEmailField.error = getString(R.string.toast_enterEmail)
@@ -73,24 +69,27 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
     }
 
     private fun registerWithGoogle() {
-        val intent = googleSignInClient.signInIntent
+        // OLD
+//        val intent = googleSignInClient.signInIntent
+
+        val intent = presenter.onRegisteredWithGoogle()
         startActivityForResult(intent, SIGN_IN_CODE)
     }
 
     private fun createGoogleRequest() {
         activity?.let { activity ->
-            presenter.onGoogleRequestCreated(activity)
+            presenter.onGoogleRequestCreated(activity, getString(R.string.default_web_client_id))
         }
 
-        googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
 
-        // getClient(activity)
-        activity?.let {
-            googleSignInClient = GoogleSignIn.getClient(it, googleSignInOptions)
-        }
+        // OLD
+//        googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//            .requestIdToken(getString(R.string.default_web_client_id))
+//            .requestEmail()
+//            .build()
+//        activity?.let {
+//            googleSignInClient = GoogleSignIn.getClient(it, googleSignInOptions)
+//        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -100,16 +99,21 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
                 val googleSignInAccount = task.getResult(ApiException::class.java)
                 if (googleSignInAccount != null) {
                     logInProgressBar.visibility = View.VISIBLE
-                    presenter.logInWithGoogle(googleSignInAccount)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        context?.let { ctx ->
+                            presenter.onLoggedInWithGoogle(googleSignInAccount, ctx)
+                        }
+                    }
                 }
             } catch (e: ApiException) {
-                Toast.makeText(this.context, "ERROR: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "ERROR: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
 
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    // OLD
     private suspend fun checkUserInDatabase(uid: String): User? {
         Log.e("INSIDE", "getUserFromDatabase()")
 
@@ -123,6 +127,7 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
         return user
     }
 
+    // OLD
     private fun setCurrentSessionUser(user: User) {
         Log.e("INSIDE", "setCurrentSessionUser()")
 
@@ -132,6 +137,7 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
 
     }
 
+    // OLD
     private suspend fun loadUsersPersonalGoals(uid: String): Boolean {
         Log.e("INSIDE", "loadUsersPersonalGoals()")
 
@@ -155,6 +161,7 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
         } else return false
     }
 
+    // OLD
     private suspend fun addUserToDatabase(user: User?): Boolean {
         Log.e("INSIDE", "addUserToDatabase()")
 
@@ -176,6 +183,7 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
         return result
     }
 
+    // OLD
     private suspend fun runMainActivity() {
         Log.e("INSIDE", "runMainActivity()")
         withContext(Dispatchers.Main) {
@@ -190,36 +198,52 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
             }
         }
     }
+        // OLD
+//    override fun onLogIn(result: Int, uid: String) {
+//        Log.e("SIGN_IN:", "$result, $uid")
+//
+//        if (result == 0) {
+//            CoroutineScope(Dispatchers.IO).launch {
+//                // 1. Проверяем, есть ли уже пользователь в бд
+//                // 2.1) Если нету - загружаем с сервера, добавляем в бд и текущую сессию
+//                // 2.2) Если есть - добавляем пользователя из бд в текущую сессию
+//                // 3. Загружаем стандартные категории и аналитику Пользователя в бд и текущую сессию
+//                // 4. Загружаем в текущую сессию личные и общие цели
+//                // 5. Запускаем нужную активити: Main либо Guide
+//
+//                currentUser = withContext(coroutineContext) {
+//                    checkUserInDatabase(uid)
+//                }
+//                if (currentUser == null) {
+//                    Log.e("USER", "$currentUser. Loading from server...")
+//                    presenter.loadUserFromServer(uid) // loading users data from server
+//                } else {
+//                    proceedLoadingUsersData(USER_PROFILE_LOADED)
+//                }
+//            }
+//        } else if (result == 1) {
+//            logInProgressBar.visibility = View.GONE
+//            Toast.makeText(
+//                this.context,
+//                getString(R.string.Toast_accountNotFound),
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        } else if (result == 2) {
+//            logInProgressBar.visibility = View.GONE
+//            Toast.makeText(
+//                this.context,
+//                getString(R.string.toast_accountNotConfError),
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        } else if (result == 3) {
+//            logInProgressBar.visibility = View.GONE
+//            Toast.makeText(this.context, getString(R.string.toast_networkError), Toast.LENGTH_SHORT)
+//                .show()
+//        }
+//
+//    }
 
-    override fun onLogIn(result: Int, uid: String) {
-        Log.e("SIGN_IN:", "$result, $uid")
-
-        if (result == 0) {
-            CoroutineScope(Dispatchers.IO).launch {
-                currentUser = withContext(coroutineContext) {
-                    checkUserInDatabase(uid)
-                }
-                if (currentUser == null) {
-                    Log.e("USER", "$currentUser. Loading from server...")
-                    presenter.loadUserFromServer(uid) // loading users data from server
-                } else {
-                    proceedLoadingUsersData(USER_PROFILE_LOADED)
-                }
-            }
-        } else if (result == 1) {
-            logInProgressBar.visibility = View.GONE
-            Toast.makeText(this.context, getString(R.string.Toast_accountNotFound), Toast.LENGTH_SHORT).show()
-        } else if (result == 2) {
-            logInProgressBar.visibility = View.GONE
-            Toast.makeText(this.context, getString(R.string.toast_accountNotConfError), Toast.LENGTH_SHORT).show()
-        }
-        else if (result == 3) {
-            logInProgressBar.visibility = View.GONE
-            Toast.makeText(this.context, getString(R.string.toast_networkError), Toast.LENGTH_SHORT).show()
-        }
-
-    }
-
+    // OLD
 //    override fun onUserLoadedFromServer(user: User) {
 //        Log.e("USER LOADED:", "$user")
 //        currentUser = user
@@ -238,6 +262,7 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
 //        }
 //    }
 
+    // OLD
     private suspend fun setDefaultAnalytcs(id: String): Boolean {
         Log.e("INSIDE", "setDefaultAnalytcs()")
 
@@ -252,6 +277,7 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
         return result
     }
 
+    // OLD
     private suspend fun setDefaultCategories(id: String): Boolean {
         Log.e("INSIDE", "setDefaultCategories()")
 
@@ -272,26 +298,53 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
         return result
     }
 
-    override fun onSocialGoalsLoaded(result: Boolean) {
-        Log.e("SOCIAL GOALS LOADED:", "$result")
-        proceedLoadingUsersData(USER_GOALS_LOADED)
+    // OLD
+//    override fun onSocialGoalsLoaded(result: Boolean) {
+//        Log.e("SOCIAL GOALS LOADED:", "$result")
+//        proceedLoadingUsersData(USER_GOALS_LOADED)
+//    }
+
+    override fun showAuthenticationError() {
+        logInProgressBar.visibility = View.GONE
+        Toast.makeText(
+            this.context,
+            getString(R.string.Toast_accountNotFound),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
-    private fun proceedLoadingUsersData(tag: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            if (tag.equals(USER_PROFILE_LOADED)) {
-                currentUser?.let { setCurrentSessionUser(it) }
-                currentUser?.id?.let { loadUsersCategories(it) }
-                currentUser?.id?.let { loadUsersAnalytics(it) }
-                currentUser?.id?.let { loadUsersPersonalGoals(it) }
-                currentUser?.id?.let { presenter.loadSocialGoalsFromServer(it) }
-            }
-            if (tag.equals(USER_GOALS_LOADED)) {
-                runMainActivity()
-            }
-        }
+    override fun showInternetError() {
+        logInProgressBar.visibility = View.GONE
+        Toast.makeText(this.context, getString(R.string.toast_networkError), Toast.LENGTH_SHORT)
+            .show()
     }
 
+    override fun showGeneralError() {
+        logInProgressBar.visibility = View.GONE
+        Toast.makeText(
+            this.context,
+            getString(R.string.toast_accountNotConfError),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    // OLD
+//    private fun proceedLoadingUsersData(tag: String) {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            if (tag.equals(USER_PROFILE_LOADED)) {
+//                currentUser?.let { setCurrentSessionUser(it) }
+//                currentUser?.id?.let { loadUsersCategories(it) }
+//                currentUser?.id?.let { loadUsersAnalytics(it) }
+//                currentUser?.id?.let { loadUsersPersonalGoals(it) }
+//                currentUser?.id?.let { presenter.loadSocialGoalsFromServer(it) }
+//            }
+//            if (tag.equals(USER_GOALS_LOADED)) {
+//                runMainActivity()
+//            }
+//        }
+//    }
+
+    // OLD
     private suspend fun loadUsersAnalytics(id: String): Boolean {
         Log.e("INSIDE", "loadUsersAnalytics()")
 
@@ -309,6 +362,7 @@ class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
         } else return false
     }
 
+    // OLD
     private suspend fun loadUsersCategories(userId: String): Boolean {
         Log.e("INSIDE", "loadUsersCategories()")
 

@@ -10,6 +10,7 @@ class GoalRepositoryImpl {
     lateinit var databaseRepositoryImpl: DatabaseRepositoryImpl
     lateinit var teamGoalRepositoryImpl: TeamGoalRepositoryImpl
 
+    // Загружает из бд в колелкцию личные цели по Id пользователя
     suspend fun loadUsersPersonalGoals(uid: String, context: Context): Boolean {
         databaseRepositoryImpl = DatabaseRepositoryImpl()
         GoalsData.instance.goalsInProgressList = databaseRepositoryImpl.loadUsersPersonalGoals(uid, context)

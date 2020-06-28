@@ -1,152 +1,141 @@
 package by.konopelko.domain.interactors.authentication
 
 import android.content.Context
+import android.content.Intent
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import by.konopelko.data.database.entities.User
+import by.konopelko.data.session.CategoriesData
+import by.konopelko.domain.R
+import by.konopelko.domain.repositories.FirebaseAuthRepository
+import by.konopelko.domain.repositories.GoogleAuthRepository
+import by.konopelko.domain.repositories.UserRepository
+import by.konopelko.domain.repositories.UserRepositoryDefault
 import by.konopelko.domain.repositories.session.*
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.firebase.FirebaseNetworkException
+import com.google.firebase.auth.FirebaseAuthException
 
 class AuthenticationInteractor {
     lateinit var categoryRepository: CategoryRepository
     lateinit var personalGoalRepository: PersonalGoalRepository
     lateinit var analyticsRepository: AnalyticsRepository
     lateinit var sessionGeneralRepository: SessionGeneralRepository
+    lateinit var googleAuthRepository: GoogleAuthRepository
+    lateinit var firebaseAuthRepository: FirebaseAuthRepository
+    lateinit var userRepository: UserRepository
+    lateinit var teamGoalRepository: TeamGoalsRepository
 
-    val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
+    suspend fun performLogIn(email: String, password: String, context: Context): Int {
+        firebaseAuthRepository = FirebaseAuthRepository()
+        val resultCode = firebaseAuthRepository.logInWithEmailPassword(email, password)
 
-    fun performLogIn(email: String, password: String) {
-        auth.signInWithEmailAndPassword(
-            email,
-            password
-        ).addOnSuccessListener {
-            if (auth.currentUser!!.isEmailVerified) {
-                onOperationListener.onLogIn(0, auth.currentUser?.uid.toString())
-            } else {
-                onOperationListener.onLogIn(2, auth.currentUser?.uid.toString())
-            }
-        }.addOnFailureListener {
-            when (it) {
-                is FirebaseAuthException -> {
-                    onOperationListener.onLogIn(1, auth.currentUser?.uid.toString())
-                }
-                is FirebaseNetworkException -> {
-                    onOperationListener.onLogIn(3, auth.currentUser?.uid.toString())
-                }
-            }
+        if (resultCode == 0) {
+            loadUsersData(context)
         }
+        return resultCode
     }
 
-    fun performLogInWithGoogle(googleSignInAccount: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(googleSignInAccount.idToken, null)
-        auth.signInWithCredential(credential).addOnSuccessListener {
-            googleSignInAccount.displayName?.let { it1 -> createAccountWithGoogle(it1) }
-        }.addOnFailureListener {
-            when (it) {
-                is FirebaseAuthException -> {
-                    onOperationListener.onLogIn(1, auth.currentUser?.uid.toString())
-                }
-                is FirebaseNetworkException -> {
-                    onOperationListener.onLogIn(3, auth.currentUser?.uid.toString())
-                }
-            }
+    suspend fun performLogInWithGoogle(googleSignInAccount: GoogleSignInAccount, context: Context): Int {
+        googleAuthRepository = GoogleAuthRepository()
+        firebaseAuthRepository = FirebaseAuthRepository()
+        userRepository = UserRepositoryDefault()
+        analyticsRepository = AnalyticsRepositoryDefault()
+        personalGoalRepository = PersonalGoalRepositoryDefault()
+        teamGoalRepository = TeamGoalsRepositoryDefault()
+        categoryRepository = CategoryRepositoryDefault()
+
+        var resultCode = -1
+        val credential = googleAuthRepository.getAuthCredential(googleSignInAccount)
+        resultCode = firebaseAuthRepository.logInWithGoogle(credential, googleSignInAccount)
+
+        // После того, как мы вошли в аккаунт, проверяем код ответа
+        if (resultCode == 0) { // если вход прошёл успешно, то
+            loadUsersData(context) // загружаем данные пользователя
+        } // если что-то пошло не так - возвращается код ошибки
+        return resultCode
+    }
+
+    private suspend fun loadUsersData(context: Context) {
+        val uid = userRepository.getAuthorizedUserId() // берём id пользователя
+        val userExists = userRepository.checkUserExistence(uid, context) // 1. Проверяем, есть ли уже пользователь в бд
+
+        if (!userExists) { // 2.1) Если нету
+            userRepository.createUserFromServer(uid, context) // загружаем с сервера, добавляем в текущую сессию и бд
+        } else { // 2.2) Если есть
+            userRepository.setCurrentUser(uid, context) // добавляем пользователя из бд в текущую сессию
         }
+        val titles = ArrayList<String>()
+        titles.addAll(context.resources.getStringArray(R.array.default_categories_titles))
+        categoryRepository.createDefaultCategories(uid, titles, context) // Загружаем стандартные категории Пользователя в бд
+        categoryRepository.loadUsersCategoris(uid, context) // загружаем категории в текущую сессию
+        analyticsRepository.createDefaultAnalytics(uid, context) // загружаем стандартную аналитику Пользователя в бд
+        analyticsRepository.loadUsersAnalytics(uid, context) // загружаем аналитику в текущую сессию
+        personalGoalRepository.loadUsersPersonalGoals(uid, context) // Загружаем в текущую сессию личные цели
+        teamGoalRepository.loadUsersTeamGoals(uid, context) // и командные цели
     }
 
-    fun createAccountWithGoogle(name: String) {
-        var nameExists = false
-        // регистритуем пользователя в Firebase бд, если его ещё там нет
-        userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(users: DataSnapshot) {
-                for (user in users.children) {
-                    if (user.child("login").value.toString().equals(name)) {
-                        nameExists = true
-                        break
-                    }
-                }
-                if (!nameExists) {
-                    // adding user to UsersDatabase at Firebase
-                    val currentUid = auth.currentUser?.uid
-                    val firebaseDatabase =
-                        currentUid?.let { cur_uid ->
-                            FirebaseDatabase.getInstance().reference.child("Users")
-                                .child(cur_uid)
-                        }
-                    val userMap = HashMap<String, String>()
-                    userMap["uid"] = currentUid.toString()
-                    userMap["login"] = name
+    // возвращает объект пользователя по id
+//    fun performUserDownLoad(uid: String) {
+//        this.userDatabase.child(uid)
+//            .addListenerForSingleValueEvent(object : ValueEventListener {
+//                override fun onDataChange(currentUser: DataSnapshot) {
+//                    val login = currentUser.child("login").value.toString()
+//                    val friends = ArrayList<User>()
+//                    val user = User(
+//                        uid,
+//                        login,
+//                        friends
+//                    )
+//
+//                    onOperationListener.onUserLoadedFromServer(user)
+//                }
+//
+//                override fun onCancelled(p0: DatabaseError) {
+//                }
+//            })
+//    }
 
-                    firebaseDatabase?.setValue(userMap)?.addOnSuccessListener {
-                        onOperationListener.onLogIn(0, auth.currentUser?.uid.toString())
-                    }
-                } else {
-                    onOperationListener.onLogIn(0, auth.currentUser?.uid.toString())
-                }
-            }
-
-            override fun onCancelled(p0: DatabaseError) {
-            }
-        })
-    }
-
-    fun performUserDownLoad(uid: String) {
-        this.userDatabase.child(uid)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(currentUser: DataSnapshot) {
-                    val login = currentUser.child("login").value.toString()
-                    val friends = ArrayList<User>()
-                    val user = User(
-                        uid,
-                        login,
-                        friends
-                    )
-
-                    onOperationListener.onUserLoadedFromServer(user)
-                }
-
-                override fun onCancelled(p0: DatabaseError) {
-                }
-            })
-    }
-
-    fun performSocialGoalsDownload(uid: String) {
-        this.userDatabase.child(uid).child("socialGoals")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(socialGoals: DataSnapshot) {
-                    for (goal in socialGoals.children) {
-                        val tasks = ArrayList<Task>()
-                        for (taskSnapshot in goal.child("tasks").children) {
-                            val task =
-                                Task(
-                                    taskSnapshot.child("text").value.toString(),
-                                    taskSnapshot.child("finishDate").value.toString(),
-                                    taskSnapshot.child("complete").value.toString().toBoolean()
-                                )
-                            tasks.add(task)
-                        }
-
-                        val newGoal =
-                            Goal(
-                                goal.child("ownerId").value.toString(),
-                                goal.child("category").value.toString(),
-                                goal.child("text").value.toString(),
-                                goal.child("progress").value.toString().toInt(),
-                                tasks,
-                                goal.child("done").value.toString().toBoolean(),
-                                goal.child("social").value.toString().toBoolean()
-                            )
-
-                        SocialGoalCollection.instance.goalList.add(newGoal)
-                        SocialGoalCollection.instance.keysList.add(goal.key.toString())
-                    }
-                    onOperationListener.onSocialGoalsLoaded(true)
-                }
-
-                override fun onCancelled(p0: DatabaseError) {
-                }
-            })
-    }
+//    fun performSocialGoalsDownload(uid: String) {
+//        this.userDatabase.child(uid).child("socialGoals")
+//            .addListenerForSingleValueEvent(object : ValueEventListener {
+//                override fun onDataChange(socialGoals: DataSnapshot) {
+//                    for (goal in socialGoals.children) {
+//                        val tasks = ArrayList<Task>()
+//                        for (taskSnapshot in goal.child("tasks").children) {
+//                            val task =
+//                                Task(
+//                                    taskSnapshot.child("text").value.toString(),
+//                                    taskSnapshot.child("finishDate").value.toString(),
+//                                    taskSnapshot.child("complete").value.toString().toBoolean()
+//                                )
+//                            tasks.add(task)
+//                        }
+//
+//                        val newGoal =
+//                            Goal(
+//                                goal.child("ownerId").value.toString(),
+//                                goal.child("category").value.toString(),
+//                                goal.child("text").value.toString(),
+//                                goal.child("progress").value.toString().toInt(),
+//                                tasks,
+//                                goal.child("done").value.toString().toBoolean(),
+//                                goal.child("social").value.toString().toBoolean()
+//                            )
+//
+//                        SocialGoalCollection.instance.goalList.add(newGoal)
+//                        SocialGoalCollection.instance.keysList.add(goal.key.toString())
+//                    }
+//                    onOperationListener.onSocialGoalsLoaded(true)
+//                }
+//
+//                override fun onCancelled(p0: DatabaseError) {
+//                }
+//            })
+//    }
 
     suspend fun setCurrentUser(uid: String, context: Context): Boolean {
-        return true
+        return userRepository.setCurrentUser(uid, context)
     }
 
     suspend fun loadUsersCategories(uid: String, context: Context): Boolean {
@@ -174,7 +163,15 @@ class AuthenticationInteractor {
         sessionGeneralRepository.setCurrentSessionRun(state)
     }
 
-    fun createGoogleRequest(activity: FragmentActivity) {
-        //googleAuthRepository
+    fun createGoogleRequest(activity: FragmentActivity, webClientId: String) {
+        googleAuthRepository =
+            GoogleAuthRepository()
+        googleAuthRepository.createGoogleRequest(activity, webClientId)
+    }
+
+    fun getGoogleAuthIntent(): Intent? {
+        googleAuthRepository =
+            GoogleAuthRepository()
+        return googleAuthRepository.getGoogleAuthIntent()
     }
 }

@@ -10,7 +10,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 class TeamGoalRepositoryImpl {
-    val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
+    private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
+
     fun loadUsersTeamGoals(uid: String, context: Context): Boolean {
         val list = ArrayList<Goal>()
         val keyList = ArrayList<String>()
