@@ -45,7 +45,6 @@ class ActivityLogIn : AppCompatActivity(), LogInGeneralView, View.OnClickListene
                 // inflating registerFragment
                 supportFragmentManager.beginTransaction()
                     .replace(logInFragmentLayout.id, registerFragment).commit()
-
                 // changing buttons visibility
                 registerButton.visibility = View.GONE
                 guestButton.visibility = View.GONE
@@ -53,28 +52,10 @@ class ActivityLogIn : AppCompatActivity(), LogInGeneralView, View.OnClickListene
             }
             guestButton.id -> { // if user enters as a guest
                 auth.signInAnonymously()
-//                CurrentSession.instance.currentUser = User("0", getString(R.string.username_guest), ArrayList()) // OLD
-
                 CoroutineScope(Dispatchers.IO).launch {
                     loadCurrentUserData("0") // NEW устанавливает текущего пользователя Гость,
-                    // загружает категории, личные цели и аналитику Гостя
-
-//                    loadUsersCategories("0") // OLD
-//                    loadUsersPersonalGoals("0") // OLD
-//                    loadUsersAnalytics("0") // OLD
-
-
+                                                    // и загружает категории, личные цели и аналитику Гостя
                     checkAndRunActivity() // NEW проверяет, первый ли это запуск и запускает нужную Activity
-
-                    // OLD
-//                    withContext(Dispatchers.Main) {
-//                        if (CurrentSession.instance.firstTimeRun) {
-//                            startActivity(Intent(this@ActivityLogIn, ActivityGuide::class.java))
-//                            CurrentSession.instance.firstTimeRun = false // OLD
-//                        } else {
-//                            startActivity(Intent(this@ActivityLogIn, ActivityMain::class.java))
-//                        }
-//                    }
                 }
             }
         }
@@ -86,55 +67,6 @@ class ActivityLogIn : AppCompatActivity(), LogInGeneralView, View.OnClickListene
 
     private suspend fun loadCurrentUserData(uid: String): Boolean {
         return presenter.onCurrentUserDataLoaded(uid, this)
-    }
-
-    // OLD
-    private suspend fun loadUsersAnalytics(id: String) {
-        AnalyticsSingleton.instance.analytics = CoroutineScope(Dispatchers.IO).async {
-            DatabaseOperations.getInstance(this@ActivityLogIn).loadAnalytics(id).await()
-        }.await()
-    }
-
-    // OLD
-    private suspend fun loadUsersCategories(id: String): Boolean {
-        // очищаем локальную коллекцию пользовательских категорий
-        CategoryCollection.instance.categoryList.clear()
-
-        val categoriesList = CoroutineScope(Dispatchers.IO).async {
-            DatabaseOperations.getInstance(this@ActivityLogIn).getCategoriesByUserId("0")
-                .await()
-        }.await()
-
-        CategoryCollection.instance.categoryList.addAll(categoriesList)
-
-        if (categoriesList != null) {
-            Log.e("INSIDE", "loadUsersCategories(): FINISH $categoriesList")
-
-            return true
-        } else return false
-    }
-
-    // OLD
-    private suspend fun loadUsersPersonalGoals(uid: String): Boolean {
-        Log.e("INSIDE", "loadUsersPersonalGoals()")
-
-        // подгружаем список личных целей из локальной бд
-        val goalsDatabase = CoroutineScope(Dispatchers.IO).async {
-            DatabaseOperations.getInstance(this@ActivityLogIn)
-                .loadGoalsDatabase(uid)
-                .await()
-        }.await()
-
-        // отчищается коллекция для хранения списка из бд
-        GoalCollection.instance.goalsInProgressList.clear()
-
-        if (goalsDatabase != null) {
-            GoalCollection.instance.setGoalsInProgress(goalsDatabase)
-            GoalCollection.instance.visible = true
-            Log.e("INSIDE", "loadUsersPersonalGoals(): FINISH $goalsDatabase")
-
-            return true
-        } else return false
     }
 
     override fun onBackPressed() {

@@ -3,23 +3,14 @@ package by.konopelko.ourgoals.ui.startscreen
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import by.konopelko.ourgoals.ActivityMain
 import by.konopelko.ourgoals.BuildConfig
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.entities.Goal
-import by.konopelko.ourgoals.database.entities.Task
-import by.konopelko.ourgoals.database.entities.User
 import by.konopelko.ourgoals.ui.authentication.ActivityLogIn
 import by.konopelko.ourgoals.mvp.startscreen.StartScreenPresenterDefault
 import by.konopelko.ourgoals.mvp.startscreen.StartScreenView
-import by.konopelko.ourgoals.temporaryData.*
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.*
 
 const val PREFS_NAME = "shared-prefs"
@@ -32,7 +23,6 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
         BuildConfig.VERSION_CODE
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,41 +35,28 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
 
         CoroutineScope(Dispatchers.IO).launch {
             loadDatabaseInstance() // загрузка ссылки на БД NEW
-//            createGuest() // OLD
-//            setCurrentUser() // OLD
-
             when {
                 // Не первый запуск
                 savedVersionCode == currentVersionCode -> {
                     setCurrentSessionRun(false) // NEW
-//                    CurrentSession.instance.firstTimeRun = false // OLD
-
                     if (auth.currentUser != null) {
                         if (auth.currentUser!!.isEmailVerified) {
                             loadCurrentUserData() // NEW загрузка данных текущего пользователя
                             transitToMainScreen() // NEW переход к ActivityMain
-//                            waitAndTransitToMain() // OLD
-
                         } else {
                             transitToSignInScreen() // NEW переход к ActivityLogIn
-//                            waitAndTransitToLogIn() // OLD
                         }
                     } else {
                         loadCurrentUserData() // NEW загрузка данных текущего пользователя
                         transitToMainScreen() // NEW переход к MainActivity
-//                        waitAndTransitToMain() // OLD
                     }
                 }
                 // Первый запуск/очищены prefs
                 savedVersionCode == PREFS_CODE_DOESNT_EXIST -> {
                     loadUserGuestData() // NEW загрузка данных Гостя
                     loadCurrentUserData() // NEW загрузка данных текущего пользователя
-
                     setCurrentSessionRun(true) // NEW
-//                    CurrentSession.instance.firstTimeRun = true // OLD
-
                     transitToSignInScreen() // NEW переход к ActivityLogIn
-//                    waitAndTransitToLogIn() // OLD
                 }
                 currentVersionCode > savedVersionCode -> {
                     // TODO Обновление приложения
@@ -142,171 +119,4 @@ class ActivityStart : AppCompatActivity(), StartScreenView {
             startActivity(Intent(this@ActivityStart, ActivityLogIn::class.java))
         }
     }
-
-    // OLD
-    private suspend fun waitAndTransitToMain() {
-        val currentUserId = CurrentSession.instance.currentUser.id
-
-        // загружаем категории
-        loadUsersCategories(currentUserId)
-
-        // загружаем личные цели
-        loadPersonalGoals(currentUserId)
-
-        // загружаем командные цели
-        loadSocialGoals(currentUserId)
-
-        // загружаем аналитику
-        loadAnalytics(currentUserId)
-
-        // вместо delay сделать через последовательно через mvp
-        delay(2000)
-
-        withContext(Dispatchers.Main) {
-            startActivity(Intent(this@ActivityStart, ActivityMain::class.java))
-        }
-    }
-
-    // OLD
-    private suspend fun waitAndTransitToLogIn() {
-        val currentUserId = CurrentSession.instance.currentUser.id
-        Log.e("CURRENT SESSION UID: ", currentUserId)
-
-        // вместо delay сделать нормально
-        delay(2000)
-
-        withContext(Dispatchers.Main) {
-            startActivity(Intent(this@ActivityStart, ActivityLogIn::class.java))
-        }
-    }
-
-    // OLD
-    private suspend fun createGuest() {
-        if (!checkGuestExistence()) {
-            val guest = User(
-                "0",
-                getString(R.string.username_guest),
-                ArrayList()
-            )
-            DatabaseOperations.getInstance(this).addUsertoDatabase(guest).await()
-
-            setDefaultCategories(guest.id)
-            setDefaultAnalytics(guest.id)
-        }
-    }
-
-    // OLD
-    private suspend fun setDefaultAnalytics(guestId: String) {
-        // задаём изначальную аналитику
-        DatabaseOperations.getInstance(this).setDefaultAnalytics(guestId).await()
-    }
-
-    // OLD
-    private suspend fun setDefaultCategories(guestId: String) {
-        val list = ArrayList<String>()
-        list.addAll(resources.getStringArray(R.array.default_categories_titles))
-
-        // загружаем в бд стандартные категории (со всеми разделами) для гостя
-        DatabaseOperations.getInstance(this).setDefaultCategoriesList(guestId, list).await()
-
-        // добавляем стандартные категории в коллекцию
-        CategoryCollection.instance.setDefaultCategories(guestId, list)
-
-        Log.e("DEFAULT CATEGORIES: ", " LOADED: ${CategoryCollection.instance.categoryList}")
-    }
-
-    // OLD
-    private suspend fun checkGuestExistence(): Boolean {
-        val databaseSize = DatabaseOperations.getInstance(this).getUsersDatabaseSize().await()
-        Log.e("USER_DATABASE_SIZE: ", databaseSize.toString())
-        return databaseSize != 0
-    }
-
-    // OLD
-    // setting current session user
-    private suspend fun setCurrentUser() {
-        if (auth.currentUser != null) {
-            // определяем текущего пользователя
-            val user =
-                DatabaseOperations.getInstance(this).getUserById(auth.currentUser!!.uid).await()
-            CurrentSession.instance.currentUser = user
-
-            Log.e("CURRENT USER NAME: ", CurrentSession.instance.currentUser.name)
-            Log.e("CURRENT USER ID: ", CurrentSession.instance.currentUser.id)
-        }
-    }
-
-    // OLD
-    private suspend fun loadAnalytics(uid: String) {
-        val analytics = DatabaseOperations.getInstance(this).loadAnalytics(uid).await()
-        AnalyticsSingleton.instance.analytics = analytics
-    }
-
-    // OLD
-    private suspend fun loadPersonalGoals(uid: String) {
-        // загружаем список личных целей из локальной бд
-        val goalsDatabase =
-            DatabaseOperations.getInstance(this@ActivityStart).loadGoalsDatabase(uid)
-                .await()
-        Log.e("GOAL DATABASE SIZE: ", goalsDatabase.size.toString())
-
-        // загружаем цели в коллекцию
-        GoalCollection.instance.goalsInProgressList.clear()
-        GoalCollection.instance.setGoalsInProgress(goalsDatabase)
-        GoalCollection.instance.visible = true
-        Log.e("GOAL LOCAL SIZE:", GoalCollection.instance.goalsInProgressList.size.toString())
-    }
-
-    // OLD
-    private suspend fun loadUsersCategories(uid: String) {
-        CategoryCollection.instance.categoryList.clear()
-        // загружаем список категорий
-        val categories =
-            DatabaseOperations.getInstance(this).getCategoriesByUserId(uid).await()
-        CategoryCollection.instance.categoryList.addAll(categories)
-        Log.e("----CATEGORIES----", " LOADED: ${CategoryCollection.instance.categoryList}")
-    }
-
-    // OLD
-    private fun loadSocialGoals(currentUserId: String) {
-        SocialGoalCollection.instance.goalList.clear()
-
-        userDatabase.child(currentUserId).child("socialGoals")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(socialGoals: DataSnapshot) {
-                    for (goal in socialGoals.children) {
-
-                        val tasks = ArrayList<Task>()
-                        for (taskSnapshot in goal.child("tasks").children) {
-                            val task =
-                                Task(
-                                    taskSnapshot.child("text").value.toString(),
-                                    taskSnapshot.child("finishDate").value.toString(),
-                                    taskSnapshot.child("complete").value.toString().toBoolean()
-                                )
-
-                            tasks.add(task)
-                        }
-
-                        val newGoal =
-                            Goal(
-                                goal.child("ownerId").value.toString(),
-                                goal.child("category").value.toString(),
-                                goal.child("text").value.toString(),
-                                goal.child("progress").value.toString().toInt(),
-                                tasks,
-                                goal.child("done").value.toString().toBoolean(),
-                                goal.child("social").value.toString().toBoolean()
-                            )
-
-                        SocialGoalCollection.instance.goalList.add(newGoal)
-                        SocialGoalCollection.instance.keysList.add(goal.key.toString())
-                    }
-                }
-
-                override fun onCancelled(p0: DatabaseError) {
-                }
-            })
-    }
-
 }

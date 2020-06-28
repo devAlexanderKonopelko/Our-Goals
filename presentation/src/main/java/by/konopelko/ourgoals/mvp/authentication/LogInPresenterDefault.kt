@@ -79,16 +79,6 @@ class LogInPresenterDefault(private val generalView: LogInGeneralView): LogInPre
         }
     }
 
-    // OLD
-//    override fun loadUserFromServer(uid: String) {
-//        interactor.performUserDownLoad(uid)
-//    }
-
-    // OLD
-//    override fun loadSocialGoalsFromServer(uid: String) {
-//        interactor.performSocialGoalsDownload(uid)
-//    }
-
     override fun onRegisteredWithGoogle(): Intent? {
         return interactor.getGoogleAuthIntent()
     }
