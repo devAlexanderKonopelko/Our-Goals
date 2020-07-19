@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import by.konopelko.ourgoals.ActivityMain
+import by.konopelko.ourgoals.ui.mainscreen.ActivityMain
 import by.konopelko.ourgoals.BuildConfig
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.ui.authentication.ActivityLogIn

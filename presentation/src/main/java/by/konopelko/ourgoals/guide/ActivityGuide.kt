@@ -1,12 +1,11 @@
 package by.konopelko.ourgoals.guide
 
-import by.konopelko.ourgoals.ActivityMain
+import by.konopelko.ourgoals.ui.mainscreen.ActivityMain
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.help.FragmentHelp
 import by.konopelko.ourgoals.help.ViewPagerAdapter
 import kotlinx.android.synthetic.main.activity_guide.*
 

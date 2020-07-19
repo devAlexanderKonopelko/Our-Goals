@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import by.konopelko.ourgoals.ActivityMain
+import by.konopelko.ourgoals.ui.mainscreen.ActivityMain
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.guide.ActivityGuide
 import by.konopelko.ourgoals.mvp.authentication.LogInFragmentView
@@ -20,8 +20,6 @@ import kotlinx.coroutines.*
 
 class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
     private val presenter = LogInPresenterDefault(this, this)
-
-//    private var currentUser: User? = null
     private val SIGN_IN_CODE = 1
 
     override fun onCreateView(

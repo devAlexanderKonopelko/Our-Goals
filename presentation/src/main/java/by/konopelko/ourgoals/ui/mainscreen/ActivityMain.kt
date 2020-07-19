@@ -1,4 +1,4 @@
-package by.konopelko.ourgoals
+package by.konopelko.ourgoals.ui.mainscreen
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.analytics.FragmentAnalytics
 import by.konopelko.ourgoals.categories.FragmentCategories
 import by.konopelko.ourgoals.categories.add.FragmentAddCategory
@@ -31,6 +32,8 @@ import by.konopelko.ourgoals.goals.add.FragmentAddTasks
 import by.konopelko.ourgoals.ui.authentication.ActivityLogIn
 import by.konopelko.ourgoals.goals.add.FragmentChooseFriends
 import by.konopelko.ourgoals.help.FragmentHelp
+import by.konopelko.ourgoals.mvp.mainscreen.MainScreenPresenterDefault
+import by.konopelko.ourgoals.mvp.mainscreen.MainScreenView
 import by.konopelko.ourgoals.notifications.AdapterNotifications
 import by.konopelko.ourgoals.notifications.FragmentNotifications
 import by.konopelko.ourgoals.supportDeveloper.FragmentSupportDev
@@ -49,14 +52,18 @@ import kotlinx.coroutines.withContext
 class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     FragmentAddTasks.RefreshGoalsListInterface, AdapterNotifications.NotificationActions,
     MainContract.View, FragmentAddCategory.CategoryInterface, FragmentAddLink.AddMotivation,
-    FragmentAddImage.AddMotivation, FragmentChooseFriends.SocialGoalAddition {
+    FragmentAddImage.AddMotivation, FragmentChooseFriends.SocialGoalAddition, MainScreenView {
+
+    private val presenter = MainScreenPresenterDefault(this)
+
 
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    val presenter = MainPresenter(this)
+//    val presenter = MainPresenter(this)
 
-    val fragmentGoals = FragmentGoals()
-    val fragmentCategories = FragmentCategories()
-    val fragmentAnalytics = FragmentAnalytics()
+
+    private val fragmentGoals = FragmentGoals()
+    private val fragmentCategories = FragmentCategories()
+    private val fragmentAnalytics = FragmentAnalytics()
 
     private val categoriesList = ArrayList<String>()
 
@@ -65,21 +72,29 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
 
 
+        presenter.setToolbarSortCategories(R.string.all_categories)
+
+
+        // PRESENTER
         // создаём список категорий для сортировки из верхнего тулбара
         categoriesList.add(getString(R.string.all_categories))
         for (category in CategoryCollection.instance.categoryList) {
             categoriesList.add(category.title)
         }
 
-        val arrayAdapter =
-            ArrayAdapter<String>(this, R.layout.item_spinner_sort_collections, categoriesList)
+        // VIEW
+        val arrayAdapter = ArrayAdapter(this, R.layout.item_spinner_sort_collections, categoriesList)
         toolbarSort.setAdapter(arrayAdapter)
         setSupportActionBar(toolbar)
+        // -------- Сортировка целей по категориям -----------
+        setToolbarSortListener()
 
-        //Сортировка целей по категориям
-        setToolbarSort()
 
-        // создание бокового меню
+
+
+
+
+        // ------------- создание бокового меню -----------
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, 0, 0)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
@@ -92,13 +107,14 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             nav_view.menu.findItem(R.id.nav_side_add_friends).isEnabled = false
             nav_view.menu.findItem(R.id.nav_side_social_goals).isEnabled = false
             nav_view.menu.findItem(R.id.nav_side_notifications).isEnabled = false
-            nav_view.menu.findItem(R.id.nav_side_log_out).title = getString(R.string.side_nav_signIn)
+            nav_view.menu.findItem(R.id.nav_side_log_out).title = getString(
+                R.string.side_nav_signIn
+            )
 
             nav_view.getHeaderView(0).currentUserLogin.text =
                 CurrentSession.instance.currentUser.name
 //            nav_view.getHeaderView(0).currentUserImage.setImageResource(R.drawable.icon_guest)
             nav_view.getHeaderView(0).currentUserEmail.visibility = View.INVISIBLE
-
             notificationBadge.visibility = View.INVISIBLE
             nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
                 View.INVISIBLE
@@ -137,6 +153,8 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     View.INVISIBLE
             }
         }
+
+
 
 
 //        --------- setting bottom navigation menu ------------
@@ -205,7 +223,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun setToolbarSort() {
+    private fun setToolbarSortListener() {
         toolbarSort.setOnItemClickListener { parent, view, position, id ->
             val category = categoriesList[position]
             if (category.equals(getString(R.string.all_categories))) {
@@ -236,9 +254,7 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                         //собираем подходящие цели
                         for (i in 0 until GoalCollection.instance.goalsInProgressList.size) {
-                            if (GoalCollection.instance.goalsInProgressList[i].category.equals(
-                                    category
-                                )
+                            if (GoalCollection.instance.goalsInProgressList[i].category.equals(category)
                             ) {
                                 goals.add(GoalCollection.instance.goalsInProgressList[i])
                             }
@@ -261,7 +277,8 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     GoalCollection.instance.visible = true
                     SocialGoalCollection.instance.visible = false
 
-                    bottomNavigation.selectedItemId = R.id.nav_goals
+                    bottomNavigation.selectedItemId =
+                        R.id.nav_goals
                     toolbarSortContainer.visibility = View.VISIBLE
                     getFragment(fragmentGoals)
                 } else {
@@ -274,7 +291,8 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     GoalCollection.instance.visible = false
                     SocialGoalCollection.instance.visible = true
 
-                    bottomNavigation.selectedItemId = R.id.nav_goals
+                    bottomNavigation.selectedItemId =
+                        R.id.nav_goals
                     toolbarSortContainer.visibility = View.VISIBLE
                     getFragment(fragmentGoals)
                 } else {
@@ -371,7 +389,8 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         categoriesList.add(category.title)
         val arrayAdapter =
-            ArrayAdapter<String>(this, R.layout.item_spinner_sort_collections, categoriesList)
+            ArrayAdapter(this,
+                R.layout.item_spinner_sort_collections, categoriesList)
         toolbarSort.setAdapter(arrayAdapter)
     }
 

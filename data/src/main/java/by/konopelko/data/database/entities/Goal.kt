@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-class Goal(
+class Goal (
     var ownerId: String,
     var category: String,
     var text: String,

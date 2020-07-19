@@ -6,13 +6,28 @@ import androidx.fragment.app.FragmentActivity
 import by.konopelko.domain.interactors.authentication.AuthenticationInteractor
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
-class LogInPresenterDefault(private val generalView: LogInGeneralView): LogInPresenter {
+class LogInPresenterDefault(): LogInPresenter {
 
-    constructor(generalView: LogInGeneralView, fragmentView: LogInFragmentView) : this(generalView) {
-        this.fragmentView = fragmentView
+    constructor(logInFragmentView: LogInFragmentView): this() {
+        fragmentView = logInFragmentView
+    }
+
+    constructor(logInGeneralView: LogInGeneralView): this() {
+        generalView = logInGeneralView
+    }
+
+    constructor(logInFragmentView: LogInFragmentView, registerView: RegisterFragmentView): this() {
+        fragmentView = logInFragmentView
+        registerFragmentView = registerView
+    }
+
+    constructor(generalView: LogInGeneralView, logInFragmentView: LogInFragmentView) : this(generalView) {
+        fragmentView = logInFragmentView
     }
 
     private lateinit var fragmentView: LogInFragmentView
+    private lateinit var generalView: LogInGeneralView
+    private lateinit var registerFragmentView: RegisterFragmentView
     private val interactor = AuthenticationInteractor()
 
     override suspend fun onCurrentUserDataLoaded(uid: String, context: Context): Boolean {
@@ -81,6 +96,33 @@ class LogInPresenterDefault(private val generalView: LogInGeneralView): LogInPre
 
     override fun onRegisteredWithGoogle(): Intent? {
         return interactor.getGoogleAuthIntent()
+    }
+
+    override suspend fun onRegisteredWithEmailPassword(
+        email: String,
+        password: String,
+        name: String,
+        context: Context
+    ) {
+        val result = interactor.performRegisterWithEmailPassword(email, password, name, context)
+
+        when(result) {
+            0 -> { // всё ок, показываем фрагмент входа
+                registerFragmentView.transitToLogInFragment()
+            }
+            1 -> { // сообщение о том, что пользователь уже существует
+                registerFragmentView.showUserExistError()
+            }
+            2 -> { // ошибка авторизации
+                fragmentView.showAuthenticationError()
+            }
+            3 -> { // ошибка соединения с интернетом
+                fragmentView.showInternetError()
+            }
+            4 -> { // неизвестная ошибка
+                fragmentView.showGeneralError()
+            }
+        }
     }
 
     override suspend fun onCurrentSessionRunChecked() {

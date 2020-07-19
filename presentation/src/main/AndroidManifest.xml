@@ -19,7 +19,7 @@
             android:value="@string/admob_id" />
 
         <activity
-            android:name=".ActivityMain"
+            android:name=".ui.mainscreen.ActivityMain"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="LockedOrientationActivity" />

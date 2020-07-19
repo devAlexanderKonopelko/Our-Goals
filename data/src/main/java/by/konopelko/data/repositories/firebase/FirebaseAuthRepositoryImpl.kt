@@ -1,17 +1,15 @@
 package by.konopelko.data.repositories.firebase
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.database.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
+import java.lang.NullPointerException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -91,6 +89,88 @@ class FirebaseAuthRepositoryImpl {
         }
     }
 
+    fun getAuthorizedUserId(): String {
+        return auth.currentUser?.uid ?: "0"
+    }
+
+    suspend fun logInWithEmailPassword(email: String, password: String): Int {
+        return try {
+            auth.signInWithEmailAndPassword(email, password).await()
+            0
+        } catch (e: Exception) {
+            when (e) {
+                is FirebaseAuthException -> 1
+                is FirebaseNetworkException -> 2
+                else -> 3
+            }
+        }
+    }
+
+    suspend fun registerWithEmailPassword(email: String, password: String, name: String): Int {
+        var code: Int
+        if(checkUserExistenceByName(name)) { // если пользователь уже существует, возвращаем код 1
+            code = 1
+        } else { // если пользователя ещё нет, то регистрируем его
+            code = createAccountWithEmailPassword(email, password)
+            if (code == 0) {
+                code = sendVerificationEmail() // отправляем письмо подтверждения на почту
+                if (code == 0) { // если письмо отправилось, то создаём аккаунт в firebase бд
+                    val currentUid = auth.currentUser?.uid
+                    val firebaseDatabaseUser = currentUid?.let { uid ->
+                            FirebaseDatabase.getInstance().reference.child("Users")
+                                .child(uid)
+                        }
+                    val userMap = HashMap<String, String>()
+                    userMap["uid"] = currentUid.toString()
+                    userMap["login"] = name
+
+                    code = addUserToFirebaseDatabase(firebaseDatabaseUser, userMap) // записываем данные в firebase бд
+                }
+            }
+        }
+        return code
+    }
+
+    private suspend fun sendVerificationEmail(): Int {
+        return try {
+            auth.currentUser?.sendEmailVerification()?.await()
+            0
+        } catch (e: Exception) {
+            5
+        }
+    }
+
+    private suspend fun createAccountWithEmailPassword(email: String, password: String): Int {
+        return try {
+            auth.createUserWithEmailAndPassword(email, password).await()
+            0
+        } catch (e: Exception) {
+            when (e) {
+                is FirebaseAuthException -> { // ошибка регистрации
+                    2
+                }
+                is FirebaseNetworkException -> { // ошибка интернет-соединения
+                    3
+                }
+                else -> 4 // неизвестная ошибка
+            }
+        }
+    }
+
+    private suspend fun checkUserExistenceByName(name: String): Boolean {
+        var nameExists = false
+        val users = userDatabase.getSnapshotValue()
+
+        // Проверяем, существует ли пользователь в firebase бд
+        for (user in users.children) {
+            if (user.child("login").value.toString().equals(name)) {
+                nameExists = true
+                break
+            }
+        }
+        return nameExists
+    }
+
     private suspend fun DatabaseReference.getSnapshotValue(): DataSnapshot {
         return withContext(Dispatchers.IO) {
             // приостанавливаем выполнение корутины с помощью suspendCoroutine
@@ -118,23 +198,6 @@ class FirebaseAuthRepositoryImpl {
 
         override fun onCancelled(error: DatabaseError) {
             return onError.invoke(error)
-        }
-    }
-
-    fun getAuthorizedUserId(): String {
-        return auth.currentUser?.uid ?: "0"
-    }
-
-    suspend fun loInWithEmailPassword(email: String, password: String): Int {
-        return try {
-            auth.signInWithEmailAndPassword(email, password).await()
-            0
-        } catch (e: Exception) {
-            when (e) {
-                is FirebaseAuthException -> 1
-                is FirebaseNetworkException -> 2
-                else -> 3
-            }
         }
     }
 

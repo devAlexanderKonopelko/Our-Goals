@@ -14,6 +14,12 @@ class FirebaseAuthRepository {
 
     suspend fun logInWithEmailPassword(email: String, password: String): Int {
         firebaseAuthRepositoryImpl = FirebaseAuthRepositoryImpl()
-        return firebaseAuthRepositoryImpl.loInWithEmailPassword(email, password)
+        return firebaseAuthRepositoryImpl.logInWithEmailPassword(email, password)
+    }
+
+
+    suspend fun registerWithEmailPassword(email: String, password: String, name: String): Int {
+        firebaseAuthRepositoryImpl = FirebaseAuthRepositoryImpl()
+        return firebaseAuthRepositoryImpl.registerWithEmailPassword(email, password, name)
     }
 }

@@ -15,4 +15,5 @@ interface LogInPresenter {
     suspend fun onLoggedInWithGoogle(googleSignInAccount: GoogleSignInAccount, context: Context)
     suspend fun logIn(email: String, password: String, context: Context)
     fun onRegisteredWithGoogle(): Intent?
+    suspend fun onRegisteredWithEmailPassword(email: String, password: String, name: String, context: Context)
 }

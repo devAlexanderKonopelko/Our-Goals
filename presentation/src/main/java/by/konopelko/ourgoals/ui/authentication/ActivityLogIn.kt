@@ -3,15 +3,13 @@ package by.konopelko.ourgoals.ui.authentication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
-import by.konopelko.ourgoals.ActivityMain
+import by.konopelko.ourgoals.ui.mainscreen.ActivityMain
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.guide.ActivityGuide
 import by.konopelko.ourgoals.mvp.authentication.LogInPresenterDefault
 import by.konopelko.ourgoals.mvp.authentication.LogInGeneralView
-import by.konopelko.ourgoals.temporaryData.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_log_in.*
 import kotlinx.coroutines.*

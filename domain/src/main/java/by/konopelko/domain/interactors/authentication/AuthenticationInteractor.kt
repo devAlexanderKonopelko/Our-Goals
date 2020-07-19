@@ -2,10 +2,7 @@ package by.konopelko.domain.interactors.authentication
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.fragment.app.FragmentActivity
-import by.konopelko.data.database.entities.User
-import by.konopelko.data.session.CategoriesData
 import by.konopelko.domain.R
 import by.konopelko.domain.repositories.FirebaseAuthRepository
 import by.konopelko.domain.repositories.GoogleAuthRepository
@@ -13,8 +10,6 @@ import by.konopelko.domain.repositories.UserRepository
 import by.konopelko.domain.repositories.UserRepositoryDefault
 import by.konopelko.domain.repositories.session.*
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.firebase.FirebaseNetworkException
-import com.google.firebase.auth.FirebaseAuthException
 
 class AuthenticationInteractor {
     lateinit var categoryRepository: CategoryRepository
@@ -58,7 +53,7 @@ class AuthenticationInteractor {
 
     private suspend fun loadUsersData(context: Context) {
         val uid = userRepository.getAuthorizedUserId() // берём id пользователя
-        val userExists = userRepository.checkUserExistence(uid, context) // 1. Проверяем, есть ли уже пользователь в бд
+        val userExists = userRepository.checkUserExistence(uid, context) // Проверяем, есть ли уже пользователь в бд
 
         if (!userExists) { // 2.1) Если нету
             userRepository.createUserFromServer(uid, context) // загружаем с сервера, добавляем в текущую сессию и бд
@@ -75,66 +70,8 @@ class AuthenticationInteractor {
         teamGoalRepository.loadUsersTeamGoals(uid, context) // и командные цели
     }
 
-    // возвращает объект пользователя по id
-//    fun performUserDownLoad(uid: String) {
-//        this.userDatabase.child(uid)
-//            .addListenerForSingleValueEvent(object : ValueEventListener {
-//                override fun onDataChange(currentUser: DataSnapshot) {
-//                    val login = currentUser.child("login").value.toString()
-//                    val friends = ArrayList<User>()
-//                    val user = User(
-//                        uid,
-//                        login,
-//                        friends
-//                    )
-//
-//                    onOperationListener.onUserLoadedFromServer(user)
-//                }
-//
-//                override fun onCancelled(p0: DatabaseError) {
-//                }
-//            })
-//    }
-
-//    fun performSocialGoalsDownload(uid: String) {
-//        this.userDatabase.child(uid).child("socialGoals")
-//            .addListenerForSingleValueEvent(object : ValueEventListener {
-//                override fun onDataChange(socialGoals: DataSnapshot) {
-//                    for (goal in socialGoals.children) {
-//                        val tasks = ArrayList<Task>()
-//                        for (taskSnapshot in goal.child("tasks").children) {
-//                            val task =
-//                                Task(
-//                                    taskSnapshot.child("text").value.toString(),
-//                                    taskSnapshot.child("finishDate").value.toString(),
-//                                    taskSnapshot.child("complete").value.toString().toBoolean()
-//                                )
-//                            tasks.add(task)
-//                        }
-//
-//                        val newGoal =
-//                            Goal(
-//                                goal.child("ownerId").value.toString(),
-//                                goal.child("category").value.toString(),
-//                                goal.child("text").value.toString(),
-//                                goal.child("progress").value.toString().toInt(),
-//                                tasks,
-//                                goal.child("done").value.toString().toBoolean(),
-//                                goal.child("social").value.toString().toBoolean()
-//                            )
-//
-//                        SocialGoalCollection.instance.goalList.add(newGoal)
-//                        SocialGoalCollection.instance.keysList.add(goal.key.toString())
-//                    }
-//                    onOperationListener.onSocialGoalsLoaded(true)
-//                }
-//
-//                override fun onCancelled(p0: DatabaseError) {
-//                }
-//            })
-//    }
-
     suspend fun setCurrentUser(uid: String, context: Context): Boolean {
+        userRepository = UserRepositoryDefault()
         return userRepository.setCurrentUser(uid, context)
     }
 
@@ -173,5 +110,15 @@ class AuthenticationInteractor {
         googleAuthRepository =
             GoogleAuthRepository()
         return googleAuthRepository.getGoogleAuthIntent()
+    }
+
+    suspend fun performRegisterWithEmailPassword(email: String, password: String, name: String, context: Context): Int {
+        firebaseAuthRepository = FirebaseAuthRepository()
+        val resultCode = firebaseAuthRepository.registerWithEmailPassword(email, password, name)
+
+        if (resultCode == 0) { // если регистрация прошла успешно, то
+            loadUsersData(context) // загружаем данные пользователя
+        } // если что-то пошло не так - возвращается код ошибки
+        return resultCode
     }
 }
