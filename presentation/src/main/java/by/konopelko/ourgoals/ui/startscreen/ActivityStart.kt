@@ -8,8 +8,8 @@ import by.konopelko.ourgoals.ui.mainscreen.ActivityMain
 import by.konopelko.ourgoals.BuildConfig
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.ui.authentication.ActivityLogIn
-import by.konopelko.ourgoals.mvp.startscreen.StartScreenPresenterDefault
-import by.konopelko.ourgoals.mvp.startscreen.StartScreenView
+import by.konopelko.ourgoals.mvp.startscreen.presenter.StartScreenPresenterDefault
+import by.konopelko.ourgoals.mvp.startscreen.view.StartScreenView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.*
 
@@ -17,8 +17,13 @@ const val PREFS_NAME = "shared-prefs"
 const val PREFS_VERSION_CODE_KEY = "VERSION_CODE"
 const val PREFS_CODE_DOESNT_EXIST = -1
 
-class ActivityStart : AppCompatActivity(), StartScreenView {
-    private val presenter = StartScreenPresenterDefault(this, this)
+class ActivityStart : AppCompatActivity(),
+    StartScreenView {
+    private val presenter =
+        StartScreenPresenterDefault(
+            this,
+            this
+        )
     private val currentVersionCode =
         BuildConfig.VERSION_CODE
 

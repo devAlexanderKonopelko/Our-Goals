@@ -3,7 +3,8 @@ package by.konopelko.data.session
 import by.konopelko.data.database.entities.Category
 
 class CategoriesData {
-    var categoryList = ArrayList<Category>()
+    var categoryList = ArrayList<Category>() // список категорий пользователя
+    var toolbarFilterCategoryList = ArrayList<String>() // список категорий, отображающийся при фильтрации по категориям
 
     companion object {
         val instance = CategoriesData()

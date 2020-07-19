@@ -1,16 +1,16 @@
-package by.konopelko.ourgoals.mvp.authentication
+package by.konopelko.ourgoals.mvp.authentication.presenter
 
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import by.konopelko.domain.interactors.authentication.AuthenticationInteractor
+import by.konopelko.ourgoals.mvp.authentication.view.RegisterFragmentView
+import by.konopelko.ourgoals.mvp.authentication.view.LogInFragmentView
+import by.konopelko.ourgoals.mvp.authentication.view.LogInGeneralView
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
-class LogInPresenterDefault(): LogInPresenter {
-
-    constructor(logInFragmentView: LogInFragmentView): this() {
-        fragmentView = logInFragmentView
-    }
+class LogInPresenterDefault():
+    LogInPresenter {
 
     constructor(logInGeneralView: LogInGeneralView): this() {
         generalView = logInGeneralView

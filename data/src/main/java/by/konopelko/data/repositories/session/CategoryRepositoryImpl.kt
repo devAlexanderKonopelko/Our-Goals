@@ -16,4 +16,16 @@ class CategoryRepositoryImpl {
         }
         return false
     }
+
+    fun getToolbarCategoryList(allCategoriesString: String): ArrayList<String> {
+        CategoriesData.instance.toolbarFilterCategoryList.add(allCategoriesString)
+        for (category in CategoriesData.instance.categoryList) {
+            CategoriesData.instance.toolbarFilterCategoryList.add(category.title)
+        }
+        return CategoriesData.instance.toolbarFilterCategoryList
+    }
+
+    fun getToolbarCategory(position: Int): String {
+        return CategoriesData.instance.toolbarFilterCategoryList[position]
+    }
 }

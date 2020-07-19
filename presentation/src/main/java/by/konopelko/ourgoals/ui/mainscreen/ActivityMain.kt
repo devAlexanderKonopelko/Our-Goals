@@ -19,7 +19,6 @@ import by.konopelko.ourgoals.categories.motivations.add.FragmentAddImage
 import by.konopelko.ourgoals.categories.motivations.add.FragmentAddLink
 import by.konopelko.ourgoals.categories.motivations.add.FragmentAddMotivation
 import by.konopelko.ourgoals.core.main.MainContract
-import by.konopelko.ourgoals.core.main.MainPresenter
 import by.konopelko.ourgoals.database.entities.Category
 import by.konopelko.ourgoals.database.entities.Goal
 import by.konopelko.ourgoals.database.motivations.Image
@@ -32,8 +31,8 @@ import by.konopelko.ourgoals.goals.add.FragmentAddTasks
 import by.konopelko.ourgoals.ui.authentication.ActivityLogIn
 import by.konopelko.ourgoals.goals.add.FragmentChooseFriends
 import by.konopelko.ourgoals.help.FragmentHelp
-import by.konopelko.ourgoals.mvp.mainscreen.MainScreenPresenterDefault
-import by.konopelko.ourgoals.mvp.mainscreen.MainScreenView
+import by.konopelko.ourgoals.mvp.mainscreen.presenter.MainScreenPresenterDefault
+import by.konopelko.ourgoals.mvp.mainscreen.view.MainScreenView
 import by.konopelko.ourgoals.notifications.AdapterNotifications
 import by.konopelko.ourgoals.notifications.FragmentNotifications
 import by.konopelko.ourgoals.supportDeveloper.FragmentSupportDev
@@ -52,107 +51,25 @@ import kotlinx.coroutines.withContext
 class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     FragmentAddTasks.RefreshGoalsListInterface, AdapterNotifications.NotificationActions,
     MainContract.View, FragmentAddCategory.CategoryInterface, FragmentAddLink.AddMotivation,
-    FragmentAddImage.AddMotivation, FragmentChooseFriends.SocialGoalAddition, MainScreenView {
+    FragmentAddImage.AddMotivation, FragmentChooseFriends.SocialGoalAddition,
+    MainScreenView {
 
     private val presenter = MainScreenPresenterDefault(this)
 
-
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
 //    val presenter = MainPresenter(this)
-
 
     private val fragmentGoals = FragmentGoals()
     private val fragmentCategories = FragmentCategories()
     private val fragmentAnalytics = FragmentAnalytics()
 
-    private val categoriesList = ArrayList<String>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setToolbarCategoryFilter() // создаём фильтр по категориям в тулбаре
 
-        presenter.setToolbarSortCategories(R.string.all_categories)
-
-
-        // PRESENTER
-        // создаём список категорий для сортировки из верхнего тулбара
-        categoriesList.add(getString(R.string.all_categories))
-        for (category in CategoryCollection.instance.categoryList) {
-            categoriesList.add(category.title)
-        }
-
-        // VIEW
-        val arrayAdapter = ArrayAdapter(this, R.layout.item_spinner_sort_collections, categoriesList)
-        toolbarSort.setAdapter(arrayAdapter)
-        setSupportActionBar(toolbar)
-        // -------- Сортировка целей по категориям -----------
-        setToolbarSortListener()
-
-
-
-
-
-
-        // ------------- создание бокового меню -----------
-        val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, 0, 0)
-        drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
-        nav_view.setNavigationItemSelectedListener(this)
-        nav_view.menu.findItem(R.id.nav_side_notifications)
-            .setActionView(R.layout.badge_notifications)
-
-        if (CurrentSession.instance.currentUser.name.equals(getString(R.string.username_guest))) {
-            nav_view.menu.findItem(R.id.nav_side_friends).isEnabled = false
-            nav_view.menu.findItem(R.id.nav_side_add_friends).isEnabled = false
-            nav_view.menu.findItem(R.id.nav_side_social_goals).isEnabled = false
-            nav_view.menu.findItem(R.id.nav_side_notifications).isEnabled = false
-            nav_view.menu.findItem(R.id.nav_side_log_out).title = getString(
-                R.string.side_nav_signIn
-            )
-
-            nav_view.getHeaderView(0).currentUserLogin.text =
-                CurrentSession.instance.currentUser.name
-//            nav_view.getHeaderView(0).currentUserImage.setImageResource(R.drawable.icon_guest)
-            nav_view.getHeaderView(0).currentUserEmail.visibility = View.INVISIBLE
-            notificationBadge.visibility = View.INVISIBLE
-            nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
-                View.INVISIBLE
-        } else {
-            Log.e("CURRENT SESSION USER: ", CurrentSession.instance.currentUser.toString())
-
-            nav_view.getHeaderView(0).currentUserLogin.text =
-                CurrentSession.instance.currentUser.name
-            // TODO: change user's icon
-//            nav_view.getHeaderView(0).currentUserImage.setImageResource(R.drawable.icon_guest)
-            nav_view.getHeaderView(0).currentUserEmail.visibility = View.VISIBLE
-            nav_view.getHeaderView(0).currentUserEmail.text = auth.currentUser?.email
-
-            // ------ загружаем нотификации для текущего пользователя -----------
-
-            // постоянно следить за изменениями в уведомлениях:
-            // добавлять их в локальную коллекцию
-            // обновлять ui
-            Log.e("NOTIFICATIONS", "Отслеживание уведомлений")
-            presenter.observeNotifications(CurrentSession.instance.currentUser.id)
-
-            Log.e(
-                "NOTIFICATIONS AMOUNT:",
-                NotificationsCollection.instance.requestsKeys.size.toString()
-            )
-
-            if (NotificationsCollection.instance.friendsRequests.size != 0 ||
-                NotificationsCollection.instance.goalsRequests.size != 0
-            ) {
-                notificationBadge.visibility = View.VISIBLE
-                nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
-                    View.VISIBLE
-            } else {
-                notificationBadge.visibility = View.INVISIBLE
-                nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
-                    View.INVISIBLE
-            }
-        }
+        setSideNavigationBar() // задаём вид бокового меню
 
 
 
@@ -223,9 +140,88 @@ class ActivityMain : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun setToolbarSortListener() {
+    private fun setSideNavigationBar() {
+        val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, 0, 0)
+        drawer_layout.addDrawerListener(toggle)
+        toggle.syncState()
+        nav_view.setNavigationItemSelectedListener(this)
+        nav_view.menu.findItem(R.id.nav_side_notifications)
+            .setActionView(R.layout.badge_notifications)
+
+        if (CurrentSession.instance.currentUser.name.equals(getString(R.string.username_guest))) {
+            nav_view.menu.findItem(R.id.nav_side_friends).isEnabled = false
+            nav_view.menu.findItem(R.id.nav_side_add_friends).isEnabled = false
+            nav_view.menu.findItem(R.id.nav_side_social_goals).isEnabled = false
+            nav_view.menu.findItem(R.id.nav_side_notifications).isEnabled = false
+            nav_view.menu.findItem(R.id.nav_side_log_out).title = getString(
+                R.string.side_nav_signIn
+            )
+
+            nav_view.getHeaderView(0).currentUserLogin.text =
+                CurrentSession.instance.currentUser.name
+//            nav_view.getHeaderView(0).currentUserImage.setImageResource(R.drawable.icon_guest)
+            nav_view.getHeaderView(0).currentUserEmail.visibility = View.INVISIBLE
+            notificationBadge.visibility = View.INVISIBLE
+            nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
+                View.INVISIBLE
+        } else {
+            Log.e("CURRENT SESSION USER: ", CurrentSession.instance.currentUser.toString())
+
+            nav_view.getHeaderView(0).currentUserLogin.text =
+                CurrentSession.instance.currentUser.name
+            // TODO: change user's icon
+//            nav_view.getHeaderView(0).currentUserImage.setImageResource(R.drawable.icon_guest)
+            nav_view.getHeaderView(0).currentUserEmail.visibility = View.VISIBLE
+            nav_view.getHeaderView(0).currentUserEmail.text = auth.currentUser?.email
+
+            // ------ загружаем нотификации для текущего пользователя -----------
+
+            // постоянно следить за изменениями в уведомлениях:
+            // добавлять их в локальную коллекцию
+            // обновлять ui
+            Log.e("NOTIFICATIONS", "Отслеживание уведомлений")
+            presenter.observeNotifications(CurrentSession.instance.currentUser.id)
+
+            Log.e(
+                "NOTIFICATIONS AMOUNT:",
+                NotificationsCollection.instance.requestsKeys.size.toString()
+            )
+
+            if (NotificationsCollection.instance.friendsRequests.size != 0 ||
+                NotificationsCollection.instance.goalsRequests.size != 0
+            ) {
+                notificationBadge.visibility = View.VISIBLE
+                nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
+                    View.VISIBLE
+            } else {
+                notificationBadge.visibility = View.INVISIBLE
+                nav_view.menu.findItem(R.id.nav_side_notifications).actionView.visibility =
+                    View.INVISIBLE
+            }
+        }
+    }
+
+    private fun setToolbarCategoryFilter() {
+        // возвращает список категорий
+        val categoriesList = setToolbarCategoryList()
+
+        // VIEW
+        val arrayAdapter = ArrayAdapter(this, R.layout.item_spinner_sort_collections, categoriesList)
+        toolbarSort.setAdapter(arrayAdapter)
+        setSupportActionBar(toolbar)
+
+        setToolbarFilterListener()
+    }
+
+    // задаёт список категорий, который будет отображаться при фильтрации целей по категориям
+    private fun setToolbarCategoryList(): ArrayList<String> {
+        val allCategoriesString = getString(R.string.all_categories)
+        return presenter.getToolbarCategoryList(allCategoriesString)
+    }
+
+    private fun setToolbarFilterListener() {
         toolbarSort.setOnItemClickListener { parent, view, position, id ->
-            val category = categoriesList[position]
+            val category = presenter.getToolbarCategory(position)
             if (category.equals(getString(R.string.all_categories))) {
                 // коллекции хранят цели со всех категорий
                 if (GoalCollection.instance.visible) {

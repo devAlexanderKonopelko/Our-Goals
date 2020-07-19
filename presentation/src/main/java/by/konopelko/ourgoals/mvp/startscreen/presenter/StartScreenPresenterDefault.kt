@@ -1,10 +1,12 @@
-package by.konopelko.ourgoals.mvp.startscreen
+package by.konopelko.ourgoals.mvp.startscreen.presenter
 
 import android.content.Context
 import by.konopelko.domain.interactors.startscreen.StartScreenInteractor
+import by.konopelko.ourgoals.mvp.startscreen.view.StartScreenView
 
 
-class StartScreenPresenterDefault(val view: StartScreenView, context: Context): StartScreenPresenter {
+class StartScreenPresenterDefault(val view: StartScreenView, context: Context):
+    StartScreenPresenter {
     private val interactor = StartScreenInteractor()
 
     override fun onDatabaseInstanceLoaded(context: Context): Boolean {

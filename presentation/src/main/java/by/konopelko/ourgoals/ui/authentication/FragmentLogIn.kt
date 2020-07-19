@@ -10,16 +10,22 @@ import androidx.fragment.app.Fragment
 import by.konopelko.ourgoals.ui.mainscreen.ActivityMain
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.guide.ActivityGuide
-import by.konopelko.ourgoals.mvp.authentication.LogInFragmentView
-import by.konopelko.ourgoals.mvp.authentication.LogInPresenterDefault
-import by.konopelko.ourgoals.mvp.authentication.LogInGeneralView
+import by.konopelko.ourgoals.mvp.authentication.view.LogInFragmentView
+import by.konopelko.ourgoals.mvp.authentication.presenter.LogInPresenterDefault
+import by.konopelko.ourgoals.mvp.authentication.view.LogInGeneralView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import kotlinx.android.synthetic.main.fragment_log_in.*
 import kotlinx.coroutines.*
 
-class FragmentLogIn : Fragment(), LogInGeneralView, LogInFragmentView {
-    private val presenter = LogInPresenterDefault(this, this)
+class FragmentLogIn : Fragment(),
+    LogInGeneralView,
+    LogInFragmentView {
+    private val presenter =
+        LogInPresenterDefault(
+            this,
+            this
+        )
     private val SIGN_IN_CODE = 1
 
     override fun onCreateView(

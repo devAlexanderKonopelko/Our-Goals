@@ -8,6 +8,7 @@ import by.konopelko.data.repositories.session.CategoryRepositoryImpl
 class CategoryRepositoryDefault: CategoryRepository {
     lateinit var databaseRepositoryImpl: DatabaseRepositoryImpl
     lateinit var categoryRepositoryImpl: CategoryRepositoryImpl
+
     override suspend fun createDefaultCategories(ownerId: String, titles: ArrayList<String>, context: Context): Boolean {
         databaseRepositoryImpl = DatabaseRepositoryImpl()
 
@@ -29,5 +30,15 @@ class CategoryRepositoryDefault: CategoryRepository {
     override suspend fun loadUsersCategoris(uid: String, context: Context): Boolean {
         categoryRepositoryImpl = CategoryRepositoryImpl()
         return categoryRepositoryImpl.loadUsersCategoris(uid, context)
+    }
+
+    override fun getToolbarCategoryList(allCategoriesString: String): ArrayList<String> {
+        categoryRepositoryImpl = CategoryRepositoryImpl()
+        return categoryRepositoryImpl.getToolbarCategoryList(allCategoriesString)
+    }
+
+    override fun getToolbarCategory(position: Int): String {
+        categoryRepositoryImpl = CategoryRepositoryImpl()
+        return categoryRepositoryImpl.getToolbarCategory(position)
     }
 }

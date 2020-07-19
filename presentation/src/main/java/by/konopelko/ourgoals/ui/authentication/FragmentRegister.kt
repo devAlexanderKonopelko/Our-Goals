@@ -1,7 +1,6 @@
 package by.konopelko.ourgoals.ui.authentication
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,27 +9,24 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import by.konopelko.ourgoals.R
-import by.konopelko.ourgoals.database.entities.User
-import by.konopelko.ourgoals.mvp.authentication.LogInFragmentView
-import by.konopelko.ourgoals.mvp.authentication.LogInPresenterDefault
-import by.konopelko.ourgoals.mvp.authentication.RegisterFragmentView
-import by.konopelko.ourgoals.temporaryData.*
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import by.konopelko.ourgoals.mvp.authentication.view.LogInFragmentView
+import by.konopelko.ourgoals.mvp.authentication.presenter.LogInPresenterDefault
+import by.konopelko.ourgoals.mvp.authentication.view.RegisterFragmentView
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_log_in.*
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class FragmentRegister : Fragment(), LogInFragmentView, RegisterFragmentView {
-    private val presenter = LogInPresenterDefault(this, this)
+class FragmentRegister : Fragment(),
+    LogInFragmentView,
+    RegisterFragmentView {
+    private val presenter =
+        LogInPresenterDefault(
+            this,
+            this
+        )
 
     override fun onCreateView(
         inflater: LayoutInflater,

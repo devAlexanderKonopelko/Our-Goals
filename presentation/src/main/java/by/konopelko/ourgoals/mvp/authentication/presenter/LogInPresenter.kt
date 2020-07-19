@@ -1,4 +1,4 @@
-package by.konopelko.ourgoals.mvp.authentication
+package by.konopelko.ourgoals.mvp.authentication.presenter
 
 import android.content.Context
 import android.content.Intent

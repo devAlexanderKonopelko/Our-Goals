@@ -8,16 +8,20 @@ import androidx.lifecycle.ViewModelProvider
 import by.konopelko.ourgoals.ui.mainscreen.ActivityMain
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.guide.ActivityGuide
-import by.konopelko.ourgoals.mvp.authentication.LogInPresenterDefault
-import by.konopelko.ourgoals.mvp.authentication.LogInGeneralView
+import by.konopelko.ourgoals.mvp.authentication.presenter.LogInPresenterDefault
+import by.konopelko.ourgoals.mvp.authentication.view.LogInGeneralView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_log_in.*
 import kotlinx.coroutines.*
 
-class ActivityLogIn : AppCompatActivity(), LogInGeneralView, View.OnClickListener {
+class ActivityLogIn : AppCompatActivity(),
+    LogInGeneralView, View.OnClickListener {
     private val logInFragment = FragmentLogIn()
     private val registerFragment = FragmentRegister()
-    private val presenter = LogInPresenterDefault(this)
+    private val presenter =
+        LogInPresenterDefault(
+            this
+        )
 
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
 

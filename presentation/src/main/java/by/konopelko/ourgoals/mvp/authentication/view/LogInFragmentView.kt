@@ -1,5 +1,4 @@
-package by.konopelko.ourgoals.mvp.authentication
-
+package by.konopelko.ourgoals.mvp.authentication.view
 
 interface LogInFragmentView {
     fun showAuthenticationError()

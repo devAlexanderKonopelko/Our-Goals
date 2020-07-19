@@ -1,6 +1,4 @@
-package by.konopelko.ourgoals.mvp.authentication
-
-import by.konopelko.ourgoals.database.entities.User
+package by.konopelko.ourgoals.mvp.authentication.view
 
 interface LogInGeneralView {
     suspend fun startGuideActivity()
