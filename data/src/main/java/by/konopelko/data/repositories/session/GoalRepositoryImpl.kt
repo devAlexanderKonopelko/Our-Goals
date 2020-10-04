@@ -3,8 +3,7 @@ package by.konopelko.data.repositories.session
 import android.content.Context
 import by.konopelko.data.repositories.DatabaseRepositoryImpl
 import by.konopelko.data.repositories.firebase.TeamGoalRepositoryImpl
-import by.konopelko.data.session.GoalsData
-import by.konopelko.data.session.TeamGoalsData
+import by.konopelko.data.local.GoalsData
 
 class GoalRepositoryImpl {
     lateinit var databaseRepositoryImpl: DatabaseRepositoryImpl

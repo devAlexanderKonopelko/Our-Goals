@@ -28,7 +28,9 @@ android {
 }
 
 dependencies {
+    implementation project(path: ':domain')
     def room_version = "2.2.5"
+    def koin_version = '2.0.1'
 
     // Room Database
     implementation "androidx.room:room-runtime:$room_version"
@@ -55,4 +57,9 @@ dependencies {
 
     // Google Auth
     implementation 'com.google.android.gms:play-services-auth:18.1.0'
+
+    // Koin for Kotlin
+    implementation "org.koin:koin-core:$koin_version"
+    // Koin extended & experimental features
+    implementation "org.koin:koin-core-ext:$koin_version"
 }

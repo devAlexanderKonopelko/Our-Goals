@@ -3,7 +3,7 @@ package by.konopelko.data.repositories.firebase
 import android.content.Context
 import by.konopelko.data.database.entities.Goal
 import by.konopelko.data.database.entities.Task
-import by.konopelko.data.session.TeamGoalsData
+import by.konopelko.data.local.TeamGoalsData
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase

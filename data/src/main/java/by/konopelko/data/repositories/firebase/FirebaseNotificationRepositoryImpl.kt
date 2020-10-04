@@ -1,8 +1,8 @@
 package by.konopelko.data.repositories.firebase
 
 import android.util.Log
-import by.konopelko.data.session.NotificationData
-import by.konopelko.data.session.UserData
+import by.konopelko.data.local.NotificationData
+import by.konopelko.data.local.UserData
 import com.google.firebase.database.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

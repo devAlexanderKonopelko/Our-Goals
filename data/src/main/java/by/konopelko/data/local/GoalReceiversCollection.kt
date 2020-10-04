@@ -1,4 +1,4 @@
-package by.konopelko.data.session
+package by.konopelko.data.local
 
 class GoalReceiversCollection {
     val receiversIds = ArrayList<String>()

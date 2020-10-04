@@ -1,6 +1,6 @@
 package by.konopelko.data.repositories.session
 
-import by.konopelko.data.session.SessionGeneralData
+import by.konopelko.data.local.SessionGeneralData
 
 class SessionGeneralRepositoryImpl {
     fun setCurrentSessionRun(state: Boolean) {

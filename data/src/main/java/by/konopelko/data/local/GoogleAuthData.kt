@@ -1,4 +1,4 @@
-package by.konopelko.data.session
+package by.konopelko.data.local
 
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions

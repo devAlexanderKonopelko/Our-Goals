@@ -1,4 +1,4 @@
-package by.konopelko.data.session
+package by.konopelko.data.local
 
 class SessionGeneralData {
     var firstTimeRun = true

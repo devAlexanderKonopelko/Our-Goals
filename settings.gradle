@@ -1,4 +1,4 @@
+include ':domain'
 rootProject.name='OurGoals'
 include ':presentation'
 include ':data'
-include ':domain'

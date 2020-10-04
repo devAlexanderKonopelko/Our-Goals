@@ -2,7 +2,7 @@ package by.konopelko.data.repositories.session
 
 import android.content.Context
 import by.konopelko.data.repositories.DatabaseRepositoryImpl
-import by.konopelko.data.session.AnalyticsData
+import by.konopelko.data.local.AnalyticsData
 
 class AnalyticsRepositoryImpl {
     lateinit var databaseRepositoryImpl: DatabaseRepositoryImpl

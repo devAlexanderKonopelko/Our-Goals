@@ -2,7 +2,7 @@ package by.konopelko.data.repositories
 
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity
-import by.konopelko.data.session.GoogleAuthData
+import by.konopelko.data.local.GoogleAuthData
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions

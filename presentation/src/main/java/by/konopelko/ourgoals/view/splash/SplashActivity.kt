@@ -10,16 +10,25 @@ import by.konopelko.ourgoals.view.signin.ActivityLogIn
 import by.konopelko.ourgoals.presenter.splash.SplashPresenter
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.*
+import org.koin.android.ext.android.getKoin
+import org.koin.core.qualifier.named
+import org.koin.core.scope.Scope
 
-class ActivityStart : AppCompatActivity(), SplashView {
+class SplashActivity : AppCompatActivity(), SplashView {
 
-    private val presenter = SplashPresenter(this)
+    private lateinit var scope: Scope
+
+    private val presenter = SplashPresenter(
+        this,
+        getVersionCode = scope.get())
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
+
+        scope = getKoin().getOrCreateScope(DI_SCOPE_NAME, named(DI_SCOPE_NAME))
 
         presenter.loadUserData()
 
@@ -105,14 +114,18 @@ class ActivityStart : AppCompatActivity(), SplashView {
 
     override suspend fun transitToMainScreen() {
         withContext(Dispatchers.Main) {
-            startActivity(Intent(this@ActivityStart, ActivityMain::class.java))
+            startActivity(Intent(this@SplashActivity, ActivityMain::class.java))
         }
     }
 
     override suspend fun transitToSignInScreen() {
         // start ActivityLogIn
         withContext(Dispatchers.Main) {
-            startActivity(Intent(this@ActivityStart, ActivityLogIn::class.java))
+            startActivity(Intent(this@SplashActivity, ActivityLogIn::class.java))
         }
+    }
+
+    companion object {
+        const val DI_SCOPE_NAME = "SplashScope"
     }
 }

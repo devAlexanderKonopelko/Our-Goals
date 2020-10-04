@@ -1,4 +1,4 @@
-package by.konopelko.domain
+package by.konopelko.ourgoals.domain
 
 import org.junit.Test
 

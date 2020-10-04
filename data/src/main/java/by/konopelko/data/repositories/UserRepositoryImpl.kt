@@ -4,7 +4,7 @@ import android.content.Context
 import by.konopelko.data.database.entities.User
 import by.konopelko.data.repositories.firebase.FirebaseAuthRepositoryImpl
 import by.konopelko.data.repositories.firebase.FirebaseUserRepositoryImpl
-import by.konopelko.data.session.UserData
+import by.konopelko.data.local.UserData
 
 class UserRepositoryImpl {
     lateinit var databaseRepositoryImpl: DatabaseRepositoryImpl

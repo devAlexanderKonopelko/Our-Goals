@@ -2,7 +2,7 @@ package by.konopelko.data.repositories.session
 
 import android.content.Context
 import by.konopelko.data.repositories.DatabaseRepositoryImpl
-import by.konopelko.data.session.CategoriesData
+import by.konopelko.data.local.CategoriesData
 
 class CategoryRepositoryImpl {
     lateinit var databaseRepositoryImpl: DatabaseRepositoryImpl
