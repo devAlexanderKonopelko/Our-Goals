@@ -2,6 +2,7 @@ package by.konopelko.ourgoals.presenter.splash
 
 import android.content.Context
 import by.konopelko.domain.interactors.startscreen.StartScreenInteractor
+import by.konopelko.domain.usecases.getversioncode.GetVersionCodeUseCaseImpl
 import by.konopelko.ourgoals.view.splash.SplashView
 
 
@@ -11,8 +12,12 @@ class SplashPresenter(
 
     private val interactor = StartScreenInteractor()
 
-    fun loadUserData() {
+    private val getVersionCode = GetVersionCodeUseCaseImpl()
 
+    // load users data depending on app first start by checking version code
+    fun loadUserData() {
+        when(getVersionCode()) {
+        }
     }
 
     fun onDatabaseInstanceLoaded(context: Context): Boolean {
