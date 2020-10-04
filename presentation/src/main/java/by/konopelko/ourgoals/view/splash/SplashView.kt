@@ -1,6 +1,6 @@
 package by.konopelko.ourgoals.view.splash
 
-interface StartScreenView {
+interface SplashView {
     suspend fun transitToMainScreen()
     suspend fun transitToSignInScreen()
 }

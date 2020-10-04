@@ -5,32 +5,23 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import by.konopelko.ourgoals.view.home.ActivityMain
-import by.konopelko.ourgoals.BuildConfig
 import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.view.signin.ActivityLogIn
-import by.konopelko.ourgoals.presenter.splash.StartScreenPresenterDefault
+import by.konopelko.ourgoals.presenter.splash.SplashPresenter
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.*
 
-const val PREFS_NAME = "shared-prefs"
-const val PREFS_VERSION_CODE_KEY = "VERSION_CODE"
-const val PREFS_CODE_DOESNT_EXIST = -1
+class ActivityStart : AppCompatActivity(), SplashView {
 
-class ActivityStart : AppCompatActivity(),
-    StartScreenView {
-    private val presenter =
-        StartScreenPresenterDefault(
-            this,
-            this
-        )
-    private val currentVersionCode =
-        BuildConfig.VERSION_CODE
+    private val presenter = SplashPresenter(this)
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
+
+        presenter.loadUserData()
 
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val savedVersionCode = prefs.getInt(
@@ -39,29 +30,29 @@ class ActivityStart : AppCompatActivity(),
         )
 
         CoroutineScope(Dispatchers.IO).launch {
-            loadDatabaseInstance() // загрузка ссылки на БД NEW
+            loadDatabaseInstance() // загрузка ссылки на БД
             when {
                 // Не первый запуск
                 savedVersionCode == currentVersionCode -> {
-                    setCurrentSessionRun(false) // NEW
+                    setCurrentSessionRun(false) //
                     if (auth.currentUser != null) {
                         if (auth.currentUser!!.isEmailVerified) {
-                            loadCurrentUserData() // NEW загрузка данных текущего пользователя
-                            transitToMainScreen() // NEW переход к ActivityMain
+                            loadCurrentUserData() // загрузка данных текущего пользователя
+                            transitToMainScreen() //переход к ActivityMain
                         } else {
-                            transitToSignInScreen() // NEW переход к ActivityLogIn
+                            transitToSignInScreen() //переход к ActivityLogIn
                         }
                     } else {
-                        loadCurrentUserData() // NEW загрузка данных текущего пользователя
-                        transitToMainScreen() // NEW переход к MainActivity
+                        loadCurrentUserData() //  загрузка данных текущего пользователя
+                        transitToMainScreen() //  переход к MainActivity
                     }
                 }
                 // Первый запуск/очищены prefs
                 savedVersionCode == PREFS_CODE_DOESNT_EXIST -> {
-                    loadUserGuestData() // NEW загрузка данных Гостя
-                    loadCurrentUserData() // NEW загрузка данных текущего пользователя
-                    setCurrentSessionRun(true) // NEW
-                    transitToSignInScreen() // NEW переход к ActivityLogIn
+                    loadUserGuestData() //  загрузка данных Гостя
+                    loadCurrentUserData() //  загрузка данных текущего пользователя
+                    setCurrentSessionRun(true) //
+                    transitToSignInScreen() //  переход к ActivityLogIn
                 }
                 currentVersionCode > savedVersionCode -> {
                     // TODO Обновление приложения
