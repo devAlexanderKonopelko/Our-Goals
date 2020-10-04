@@ -1,8 +1,8 @@
 package by.konopelko.domain.interactors.startscreen
 
 import android.content.Context
-import by.konopelko.domain.repositories.DatabaseRepository
-import by.konopelko.domain.repositories.DatabaseRepositoryDefault
+import by.konopelko.domain.repositories.database.DatabaseRepository
+import by.konopelko.domain.repositories.database.DatabaseRepositoryDefault
 import by.konopelko.domain.repositories.UserRepository
 import by.konopelko.domain.repositories.UserRepositoryDefault
 import by.konopelko.domain.repositories.session.*
@@ -22,7 +22,8 @@ class StartScreenInteractor {
     }
 
     fun loadDatabaseInstance(context: Context): Boolean {
-        databaseRepository = DatabaseRepositoryDefault()
+        databaseRepository =
+            DatabaseRepositoryDefault()
         return databaseRepository.loadDatabaseInstance(context)
     }
 

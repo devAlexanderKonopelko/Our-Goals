@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import by.konopelko.domain.R
-import by.konopelko.domain.repositories.FirebaseAuthRepository
-import by.konopelko.domain.repositories.GoogleAuthRepository
+import by.konopelko.domain.repositories.firebase.FirebaseAuthRepository
+import by.konopelko.domain.repositories.firebase.GoogleAuthRepository
 import by.konopelko.domain.repositories.UserRepository
 import by.konopelko.domain.repositories.UserRepositoryDefault
 import by.konopelko.domain.repositories.session.*
@@ -22,7 +22,8 @@ class AuthenticationInteractor {
     lateinit var teamGoalRepository: TeamGoalsRepository
 
     suspend fun performLogIn(email: String, password: String, context: Context): Int {
-        firebaseAuthRepository = FirebaseAuthRepository()
+        firebaseAuthRepository =
+            FirebaseAuthRepository()
         val resultCode = firebaseAuthRepository.logInWithEmailPassword(email, password)
 
         if (resultCode == 0) {
@@ -32,8 +33,10 @@ class AuthenticationInteractor {
     }
 
     suspend fun performLogInWithGoogle(googleSignInAccount: GoogleSignInAccount, context: Context): Int {
-        googleAuthRepository = GoogleAuthRepository()
-        firebaseAuthRepository = FirebaseAuthRepository()
+        googleAuthRepository =
+            GoogleAuthRepository()
+        firebaseAuthRepository =
+            FirebaseAuthRepository()
         userRepository = UserRepositoryDefault()
         analyticsRepository = AnalyticsRepositoryDefault()
         personalGoalRepository = PersonalGoalRepositoryDefault()
@@ -113,7 +116,8 @@ class AuthenticationInteractor {
     }
 
     suspend fun performRegisterWithEmailPassword(email: String, password: String, name: String, context: Context): Int {
-        firebaseAuthRepository = FirebaseAuthRepository()
+        firebaseAuthRepository =
+            FirebaseAuthRepository()
         val resultCode = firebaseAuthRepository.registerWithEmailPassword(email, password, name)
 
         if (resultCode == 0) { // если регистрация прошла успешно, то

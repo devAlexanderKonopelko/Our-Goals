@@ -1,34 +1,41 @@
-package by.konopelko.ourgoals.core.main
+package by.konopelko.data.repositories.firebase
 
 import android.util.Log
-import by.konopelko.ourgoals.database.entities.Goal
-import by.konopelko.ourgoals.database.entities.Task
-import by.konopelko.ourgoals.database.entities.User
-import by.konopelko.ourgoals.temporaryData.CurrentSession
-import by.konopelko.ourgoals.temporaryData.NotificationsCollection
+import by.konopelko.data.session.NotificationData
+import by.konopelko.data.session.UserData
 import com.google.firebase.database.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
-class MainInteractor(val onOperationListener: MainContract.OnOperationListener) :
-    MainContract.Interactor {
-    private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
+class FirebaseNotificationRepositoryImpl {
     private val friendRequestDatabase = FirebaseDatabase.getInstance().reference.child("FriendRequests")
-    private lateinit var goalRequestDatabase: DatabaseReference
+    private val userDatabase = FirebaseDatabase.getInstance().reference.child("Users")
+    private val goalRequestDatabase = FirebaseDatabase.getInstance().reference.child("GoalRequests")
 
     // хранят список повешенных на данные слушателей изменений
     private val goalsRequestListeners = ArrayList<ValueEventListener>()
-    private val friendsRequestListeners = ArrayList<ValueEventListener>()
 
-    override fun performNotificationsObservation(uid: String) {
+    suspend fun observeNotifications() {
         // очищаем коллекцию уведомлений
-        NotificationsCollection.instance.clearTempNotificationsList()
+        NotificationData.instance.clearTempNotificationsList()
+
+        val uid = UserData.instance.currentUser.id
 
         // подгружаем все существующие уведомления
         performFriendsNotificationsObservation(uid)
         performGoalsNotificationsObservation(uid)
     }
 
-    override fun performFriendsNotificationsObservation(uid: String) {
+    private suspend fun performFriendsNotificationsObservation(uid: String) {
         // firebase work
+        val currentUser = friendRequestDatabase.child(uid).getSnapshotFromEventListener()
+
+
+
+
         friendRequestDatabase.child(uid)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(requests: DataSnapshot) {
@@ -129,9 +136,9 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
             })
     }
 
-    override fun performGoalsNotificationsObservation(uid: String) {
+    private fun performGoalsNotificationsObservation(uid: String) {
         // firebase goal notifications search
-        goalRequestDatabase = FirebaseDatabase.getInstance().reference.child("GoalRequests")
+//        goalRequestDatabase = FirebaseDatabase.getInstance().reference.child("GoalRequests")
 
         val valueEventListener = goalRequestDatabase.child(CurrentSession.instance.currentUser.id)
             .addValueEventListener(object : ValueEventListener {
@@ -277,15 +284,35 @@ class MainInteractor(val onOperationListener: MainContract.OnOperationListener) 
         Log.e("LISTENER","GOAL LISTENER ADDED: $valueEventListener \nARRAY: $goalsRequestListeners")
     }
 
-    override fun performNotificationsListenersRemoval() {
-        // удаляем всех слушателей с данных. Это действие выполняется при нажатии на "Выйти из аккаунта"
-        goalsRequestListeners.forEach {valueEventListener ->
-            Log.e("LISTENER","GOAL LISTENER REMOVING: $valueEventListener")
-            goalRequestDatabase.child(CurrentSession.instance.currentUser.id).removeEventListener(valueEventListener)
-        }
-        goalsRequestListeners.clear()
 
-        onOperationListener.onNotificationsListenersRemoved()
+    private suspend fun DatabaseReference.getSnapshotFromEventListener(): DataSnapshot {
+        return withContext(Dispatchers.IO) {
+            // приостанавливаем выполнение корутины с помощью suspendCoroutine
+            suspendCoroutine<DataSnapshot> { continuation -> // с помощью continuation мы сможем продолжить выполнение
+                addValueEventListener(MyValueEventListener( // запускаем кастомный слушатель
+                    // в качестве параметров передаём две функции, которые продолжат выполнение корутины
+                    onDataChange = {
+                        continuation.resume(it)
+                    },
+                    onError = {
+                        continuation.resumeWithException(it.toException())
+                    }
+                ))
+            }
+        }
+    }
+
+    class MyValueEventListener(
+        val onDataChange: (DataSnapshot) -> Unit,
+        val onError: (DatabaseError) -> Unit
+    ) : ValueEventListener {
+        override fun onDataChange(data: DataSnapshot) {
+            return onDataChange.invoke(data) // вызываем переданную функцию как только получим data
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            return onError.invoke(error)
+        }
     }
 
 }

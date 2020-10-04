@@ -19,20 +19,20 @@
             android:value="@string/admob_id" />
 
         <activity
-            android:name=".ui.mainscreen.ActivityMain"
+            android:name=".view.home.ActivityMain"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".guide.ActivityGuide"
+            android:name=".view.guide.ActivityGuide"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".ui.authentication.ActivityLogIn"
+            android:name=".view.signin.ActivityLogIn"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".ui.startscreen.ActivityStart"
+            android:name=".view.splash.ActivityStart"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
