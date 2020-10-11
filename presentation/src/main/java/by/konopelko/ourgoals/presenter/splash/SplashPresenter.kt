@@ -2,7 +2,7 @@ package by.konopelko.ourgoals.presenter.splash
 
 import android.content.Context
 import by.konopelko.domain.interactors.startscreen.StartScreenInteractor
-import by.konopelko.domain.usecases.getversioncode.GetVersionCodeUseCase
+import by.konopelko.ourgoals.domain.usecases.getversioncode.GetVersionCodeUseCase
 import by.konopelko.ourgoals.view.splash.SplashView
 
 

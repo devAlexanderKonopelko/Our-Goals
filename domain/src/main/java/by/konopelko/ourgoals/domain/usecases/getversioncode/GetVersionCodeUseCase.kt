@@ -1,4 +1,4 @@
-package by.konopelko.domain.usecases.getversioncode
+package by.konopelko.ourgoals.domain.usecases.getversioncode
 
 interface GetVersionCodeUseCase {
 }
