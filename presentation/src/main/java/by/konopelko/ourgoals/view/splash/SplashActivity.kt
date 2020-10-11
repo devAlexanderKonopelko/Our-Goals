@@ -19,7 +19,8 @@ class SplashActivity : AppCompatActivity(), SplashView {
 
     private val presenter = SplashPresenter(
         this,
-        checkFirstRun = scope.get()
+        checkFirstRun = scope.get(),
+        updateVersionCode = scope.get()
     )
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -30,9 +31,7 @@ class SplashActivity : AppCompatActivity(), SplashView {
 
         scope = getKoin().getOrCreateScope(DI_SCOPE_NAME, named(DI_SCOPE_NAME))
 
-        CoroutineScope(Dispatchers.IO).launch {
-            presenter.transitToNextScreen()
-        }
+        presenter.transitToNextScreen()
     }
 
     private fun setCurrentSessionRun(state: Boolean) {
@@ -42,7 +41,10 @@ class SplashActivity : AppCompatActivity(), SplashView {
     private suspend fun loadCurrentUserData(): Boolean {
         var result = false
         auth.currentUser?.let { user ->
-            result = presenter.onCurrentUserDataLoaded(user.uid, this) // загружаем данные текущего пользователя
+            result = presenter.onCurrentUserDataLoaded(
+                user.uid,
+                this
+            ) // загружаем данные текущего пользователя
         }
         return result
     }

@@ -4,6 +4,7 @@ import android.content.Context
 import by.konopelko.domain.interactors.startscreen.StartScreenInteractor
 import by.konopelko.ourgoals.domain.entity.AppState
 import by.konopelko.ourgoals.domain.usecases.checkfirstrun.CheckFirstRunUseCase
+import by.konopelko.ourgoals.domain.usecases.updateversioncode.UpdateVersionCodeUseCase
 import by.konopelko.ourgoals.view.splash.SplashView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +14,8 @@ import kotlinx.coroutines.withContext
 
 class SplashPresenter(
     private val view: SplashView,
-    private val checkFirstRun: CheckFirstRunUseCase
+    private val checkFirstRun: CheckFirstRunUseCase,
+    private val updateVersionCode: UpdateVersionCodeUseCase
 ) {
 
     private val interactor = StartScreenInteractor()
@@ -21,7 +23,9 @@ class SplashPresenter(
     // load users data depending on app first start by checking version code
     fun transitToNextScreen() {
         CoroutineScope(Dispatchers.IO).launch {
-            when (checkFirstRun()) {
+            val isFirstRun = checkFirstRun()
+            updateVersionCode()
+            when (isFirstRun) {
                 AppState.FIRST_RUN -> {
 //                    loadUserGuestData() //  вынести заргузку гостя в Sign In Activity
 //                    loadCurrentUserData() // ? загрузка данных текущего пользователя
@@ -39,9 +43,11 @@ class SplashPresenter(
                 } // TODO: create update popup dialog
             }
         }
-        //        В конце надо записывать в prefs текущую версию, чтобы сохранилась информация о версии.
-//        Иначе постоянно будет первый запуск.
-        prefs.edit().putInt(PREFS_VERSION_CODE_KEY, currentVersionCode).apply()
+
+    }
+
+    private fun updateVersionCode() {
+        updateVersionCode.invoke()
     }
 
     private suspend fun transitToMainScreen() {
