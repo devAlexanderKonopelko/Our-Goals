@@ -1,6 +1,6 @@
 package by.konopelko.data.local
 
-import by.konopelko.data.database.entities.Goal
+import by.konopelko.data.database.entity.Goal
 
 class GoalsData {
     var goalsInProgressList = ArrayList<Goal>()

@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import by.konopelko.data.database.entities.Analytics
+import by.konopelko.data.database.entity.Analytics
 
 @Dao
 interface AnalyticsDao {

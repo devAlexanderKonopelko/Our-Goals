@@ -1,7 +1,7 @@
 package by.konopelko.ourgoals.domain.usecases.checkfirstrun
 
 import by.konopelko.ourgoals.domain.entity.AppState
-import by.konopelko.ourgoals.domain.repositories.sharedpreferences.SharedPreferencesRepository
+import by.konopelko.ourgoals.domain.repository.sharedpreferences.SharedPreferencesRepository
 
 class CheckFirstRunUseCaseImpl(
     private val sharedPreferencesRepository: SharedPreferencesRepository

@@ -8,7 +8,6 @@ import by.konopelko.ourgoals.R
 import by.konopelko.ourgoals.view.signin.ActivityLogIn
 import by.konopelko.ourgoals.presenter.splash.SplashPresenter
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.*
 import org.koin.android.ext.android.getKoin
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
@@ -20,7 +19,8 @@ class SplashActivity : AppCompatActivity(), SplashView {
     private val presenter = SplashPresenter(
         this,
         checkFirstRun = scope.get(),
-        updateVersionCode = scope.get()
+        updateVersionCode = scope.get(),
+        setAppState = scope.get()
     )
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -31,6 +31,7 @@ class SplashActivity : AppCompatActivity(), SplashView {
 
         scope = getKoin().getOrCreateScope(DI_SCOPE_NAME, named(DI_SCOPE_NAME))
 
+        presenter.checkFirstRun()
         presenter.transitToNextScreen()
     }
 

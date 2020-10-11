@@ -3,7 +3,7 @@ package by.konopelko.data.database.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import by.konopelko.data.database.entities.User
+import by.konopelko.data.database.entity.User
 
 @Dao
 interface UserDao {

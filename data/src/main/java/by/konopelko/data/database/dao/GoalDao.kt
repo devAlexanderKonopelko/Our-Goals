@@ -1,7 +1,7 @@
 package by.konopelko.data.database.dao
 
 import androidx.room.*
-import by.konopelko.data.database.entities.Goal
+import by.konopelko.data.database.entity.Goal
 
 @Dao
 interface GoalDao {

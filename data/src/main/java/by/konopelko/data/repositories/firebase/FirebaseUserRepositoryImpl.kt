@@ -1,6 +1,6 @@
 package by.konopelko.data.repositories.firebase
 
-import by.konopelko.data.database.entities.User
+import by.konopelko.data.database.entity.User
 import com.google.firebase.database.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

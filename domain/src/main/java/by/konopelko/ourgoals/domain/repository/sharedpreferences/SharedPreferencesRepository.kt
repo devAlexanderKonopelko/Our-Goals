@@ -1,4 +1,4 @@
-package by.konopelko.ourgoals.domain.repositories.sharedpreferences
+package by.konopelko.ourgoals.domain.repository.sharedpreferences
 
 interface SharedPreferencesRepository {
 

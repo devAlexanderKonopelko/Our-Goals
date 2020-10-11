@@ -1,8 +1,8 @@
 package by.konopelko.data.repositories.firebase
 
 import android.content.Context
-import by.konopelko.data.database.entities.Goal
-import by.konopelko.data.database.entities.Task
+import by.konopelko.data.database.entity.Goal
+import by.konopelko.data.database.entity.Task
 import by.konopelko.data.local.TeamGoalsData
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

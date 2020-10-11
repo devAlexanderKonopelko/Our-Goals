@@ -1,7 +1,7 @@
 package by.konopelko.data.local
 
-import by.konopelko.data.database.entities.Goal
-import by.konopelko.data.database.entities.User
+import by.konopelko.data.database.entity.Goal
+import by.konopelko.data.database.entity.User
 
 class NotificationData {
     val friendsRequests = ArrayList<User>()

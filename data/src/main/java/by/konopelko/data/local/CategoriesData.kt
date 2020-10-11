@@ -1,6 +1,6 @@
 package by.konopelko.data.local
 
-import by.konopelko.data.database.entities.Category
+import by.konopelko.data.database.entity.Category
 
 class CategoriesData {
     var categoryList = ArrayList<Category>() // список категорий пользователя

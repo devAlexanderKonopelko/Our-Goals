@@ -1,4 +1,4 @@
-package by.konopelko.data.di.module
+package by.konopelko.ourgoals.di.module
 
 import by.konopelko.data.sharedpreferences.SharedPreferences
 import by.konopelko.data.sharedpreferences.SharedPreferencesImpl

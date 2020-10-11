@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import by.konopelko.data.database.entities.motivations.Motivation
+import by.konopelko.data.database.entity.motivations.Motivation
 
 @Dao
 interface MotivationsDao {

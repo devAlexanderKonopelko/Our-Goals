@@ -2,7 +2,7 @@ package by.konopelko.ourgoals
 
 import android.app.Application
 import by.konopelko.data.database.DatabaseInstance
-import by.konopelko.data.di.module.appModule
+import by.konopelko.ourgoals.di.module.appModule
 import by.konopelko.ourgoals.di.module.splashModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -21,5 +21,9 @@ class OurGoalsApplication: Application() {
 
     private fun initializeDatabase() {
         DatabaseInstance.getInstance(applicationContext)
+    }
+
+    companion object {
+        const val DI_SCOPE_NAME = "ApplicationScope"
     }
 }

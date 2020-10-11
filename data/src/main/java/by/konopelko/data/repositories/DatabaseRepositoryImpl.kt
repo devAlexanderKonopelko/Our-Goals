@@ -2,10 +2,10 @@ package by.konopelko.data.repositories
 
 import android.content.Context
 import by.konopelko.data.database.DatabaseInstance
-import by.konopelko.data.database.entities.Analytics
-import by.konopelko.data.database.entities.Category
-import by.konopelko.data.database.entities.Goal
-import by.konopelko.data.database.entities.User
+import by.konopelko.data.database.entity.Analytics
+import by.konopelko.data.database.entity.Category
+import by.konopelko.data.database.entity.Goal
+import by.konopelko.data.database.entity.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

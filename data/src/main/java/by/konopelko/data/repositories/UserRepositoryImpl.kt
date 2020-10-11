@@ -1,7 +1,7 @@
 package by.konopelko.data.repositories
 
 import android.content.Context
-import by.konopelko.data.database.entities.User
+import by.konopelko.data.database.entity.User
 import by.konopelko.data.repositories.firebase.FirebaseAuthRepositoryImpl
 import by.konopelko.data.repositories.firebase.FirebaseUserRepositoryImpl
 import by.konopelko.data.local.UserData

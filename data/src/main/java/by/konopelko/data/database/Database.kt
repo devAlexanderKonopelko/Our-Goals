@@ -3,13 +3,13 @@ package by.konopelko.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import by.konopelko.data.database.converters.*
+import by.konopelko.data.database.converter.*
 import by.konopelko.data.database.dao.*
-import by.konopelko.data.database.entities.*
-import by.konopelko.data.database.entities.motivations.Image
-import by.konopelko.data.database.entities.motivations.Link
-import by.konopelko.data.database.entities.motivations.Motivation
-import by.konopelko.data.database.entities.motivations.Note
+import by.konopelko.data.database.entity.*
+import by.konopelko.data.database.entity.motivations.Image
+import by.konopelko.data.database.entity.motivations.Link
+import by.konopelko.data.database.entity.motivations.Motivation
+import by.konopelko.data.database.entity.motivations.Note
 
 @Database(
     entities = [Goal::class,

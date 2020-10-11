@@ -1,6 +1,5 @@
-package by.konopelko.data.database.entities
+package by.konopelko.data.database.entity
 
-import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

@@ -1,7 +1,7 @@
-package by.konopelko.data.database.converters
+package by.konopelko.data.database.converter
 
 import androidx.room.TypeConverter
-import by.konopelko.data.database.entities.motivations.Link
+import by.konopelko.data.database.entity.motivations.Link
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.Serializable

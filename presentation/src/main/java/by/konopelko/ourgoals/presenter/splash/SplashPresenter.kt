@@ -4,6 +4,7 @@ import android.content.Context
 import by.konopelko.domain.interactors.startscreen.StartScreenInteractor
 import by.konopelko.ourgoals.domain.entity.AppState
 import by.konopelko.ourgoals.domain.usecases.checkfirstrun.CheckFirstRunUseCase
+import by.konopelko.ourgoals.domain.usecases.setappstate.SetAppStateUseCase
 import by.konopelko.ourgoals.domain.usecases.updateversioncode.UpdateVersionCodeUseCase
 import by.konopelko.ourgoals.view.splash.SplashView
 import kotlinx.coroutines.CoroutineScope
@@ -15,35 +16,45 @@ import kotlinx.coroutines.withContext
 class SplashPresenter(
     private val view: SplashView,
     private val checkFirstRun: CheckFirstRunUseCase,
-    private val updateVersionCode: UpdateVersionCodeUseCase
+    private val updateVersionCode: UpdateVersionCodeUseCase,
+    private val setAppState: SetAppStateUseCase
 ) {
+
+    private var isFirstRun: AppState? = null
 
     private val interactor = StartScreenInteractor()
 
-    // load users data depending on app first start by checking version code
     fun transitToNextScreen() {
         CoroutineScope(Dispatchers.IO).launch {
-            val isFirstRun = checkFirstRun()
-            updateVersionCode()
-            when (isFirstRun) {
-                AppState.FIRST_RUN -> {
+            isFirstRun?.let {
+                when (isFirstRun) {
+                    AppState.FIRST_RUN -> {
 //                    loadUserGuestData() //  вынести заргузку гостя в Sign In Activity
 //                    loadCurrentUserData() // ? загрузка данных текущего пользователя
-//                    setCurrentSessionRun(true) // сохранять инфу о том, первый ли это запуск приложения
-                    transitToSignInScreen() //  переход к ActivityLogIn
-                }
-                AppState.REPEAT_RUN -> {
-//                    setCurrentSessionRun(false) // сохранять инфу о том, первый ли это запуск приложения
-                    if (auth.currentUser != null && auth.currentUser!!.isEmailVerified) {
-//                        loadCurrentUserData() // загрузка данных текущего пользователя
+                        transitToSignInScreen() //  переход к ActivityLogIn
                     }
-                    transitToMainScreen()
+                    AppState.REPEAT_RUN -> {
+                        loadUserData() // загрузка данных текущего пользователя
+
+                        transitToMainScreen()
+                    }
+                    AppState.NEED_UPDATE -> {
+                    } // TODO: create update popup dialog
                 }
-                AppState.NEED_UPDATE -> {
-                } // TODO: create update popup dialog
             }
         }
+    }
 
+    TODO("Not yet implemented")
+    private suspend fun loadUserData() {
+        if (auth.currentUser != null && auth.currentUser!!.isEmailVerified) {
+        } else {}
+    }
+
+    fun checkFirstRun() {
+        isFirstRun = checkFirstRun.invoke()
+        setAppState(isFirstRun!!)
+        updateVersionCode()
     }
 
     private fun updateVersionCode() {
@@ -115,5 +126,7 @@ class SplashPresenter(
 
     companion object {
         const val PREFS_CODE_DOESNT_EXIST = -1
+        const val MAIN_SCREEN = "MainScreen"
+        const val SIGN_IN_SCREEN = "SignInScreen"
     }
 }

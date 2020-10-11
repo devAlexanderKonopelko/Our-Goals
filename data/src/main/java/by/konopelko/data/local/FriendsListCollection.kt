@@ -1,7 +1,7 @@
 package by.konopelko.data.local
 
 import android.util.Log
-import by.konopelko.data.database.entities.User
+import by.konopelko.data.database.entity.User
 
 class FriendsListCollection {
     val friendsList = ArrayList<User>()

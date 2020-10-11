@@ -1,6 +1,6 @@
 package by.konopelko.data.local
 
-import by.konopelko.data.database.entities.User
+import by.konopelko.data.database.entity.User
 
 class UserData {
     var currentUser =

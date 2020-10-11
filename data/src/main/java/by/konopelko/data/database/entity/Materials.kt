@@ -1,10 +1,10 @@
-package by.konopelko.data.database.entities
+package by.konopelko.data.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import by.konopelko.data.database.entities.motivations.Image
-import by.konopelko.data.database.entities.motivations.Link
-import by.konopelko.data.database.entities.motivations.Note
+import by.konopelko.data.database.entity.motivations.Image
+import by.konopelko.data.database.entity.motivations.Link
+import by.konopelko.data.database.entity.motivations.Note
 
 @Entity
 class Materials(
