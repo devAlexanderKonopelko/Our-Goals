@@ -30,10 +30,8 @@ class SplashActivity : AppCompatActivity(), SplashView {
 
         scope = getKoin().getOrCreateScope(DI_SCOPE_NAME, named(DI_SCOPE_NAME))
 
-
-
         CoroutineScope(Dispatchers.IO).launch {
-            presenter.loadUserData()
+            presenter.transitToNextScreen()
         }
     }
 
@@ -71,17 +69,12 @@ class SplashActivity : AppCompatActivity(), SplashView {
         }
     }
 
-    override suspend fun transitToMainScreen() {
-        withContext(Dispatchers.Main) {
-            startActivity(Intent(this@SplashActivity, ActivityMain::class.java))
-        }
+    override fun transitToMainScreen() {
+        startActivity(Intent(this@SplashActivity, ActivityMain::class.java))
     }
 
-    override suspend fun transitToSignInScreen() {
-        // start ActivityLogIn
-        withContext(Dispatchers.Main) {
-            startActivity(Intent(this@SplashActivity, ActivityLogIn::class.java))
-        }
+    override fun transitToSignInScreen() {
+        startActivity(Intent(this@SplashActivity, ActivityLogIn::class.java))
     }
 
     companion object {

@@ -8,6 +8,7 @@ import by.konopelko.ourgoals.view.splash.SplashView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class SplashPresenter(
@@ -18,29 +19,21 @@ class SplashPresenter(
     private val interactor = StartScreenInteractor()
 
     // load users data depending on app first start by checking version code
-    fun loadUserData() {
+    fun transitToNextScreen() {
         CoroutineScope(Dispatchers.IO).launch {
-            val firstRun = checkFirstRun()
-            when (firstRun) {
+            when (checkFirstRun()) {
                 AppState.FIRST_RUN -> {
-                    loadUserGuestData() //  загрузка данных Гостя
-                    loadCurrentUserData() //  загрузка данных текущего пользователя
-                    setCurrentSessionRun(true) //
+//                    loadUserGuestData() //  вынести заргузку гостя в Sign In Activity
+//                    loadCurrentUserData() // ? загрузка данных текущего пользователя
+//                    setCurrentSessionRun(true) // сохранять инфу о том, первый ли это запуск приложения
                     transitToSignInScreen() //  переход к ActivityLogIn
                 }
                 AppState.REPEAT_RUN -> {
-                    setCurrentSessionRun(false) //
-                    if (auth.currentUser != null) {
-                        if (auth.currentUser!!.isEmailVerified) {
-                            loadCurrentUserData() // загрузка данных текущего пользователя
-                            transitToMainScreen() //переход к ActivityMain
-                        } else {
-                            transitToSignInScreen() //переход к ActivityLogIn
-                        }
-                    } else {
-                        loadCurrentUserData() //  загрузка данных текущего пользователя
-                        transitToMainScreen() //  переход к MainActivity
+//                    setCurrentSessionRun(false) // сохранять инфу о том, первый ли это запуск приложения
+                    if (auth.currentUser != null && auth.currentUser!!.isEmailVerified) {
+//                        loadCurrentUserData() // загрузка данных текущего пользователя
                     }
+                    transitToMainScreen()
                 }
                 AppState.NEED_UPDATE -> {
                 } // TODO: create update popup dialog
@@ -49,6 +42,18 @@ class SplashPresenter(
         //        В конце надо записывать в prefs текущую версию, чтобы сохранилась информация о версии.
 //        Иначе постоянно будет первый запуск.
         prefs.edit().putInt(PREFS_VERSION_CODE_KEY, currentVersionCode).apply()
+    }
+
+    private suspend fun transitToMainScreen() {
+        withContext(Dispatchers.Main) {
+            view.transitToMainScreen()
+        }
+    }
+
+    private suspend fun transitToSignInScreen() {
+        withContext(Dispatchers.Main) {
+            view.transitToSignInScreen()
+        }
     }
 
     suspend fun onGuestUserExistenceChecked(uid: String, context: Context): Boolean {
