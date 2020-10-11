@@ -10,7 +10,7 @@ class DatabaseInstance(context: Context) {
             Database::class.java,
             "goals-database"
         )
-            .fallbackToDestructiveMigration() // заменить на миграцию без отчистки бд
+            .fallbackToDestructiveMigration() // TODO: заменить на миграцию без отчистки бд
             .build()
     }
 

@@ -1,31 +1,27 @@
 package by.konopelko.ourgoals.presenter.splash
 
 import android.content.Context
-import by.konopelko.data.sharedpreferences.SharedPreferencesConst
 import by.konopelko.domain.interactors.startscreen.StartScreenInteractor
-import by.konopelko.ourgoals.domain.usecases.getcurrentversioncode.GetCurrentVersionCodeUseCase
-import by.konopelko.ourgoals.domain.usecases.getsavedversioncode.GetSavedVersionCodeUseCase
+import by.konopelko.ourgoals.domain.entity.AppState
+import by.konopelko.ourgoals.domain.usecases.checkfirstrun.CheckFirstRunUseCase
 import by.konopelko.ourgoals.view.splash.SplashView
 
 
 class SplashPresenter(
     private val view: SplashView,
-    private val getSavedVersionCode: GetSavedVersionCodeUseCase,
-    getCurrentVersionCode: GetCurrentVersionCodeUseCase
+    private val checkFirstRun: CheckFirstRunUseCase
 ) {
 
     private val interactor = StartScreenInteractor()
-    private val currentVersionCode = getCurrentVersionCode.invoke()
 
     // load users data depending on app first start by checking version code
     fun loadUserData() {
-        when(getSavedVersionCode()) {
-
+        val firstRun = checkFirstRun()
+        when(firstRun) {
+            AppState.FIRST_RUN -> {}
+            AppState.REPEAT_RUN -> {}
+            AppState.NEED_UPDATE -> {}
         }
-    }
-
-    fun onDatabaseInstanceLoaded(context: Context): Boolean {
-        return interactor.loadDatabaseInstance(context)
     }
 
     suspend fun onGuestUserExistenceChecked(uid: String, context: Context): Boolean {
@@ -77,5 +73,9 @@ class SplashPresenter(
 
     fun onCurrentSessionRunSet(state: Boolean) {
         interactor.setCurrentSessionRun(state)
+    }
+
+    companion object {
+        const val PREFS_CODE_DOESNT_EXIST = -1
     }
 }

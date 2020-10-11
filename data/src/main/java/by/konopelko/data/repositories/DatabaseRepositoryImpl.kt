@@ -11,10 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 
 class DatabaseRepositoryImpl {
-    fun loadDatabaseInstance(context: Context): Boolean {
-        DatabaseInstance.getInstance(context)
-        return true
-    }
 
     suspend fun findUserById(uid: String, context: Context): Boolean {
         // work with database

@@ -10,4 +10,5 @@ class SharedPreferencesRepositoryImpl(
 
     override fun getSavedVersionCode(): Int = sharedPreferences.versionCode
     override fun getCurrentVersionCode(): Int = SharedPreferencesConst.CURRENT_VERSION_CODE
+    override fun getDoesntExistCode(): Int = SharedPreferencesConst.PREFS_CODE_DOESNT_EXIST
 }

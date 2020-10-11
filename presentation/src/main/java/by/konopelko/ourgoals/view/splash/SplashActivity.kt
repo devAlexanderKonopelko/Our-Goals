@@ -1,6 +1,5 @@
 package by.konopelko.ourgoals.view.splash
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -20,8 +19,7 @@ class SplashActivity : AppCompatActivity(), SplashView {
 
     private val presenter = SplashPresenter(
         this,
-        getSavedVersionCode = scope.get(),
-        getCurrentVersionCode = scope.get()
+        checkFirstRun = scope.get()
     )
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -35,7 +33,6 @@ class SplashActivity : AppCompatActivity(), SplashView {
         presenter.loadUserData()
 
         CoroutineScope(Dispatchers.IO).launch {
-            loadDatabaseInstance() // загрузка ссылки на БД
             when {
                 // Не первый запуск
                 savedVersionCode == currentVersionCode -> {
@@ -60,7 +57,7 @@ class SplashActivity : AppCompatActivity(), SplashView {
                     transitToSignInScreen() //  переход к ActivityLogIn
                 }
                 currentVersionCode > savedVersionCode -> {
-                    // TODO Обновление приложения
+                    // TODO Обновить приложение
                 }
             }
 
@@ -72,10 +69,6 @@ class SplashActivity : AppCompatActivity(), SplashView {
 
     private fun setCurrentSessionRun(state: Boolean) {
         presenter.onCurrentSessionRunSet(state)
-    }
-
-    private fun loadDatabaseInstance(): Boolean {
-        return presenter.onDatabaseInstanceLoaded(this)
     }
 
     private suspend fun loadCurrentUserData(): Boolean {

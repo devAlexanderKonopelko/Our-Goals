@@ -2,6 +2,8 @@ package by.konopelko.ourgoals.di.module
 
 import by.konopelko.data.repositories.sharedpreferences.SharedPreferencesRepositoryImpl
 import by.konopelko.ourgoals.domain.repositories.sharedpreferences.SharedPreferencesRepository
+import by.konopelko.ourgoals.domain.usecases.checkfirstrun.CheckFirstRunUseCase
+import by.konopelko.ourgoals.domain.usecases.checkfirstrun.CheckFirstRunUseCaseImpl
 import by.konopelko.ourgoals.domain.usecases.getcurrentversioncode.GetCurrentVersionCodeUseCase
 import by.konopelko.ourgoals.domain.usecases.getcurrentversioncode.GetCurrentVersionCodeUseCaseImpl
 import by.konopelko.ourgoals.domain.usecases.getsavedversioncode.GetSavedVersionCodeUseCase
@@ -17,12 +19,8 @@ val splashModule = module {
             SharedPreferencesRepositoryImpl(get())
         }
 
-        scoped<GetSavedVersionCodeUseCase> {
-            GetSavedVersionCodeUseCaseImpl(get())
-        }
-
-        scoped<GetCurrentVersionCodeUseCase> {
-            GetCurrentVersionCodeUseCaseImpl(get())
+        scoped<CheckFirstRunUseCase> {
+            CheckFirstRunUseCaseImpl(get())
         }
     }
 }
