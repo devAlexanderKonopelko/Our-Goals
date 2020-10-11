@@ -1,21 +1,26 @@
 package by.konopelko.ourgoals.presenter.splash
 
 import android.content.Context
+import by.konopelko.data.sharedpreferences.SharedPreferencesConst
 import by.konopelko.domain.interactors.startscreen.StartScreenInteractor
-import by.konopelko.ourgoals.domain.usecases.getversioncode.GetVersionCodeUseCase
+import by.konopelko.ourgoals.domain.usecases.getcurrentversioncode.GetCurrentVersionCodeUseCase
+import by.konopelko.ourgoals.domain.usecases.getsavedversioncode.GetSavedVersionCodeUseCase
 import by.konopelko.ourgoals.view.splash.SplashView
 
 
 class SplashPresenter(
     private val view: SplashView,
-    private val getVersionCode: GetVersionCodeUseCase
+    private val getSavedVersionCode: GetSavedVersionCodeUseCase,
+    getCurrentVersionCode: GetCurrentVersionCodeUseCase
 ) {
 
     private val interactor = StartScreenInteractor()
+    private val currentVersionCode = getCurrentVersionCode.invoke()
 
     // load users data depending on app first start by checking version code
     fun loadUserData() {
-        when(getVersionCode()) {
+        when(getSavedVersionCode()) {
+
         }
     }
 

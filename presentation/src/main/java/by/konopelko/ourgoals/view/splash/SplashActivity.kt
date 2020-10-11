@@ -20,7 +20,9 @@ class SplashActivity : AppCompatActivity(), SplashView {
 
     private val presenter = SplashPresenter(
         this,
-        getVersionCode = scope.get())
+        getSavedVersionCode = scope.get(),
+        getCurrentVersionCode = scope.get()
+    )
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
@@ -31,12 +33,6 @@ class SplashActivity : AppCompatActivity(), SplashView {
         scope = getKoin().getOrCreateScope(DI_SCOPE_NAME, named(DI_SCOPE_NAME))
 
         presenter.loadUserData()
-
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val savedVersionCode = prefs.getInt(
-            PREFS_VERSION_CODE_KEY,
-            PREFS_CODE_DOESNT_EXIST
-        )
 
         CoroutineScope(Dispatchers.IO).launch {
             loadDatabaseInstance() // загрузка ссылки на БД
