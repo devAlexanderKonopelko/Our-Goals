@@ -30,40 +30,10 @@ class SplashActivity : AppCompatActivity(), SplashView {
 
         scope = getKoin().getOrCreateScope(DI_SCOPE_NAME, named(DI_SCOPE_NAME))
 
-        presenter.loadUserData()
+
 
         CoroutineScope(Dispatchers.IO).launch {
-            when {
-                // Не первый запуск
-                savedVersionCode == currentVersionCode -> {
-                    setCurrentSessionRun(false) //
-                    if (auth.currentUser != null) {
-                        if (auth.currentUser!!.isEmailVerified) {
-                            loadCurrentUserData() // загрузка данных текущего пользователя
-                            transitToMainScreen() //переход к ActivityMain
-                        } else {
-                            transitToSignInScreen() //переход к ActivityLogIn
-                        }
-                    } else {
-                        loadCurrentUserData() //  загрузка данных текущего пользователя
-                        transitToMainScreen() //  переход к MainActivity
-                    }
-                }
-                // Первый запуск/очищены prefs
-                savedVersionCode == PREFS_CODE_DOESNT_EXIST -> {
-                    loadUserGuestData() //  загрузка данных Гостя
-                    loadCurrentUserData() //  загрузка данных текущего пользователя
-                    setCurrentSessionRun(true) //
-                    transitToSignInScreen() //  переход к ActivityLogIn
-                }
-                currentVersionCode > savedVersionCode -> {
-                    // TODO Обновить приложение
-                }
-            }
-
-//        В конце надо записывать в prefs текущую версию, чтобы сохранилась информация о версии.
-//        Иначе постоянно будет первый запуск.
-            prefs.edit().putInt(PREFS_VERSION_CODE_KEY, currentVersionCode).apply()
+            presenter.loadUserData()
         }
     }
 
