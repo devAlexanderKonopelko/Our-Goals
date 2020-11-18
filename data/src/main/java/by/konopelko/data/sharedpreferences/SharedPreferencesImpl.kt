@@ -2,6 +2,7 @@ package by.konopelko.data.sharedpreferences
 
 import android.content.Context
 import by.konopelko.data.sharedpreferences.SharedPreferencesConst.CURRENT_VERSION_CODE
+import by.konopelko.data.sharedpreferences.SharedPreferencesConst.LAST_USER_ID
 import by.konopelko.data.sharedpreferences.SharedPreferencesConst.PREFS_CODE_DOESNT_EXIST
 import by.konopelko.data.sharedpreferences.SharedPreferencesConst.PREFS_NAME
 import by.konopelko.data.sharedpreferences.SharedPreferencesConst.PREFS_VERSION_CODE_KEY
@@ -18,6 +19,13 @@ class SharedPreferencesImpl(
             PREFS_CODE_DOESNT_EXIST)
         set(value) {
             sharedPreferences.edit().putInt(PREFS_VERSION_CODE_KEY, value).apply()
+        }
+    override var lastUserId: String?
+        get() = sharedPreferences.getString(
+            LAST_USER_ID,
+            null)
+        set(value) {
+            sharedPreferences.edit().putString(LAST_USER_ID, value).apply()
         }
 
     override fun updateVersionCode() {

@@ -8,7 +8,8 @@ import by.konopelko.ourgoals.domain.usecases.setappstate.SetAppStateUseCase
 import by.konopelko.ourgoals.domain.usecases.updateversioncode.UpdateVersionCodeUseCase
 import by.konopelko.ourgoals.view.splash.SplashView
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -25,15 +26,29 @@ class SplashPresenter(
     private val interactor = StartScreenInteractor()
 
     fun transitToNextScreen() {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(IO).launch {
             isFirstRun?.let {
                 when (isFirstRun) {
                     AppState.FIRST_RUN -> {
+                        // Перейти в Sign In Activity
+                        // Если пользователь зарегался - добавить пользователя в бд
+                        // Отметить пользователя как последнего вошеднего пользователя
+                        // Иначе если пользователь вошёл как гость -
+                            // Создать гостя в бд
+                            // Отметить гостя как последнего вошеднего пользователя
+                        // Перейти в Home Activity
+
+
 //                    loadUserGuestData() //  вынести заргузку гостя в Sign In Activity
 //                    loadCurrentUserData() // ? загрузка данных текущего пользователя
                         transitToSignInScreen() //  переход к ActivityLogIn
                     }
                     AppState.REPEAT_RUN -> {
+                        // Проверить наличие последнего пользователя в преференсах
+                        // Если последнего пользователя нет - задать гостя как последнего пользователя
+                        // Если последний пользователь есть - загрузить его по id из бд
+                        // Перейти в Home Activity
+
                         loadUserData() // загрузка данных текущего пользователя
 
                         transitToMainScreen()
@@ -45,10 +60,11 @@ class SplashPresenter(
         }
     }
 
-    TODO("Not yet implemented")
+    //TODO("Not yet implemented")
     private suspend fun loadUserData() {
-        if (auth.currentUser != null && auth.currentUser!!.isEmailVerified) {
-        } else {}
+
+//        if (auth.currentUser != null && auth.currentUser!!.isEmailVerified) {
+//        } else {}
     }
 
     fun checkFirstRun() {
@@ -62,13 +78,13 @@ class SplashPresenter(
     }
 
     private suspend fun transitToMainScreen() {
-        withContext(Dispatchers.Main) {
+        withContext(Main) {
             view.transitToMainScreen()
         }
     }
 
     private suspend fun transitToSignInScreen() {
-        withContext(Dispatchers.Main) {
+        withContext(Main) {
             view.transitToSignInScreen()
         }
     }
