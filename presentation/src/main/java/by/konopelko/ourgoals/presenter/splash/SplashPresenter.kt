@@ -4,6 +4,7 @@ import android.content.Context
 import by.konopelko.domain.interactors.startscreen.StartScreenInteractor
 import by.konopelko.ourgoals.domain.entity.AppState
 import by.konopelko.ourgoals.domain.usecases.checkfirstrun.CheckFirstRunUseCase
+import by.konopelko.ourgoals.domain.usecases.getlastuserid.GetLastUserIdUseCase
 import by.konopelko.ourgoals.domain.usecases.setappstate.SetAppStateUseCase
 import by.konopelko.ourgoals.domain.usecases.updateversioncode.UpdateVersionCodeUseCase
 import by.konopelko.ourgoals.view.splash.SplashView
@@ -18,7 +19,8 @@ class SplashPresenter(
     private val view: SplashView,
     private val checkFirstRun: CheckFirstRunUseCase,
     private val updateVersionCode: UpdateVersionCodeUseCase,
-    private val setAppState: SetAppStateUseCase
+    private val setAppState: SetAppStateUseCase,
+    private val getLastUserId: GetLastUserIdUseCase
 ) {
 
     private var isFirstRun: AppState? = null
@@ -45,14 +47,16 @@ class SplashPresenter(
                     }
                     AppState.REPEAT_RUN -> {
                         // Проверить наличие последнего пользователя в преференсах
-                        val lastUserId = getLastUserIdUseCase() // TODO: create use case
-                        // Если последнего пользователя нет - задать и загрузить гостя как последнего пользователя
-                        // Если последний пользователь есть - загрузить его по id из бд
+                        val lastUserId = getLastUserId()
+                        // Если последнего пользователя нет - передаём пустоту в Home Activity
+                        // Если последний пользователь есть - передать в Home Activity его id
                         // Перейти в Home Activity
+                        // Если был передан id последнего пользователя - загрузить данные пользователя по id из бд
+                        // Если id не был передан - загрузить данные гостя
 
 //                        loadUserData() // загрузка данных текущего пользователя
 
-                        transitToMainScreen()
+                        transitToMainScreen(lastUserId)
                     }
                     AppState.NEED_UPDATE -> {
                     } // TODO: create update popup dialog
@@ -78,9 +82,9 @@ class SplashPresenter(
         updateVersionCode.invoke()
     }
 
-    private suspend fun transitToMainScreen() {
+    private suspend fun transitToMainScreen(lastUserId: String?) {
         withContext(Main) {
-            view.transitToMainScreen()
+            view.transitToMainScreen(lastUserId)
         }
     }
 

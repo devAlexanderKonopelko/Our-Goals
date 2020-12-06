@@ -6,4 +6,5 @@ interface SharedPreferencesRepository {
     fun getCurrentVersionCode(): Int
     fun getDoesntExistCode(): Int
     fun updateVersionCode()
+    fun getLastUserId(): String?
 }

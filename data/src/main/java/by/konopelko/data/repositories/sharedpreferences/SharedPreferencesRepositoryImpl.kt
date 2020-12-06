@@ -15,4 +15,6 @@ class SharedPreferencesRepositoryImpl(
     override fun updateVersionCode() {
         sharedPreferences.updateVersionCode()
     }
+
+    override fun getLastUserId(): String? = sharedPreferences.lastUserId
 }

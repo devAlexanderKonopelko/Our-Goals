@@ -1,6 +1,6 @@
 package by.konopelko.ourgoals.view.splash
 
 interface SplashView {
-    fun transitToMainScreen()
+    fun transitToMainScreen(lastUserId: String?)
     fun transitToSignInScreen()
 }

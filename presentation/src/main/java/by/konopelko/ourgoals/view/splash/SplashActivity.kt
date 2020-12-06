@@ -20,7 +20,8 @@ class SplashActivity : AppCompatActivity(), SplashView {
         this,
         checkFirstRun = scope.get(),
         updateVersionCode = scope.get(),
-        setAppState = scope.get()
+        setAppState = scope.get(),
+        scope.get()
     )
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -72,8 +73,10 @@ class SplashActivity : AppCompatActivity(), SplashView {
         }
     }
 
-    override fun transitToMainScreen() {
-        startActivity(Intent(this@SplashActivity, ActivityMain::class.java))
+    override fun transitToMainScreen(lastUserId: String?) {
+        val intent = Intent(this@SplashActivity, ActivityMain::class.java)
+        intent.putExtra(LAST_USER_ID, lastUserId)
+        startActivity(intent)
     }
 
     override fun transitToSignInScreen() {
@@ -82,5 +85,6 @@ class SplashActivity : AppCompatActivity(), SplashView {
 
     companion object {
         const val DI_SCOPE_NAME = "SplashScope"
+        const val LAST_USER_ID = "LastUserId"
     }
 }

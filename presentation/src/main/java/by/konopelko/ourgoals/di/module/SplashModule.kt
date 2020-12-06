@@ -6,6 +6,8 @@ import by.konopelko.ourgoals.domain.repository.AppStateRepository
 import by.konopelko.ourgoals.domain.repository.sharedpreferences.SharedPreferencesRepository
 import by.konopelko.ourgoals.domain.usecases.checkfirstrun.CheckFirstRunUseCase
 import by.konopelko.ourgoals.domain.usecases.checkfirstrun.CheckFirstRunUseCaseImpl
+import by.konopelko.ourgoals.domain.usecases.getlastuserid.GetLastUserIdUseCase
+import by.konopelko.ourgoals.domain.usecases.getlastuserid.GetLastUserIdUseCaseImpl
 import by.konopelko.ourgoals.domain.usecases.setappstate.SetAppStateUseCase
 import by.konopelko.ourgoals.domain.usecases.setappstate.SetAppStateUseCaseImpl
 import by.konopelko.ourgoals.domain.usecases.updateversioncode.UpdateVersionCodeUseCase
@@ -36,6 +38,10 @@ val splashModule = module {
 
         scoped<SetAppStateUseCase> {
             SetAppStateUseCaseImpl(get())
+        }
+
+        scoped<GetLastUserIdUseCase> {
+            GetLastUserIdUseCaseImpl(get())
         }
     }
 }
