@@ -66,6 +66,7 @@ class SplashPresenter(
     }
 
     //TODO("Not yet implemented")
+    // перенести в Home Activity
     private suspend fun loadUserData() {
 
 //        if (auth.currentUser != null && auth.currentUser!!.isEmailVerified) {
@@ -94,14 +95,17 @@ class SplashPresenter(
         }
     }
 
+    // TODO: удалить или перенести в Home Activity
     suspend fun onGuestUserExistenceChecked(uid: String, context: Context): Boolean {
         return interactor.checkGuestUserExistence(uid, context)
     }
 
+    // TODO: удалить или перенести в другую Activity
     suspend fun onGuestUserCreated(uid: String, name: String, context: Context): Boolean {
         return interactor.createGuestUser(uid, name, context)
     }
 
+    // TODO: удалить или перенести в Home Activity
     suspend fun onDefaultCategoriesCreated(
         uid: String,
         titles: ArrayList<String>,
@@ -110,10 +114,12 @@ class SplashPresenter(
         return interactor.createDefaultCategories(uid, titles, context)
     }
 
+    // TODO: удалить или перенести в Home Activity
     suspend fun onDefaultAnalyticsCreated(uid: String, context: Context): Boolean {
         return interactor.createDefaultAnalytics(uid, context)
     }
 
+    // TODO: удалить или перенести в Home Activity
     suspend fun onCurrentUserDataLoaded(uid: String, context: Context): Boolean {
         val result: Boolean = interactor.setCurrentUser(uid, context)
         if (result) {
@@ -125,29 +131,28 @@ class SplashPresenter(
         return result
     }
 
+    // TODO: удалить или перенести в Home Activity
     suspend fun onUsersCategoriesLoaded(uid: String, context: Context): Boolean {
         return interactor.loadUsersCategories(uid, context)
     }
 
+    // TODO: удалить или перенести в Home Activity
     suspend fun onUsersPersonalGoalsLoaded(uid: String, context: Context): Boolean {
         return interactor.loadUsersPersonalGoals(uid, context)
     }
 
+    // TODO: удалить или перенести в Home Activity
     suspend fun onUsersSocialGoalsLoaded(uid: String, context: Context): Boolean {
         return interactor.loadUsersSocialGoals(uid, context)
     }
 
+    // TODO: удалить или перенести в Home Activity
     suspend fun onUsersAnalyticsLoaded(uid: String, context: Context): Boolean {
         return interactor.loadUsersAnalytics(uid, context)
     }
 
+    // TODO: удалить или перенести в другую Activity
     fun onCurrentSessionRunSet(state: Boolean) {
         interactor.setCurrentSessionRun(state)
-    }
-
-    companion object {
-        const val PREFS_CODE_DOESNT_EXIST = -1
-        const val MAIN_SCREEN = "MainScreen"
-        const val SIGN_IN_SCREEN = "SignInScreen"
     }
 }
